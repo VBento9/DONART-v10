@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.3 · Loja Etapa 8 · Pagamento e Caixa · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.4 · Loja Etapa 9 · Eliminação Cloud de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -746,28 +746,32 @@ async function saveClient(){
 function editClient(id){const c=(db.clients||[]).find(x=>x.id===id);if(!c)return;clientEditId.value=c.id;clientName.value=c.name||'';clientPhone.value=c.phone||'';clientEmail.value=c.email||'';clientNotes.value=c.notes||'';window.scrollTo({top:0,behavior:'smooth'})}
 function clearClientForm(){clientEditId.value='';clientName.value='';clientPhone.value='';clientEmail.value='';clientNotes.value=''}
 async function deleteClient(id){
- if(db.orders.some(o=>o.clientId===id))return toast('Este cliente tem encomendas associadas e não pode ser apagado');
- if((db.quotes||[]).some(q=>q.clientId===id))return toast('Este cliente tem orçamentos associados e não pode ser apagado');
- const c=(db.clients||[]).find(x=>x.id===id);
- if(!c)return;
- if(!confirm('Apagar este cliente definitivamente?'))return;
- const u=cloudUser||await ensureCloudSession();
- if(u&&c._rid){
-   try{
-     const {error}=await cloudClient.from(REL_TABLES.clients).delete().eq('user_id',u.id).eq('id',c._rid);
+ const c=db.clients.find(x=>x.id===id);if(!c)return;
+ const used=(db.orders||[]).some(o=>o.clientId===id)||(db.quotes||[]).some(q=>q.clientId===id);
+ if(used&&!confirm('Este cliente tem encomendas/orçamentos associados. Eliminar o cliente sem apagar o histórico?'))return;
+ if(!used&&!confirm('Eliminar definitivamente este cliente?'))return;
+
+ let cloudOk=true;
+ try{
+   const u=cloudUser||await ensureCloudSession();
+   if(u&&cloudClient&&c._rid){
+     const {error}=await cloudClient.from('donart_v10_clients').delete().eq('id',c._rid).eq('user_id',u.id);
      if(error)throw error;
-   }catch(e){
-     cloudLogMsg('Falha ao eliminar cliente na cloud: '+cloudErrText(e));
-     toast('Não foi possível eliminar da Cloud. Nada foi apagado.');
-     return
+     cloudLogMsg('Cliente eliminado da cloud: '+(c.name||c.id));
    }
+ }catch(e){
+   cloudOk=false;
+   cloudLogMsg('Falha ao eliminar cliente da cloud: '+cloudErrText(e));
  }
+
  db.clients=db.clients.filter(x=>x.id!==id);
- localStorage.setItem(KEY,JSON.stringify(db));
- setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
- cloudLogMsg('Cliente eliminado definitivamente: '+(c.name||id));
- renderClients();renderCloudUI();
- toast('Cliente eliminado definitivamente')
+ (db.orders||[]).forEach(o=>{if(o.clientId===id)o.clientId=null});
+ (db.quotes||[]).forEach(q=>{if(q.clientId===id)q.clientId=null});
+ save();
+ renderClients();
+
+ if(cloudOk)toast('Cliente eliminado definitivamente');
+ else toast('Eliminado localmente, mas falhou na cloud');
 }
 function startOrderForClient(id){const c=(db.clients||[]).find(x=>x.id===id);if(!c)return;go('sale');setTimeout(()=>{saleClient.value=c.name;saleContact.value=c.phone||''},0)}
 function simpleHash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).padStart(8,'0')}
@@ -1614,7 +1618,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.3',
+   app_version:'10.1.4',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1

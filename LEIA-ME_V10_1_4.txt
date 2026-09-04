@@ -1,0 +1,20 @@
+DONART V10.1.4 — ELIMINAÇÃO CLOUD DE CLIENTES
+
+Objetivo:
+Corrigir clientes "fantasma" que reapareciam após sincronização.
+
+Alterações:
+- Eliminar cliente remove também o respetivo registo em donart_v10_clients no Supabase.
+- Mantém encomendas e orçamentos históricos; apenas remove a ligação direta ao cliente eliminado.
+- Se o cliente tiver histórico associado, a app pede confirmação antes de eliminar.
+- Regista sucesso/erro na atividade Cloud Sync.
+
+Não necessita de novo SQL Supabase.
+
+TESTE:
+1. Publicar por cima do projeto donart-v10.
+2. Ir a Clientes.
+3. Eliminar "Teste 1" e "teste iPhone".
+4. Fechar completamente a V10.
+5. Reabrir e confirmar que não reaparecem.
+6. Não eliminar "Teste donart", porque esse veio corretamente da loja online.
