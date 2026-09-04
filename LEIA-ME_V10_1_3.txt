@@ -1,0 +1,23 @@
+DONART V10.1.3 — PAGAMENTO E CAIXA
+
+Novidades:
+- Na encomenda Pronta aparece "Entrega e pagamento".
+- Pode receber o saldo total e entregar num único botão.
+- Pode entregar com saldo pendente, com confirmação.
+- Encomendas já Entregues mas por liquidar mostram "Saldo após entrega".
+- Pagamentos registados na encomenda criam automaticamente movimento ligado no Caixa.
+- Movimentos "via Encomenda" não são editáveis diretamente no Caixa.
+- O KPI "Entradas extra" exclui pagamentos de encomendas para não contar vendas duas vezes.
+- Correções de pagamento também deixam rasto no Caixa.
+- Mantém o histórico e o saldo da encomenda.
+
+Não necessita de SQL Supabase.
+
+TESTE COM A ENCOMENDA ATUAL:
+A WEB-EE22AEFB1F já está Entregue e tem 0,70 € por liquidar.
+1. Publicar V10.1.3.
+2. Abrir a encomenda.
+3. No bloco "Saldo após entrega", escolher o meio (ex.: Dinheiro).
+4. Tocar "Receber saldo 0,70 €".
+5. Confirmar que o bloco Conclusão passa a "Pago".
+6. Abrir Caixa e confirmar movimento "Pagamento encomenda WEB-EE22AEFB1F" com badge "via Encomenda".
