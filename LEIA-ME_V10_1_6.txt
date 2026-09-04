@@ -1,0 +1,19 @@
+DONART V10.1.6 — CLIENTES ONLINE SEM DUPLICADOS
+
+- Reutiliza cliente pelo mesmo telemóvel.
+- Se necessário, reutiliza pelo mesmo email.
+- Só usa o nome quando não existe telemóvel nem email.
+- Atualiza os dados do cliente existente em vez de criar outro.
+- Consolida duplicados já existentes com o mesmo telemóvel/email.
+- Mantém o histórico ligado ao cliente principal.
+- Clientes vindos da Loja Online recebem badge ONLINE.
+- Mantém a correção dos clientes apagados que não devem reaparecer.
+
+Não necessita de SQL Supabase.
+
+TESTE:
+1. Publicar por cima de donart-v10.
+2. Fazer nova encomenda na Loja usando o mesmo telemóvel de "Teste donart".
+3. Pode escrever outro nome, por exemplo "Teste Donart 2".
+4. Receber a encomenda na V10.
+5. Em Clientes deve continuar apenas UM cliente para esse telemóvel, agora com 2 encomendas.

@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.5 · Loja Etapa 10 · Clientes Fantasma · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.6 · Loja Etapa 11 · Clientes Online sem Duplicados · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -503,20 +503,19 @@ function ensureClientsFromOrders(){
  db.clients=db.clients||[];
  db.orders.forEach(o=>{
    if(!o.client||o.clientDeleted)return;
-   const phone=normalizePhone(o.contact),name=String(o.client).trim();
-   let c=db.clients.find(x=>(phone&&normalizePhone(x.phone)===phone)||(!phone&&normText(x.name)===normText(name)));
-   if(!c){
-     c={id:uid('CLI'),name,phone:o.contact||'',email:o.email||'',notes:'',created:o.created||todayISO()};
-     db.clients.push(c)
-   }else{
-     if(!c.phone&&o.contact)c.phone=o.contact;
-     if(!c.email&&o.email)c.email=o.email
-   }
+   const phone=normalizePhone(o.contact),mail=String(o.email||'').trim().toLowerCase(),name=String(o.client).trim(),nn=normText(name);
+   let c=db.clients.find(x=>(phone&&normalizePhone(x.phone)===phone)||(mail&&String(x.email||'').trim().toLowerCase()===mail)||(!phone&&!mail&&normText(x.name)===nn));
+   if(!c){c={id:uid('CLI'),name,phone:o.contact||'',email:o.email||'',notes:'',created:o.created||todayISO(),source:o.source==='online_store'?'online_store':'order'};db.clients.push(c)}
+   else{if(name)c.name=name;if(!c.phone&&o.contact)c.phone=o.contact;if(!c.email&&o.email)c.email=o.email;if(o.source==='online_store')c.source='online_store'}
    o.clientId=c.id
  })
 }
-function upsertClientFromOrder(name,contact){
- name=String(name||'').trim();if(!name)return null;db.clients=db.clients||[];const phone=normalizePhone(contact);let c=db.clients.find(x=>(phone&&normalizePhone(x.phone)===phone)||normText(x.name)===normText(name));if(c){c.name=name;if(contact)c.phone=contact;return c.id}c={id:uid('CLI'),name,phone:contact||'',email:'',notes:'',created:todayISO()};db.clients.push(c);return c.id
+function upsertClientFromOrder(name,contact,email=''){
+ name=String(name||'').trim();if(!name)return null;db.clients=db.clients||[];
+ const phone=normalizePhone(contact),mail=String(email||'').trim().toLowerCase(),nn=normText(name);
+ let c=db.clients.find(x=>(phone&&normalizePhone(x.phone)===phone)||(mail&&String(x.email||'').trim().toLowerCase()===mail)||(!phone&&!mail&&normText(x.name)===nn));
+ if(c){c.name=name;if(contact)c.phone=contact;if(mail)c.email=mail;return c.id}
+ c={id:uid('CLI'),name,phone:contact||'',email:mail,notes:'',created:todayISO(),source:'order'};db.clients.push(c);return c.id
 }
 function renderClientSuggestions(){ensureClientsFromOrders();const d=document.getElementById('clientSuggestions');if(d)d.innerHTML=db.clients.slice().sort((a,b)=>a.name.localeCompare(b.name,'pt')).map(c=>`<option value="${String(c.name).replace(/"/g,'&quot;')}">${c.phone||''}</option>`).join('')}
 function fillClientContact(){const n=normText(document.getElementById('saleClient')?.value),c=(db.clients||[]).find(x=>normText(x.name)===n);if(c&&document.getElementById('saleContact'))document.getElementById('saleContact').value=c.phone||''}
@@ -675,88 +674,19 @@ function editCash(id){const x=db.cash.find(x=>x.id===id);if(!x)return;if(x.sourc
 function cancelCashEdit(clear=true){editingCashId=null;if(clear){cashDate.value=todayISO();cashType.value='Entrada';cashDesc.value='';cashMethod.value='Dinheiro';cashValue.value=''}cashSaveBtn.textContent='Registar';cashCancelBtn.classList.add('hidden')}
 function deleteCash(id){const x=db.cash.find(x=>x.id===id);if(!x)return;if(x.source==='purchase')return toast('Anule a compra associada');if(['order_payment','order_payment_correction'].includes(x.source))return toast('Corrija este movimento através da encomenda associada');if(!confirm('Eliminar este movimento de caixa?'))return;db.cash=db.cash.filter(x=>x.id!==id);save();toast('Movimento eliminado')}
 function renderCash(){const d=dash(),ei=db.cash.filter(x=>x.type==='Entrada'&&!['order_payment','order_payment_correction'].includes(x.source)).reduce((s,x)=>s+(+x.value||0),0),out=db.cash.filter(x=>x.type!=='Entrada'&&x.source!=='order_payment_correction').reduce((s,x)=>s+(+x.value||0),0);cashKpis.innerHTML=[['Recebido vendas',euro(d.paid)],['Entradas extra',euro(ei)],['Saídas',euro(out)],['Saldo líquido',euro(d.paid+ei-out)]].map(([l,v])=>`<div class="card kpi"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('');cashBody.innerHTML=db.cash.length?db.cash.slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.desc||'—'}</td><td>${x.method}</td><td>${euro(x.value)}</td><td>${x.source==='purchase'?'<span class="badge warn">via Compras</span>':['order_payment','order_payment_correction'].includes(x.source)?'<span class="badge ok">via Encomenda</span>':`<button class="btn" onclick="editCash('${x.id}')">Editar</button> <button class="btn danger" onclick="deleteCash('${x.id}')">Apagar</button>`}</td></tr>`).join(''):`<tr><td colspan="6" class="empty">Sem movimentos</td></tr>`}
-function renderClients(){ensureClientsFromOrders();const stats={};db.orders.filter(completed).forEach(o=>{const id=o.clientId||upsertClientFromOrder(o.client,o.contact);if(!stats[id])stats[id]={count:0,total:0,last:''};stats[id].count++;stats[id].total+=calcOrder(o).total;if(!stats[id].last||o.created>stats[id].last)stats[id].last=o.created});const rows=(db.clients||[]).slice().sort((a,b)=>a.name.localeCompare(b.name,'pt'));clientsBody.innerHTML=rows.length?rows.map(c=>{const st=stats[c.id]||{count:0,total:0,last:''};return `<tr><td>${c.name}</td><td>${c.phone||'—'}</td><td>${c.email||'—'}</td><td>${st.count}</td><td>${euro(st.total)}</td><td>${st.last||'—'}</td><td class="client-actions"><button class="btn small" onclick="editClient('${c.id}')">Editar</button><button class="btn small" onclick="startOrderForClient('${c.id}')">Nova encomenda</button><button class="btn small danger" onclick="deleteClient('${c.id}')">Apagar</button></td></tr>`}).join(''):`<tr><td colspan="7" class="empty">Sem clientes</td></tr>`;renderClientSuggestions()}
-async function saveClient(){
- const name=clientName.value.trim();
- if(!name)return toast('Indique o nome');
- const phone=clientPhone.value.trim();
- const appId=clientEditId.value||uid('CLI');
- let c=(db.clients||[]).find(x=>x.id===appId);
- const dup=(db.clients||[]).find(x=>x.id!==appId&&(
-   (normalizePhone(phone)&&normalizePhone(x.phone)===normalizePhone(phone))||
-   normText(x.name)===normText(name)
- ));
- if(dup)return toast('Já existe um cliente com este nome/contacto');
-
- const data={
-   id:appId,
-   name,
-   phone,
-   email:clientEmail.value.trim(),
-   notes:clientNotes.value.trim(),
-   created:c?.created||todayISO()
- };
-
- if(c&&c._rid)data._rid=c._rid;
- relUuid(data);
-
- if(c)Object.assign(c,data);
- else{
-   db.clients=db.clients||[];
-   db.clients.push(data)
+function mergeDuplicateClients(){
+ db.clients=db.clients||[];
+ const keep=[],byPhone=new Map(),byEmail=new Map(),remap=new Map();
+ for(const c of db.clients){
+   const phone=normalizePhone(c.phone),mail=String(c.email||'').trim().toLowerCase();
+   let master=(phone&&byPhone.get(phone))||(mail&&byEmail.get(mail));
+   if(!master){master=c;keep.push(c);if(phone)byPhone.set(phone,c);if(mail)byEmail.set(mail,c)}
+   else{remap.set(c.id,master.id);if(!master.phone&&c.phone)master.phone=c.phone;if(!master.email&&c.email)master.email=c.email;if(!master.notes&&c.notes)master.notes=c.notes;if(c.source==='online_store')master.source='online_store'}
  }
- localStorage.setItem(KEY,JSON.stringify(db));
- renderClients();
- clearClientForm();
-
- const u=cloudUser||await ensureCloudSession();
- if(!u){
-   localStorage.setItem(REL_DIRTY,'1');
-   setCloudMeta({dirty:true,verified:false,conflict:false});
-   toast('Cliente guardado neste dispositivo');
-   return
- }
- try{
-   const row={
-     id:data._rid,
-     user_id:u.id,
-     name:data.name,
-     phone:data.phone||null,
-     email:data.email||null,
-     notes:data.notes||null,
-     data:relClone(data),
-     updated_at:new Date().toISOString()
-   };
-   const {data:saved,error}=await cloudClient.from(REL_TABLES.clients)
-     .upsert(row,{onConflict:'id'})
-     .select('*')
-     .single();
-   if(error)throw error;
-   if(!saved||saved.id!==data._rid)throw new Error('A Cloud não confirmou o cliente guardado');
-
-   const {data:verify,error:verifyError}=await cloudClient.from(REL_TABLES.clients)
-     .select('id,name,data,updated_at')
-     .eq('user_id',u.id)
-     .eq('id',data._rid)
-     .maybeSingle();
-   if(verifyError)throw verifyError;
-   if(!verify)throw new Error('Cliente não encontrado após gravação');
-
-   localStorage.removeItem(REL_DIRTY);
-   setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
-   cloudLogMsg('Cliente confirmado na Cloud: '+data.name+' · '+data._rid.slice(0,8));
-   renderClients();renderCloudUI();
-   toast('Cliente guardado e sincronizado')
- }catch(e){
-   localStorage.setItem(REL_DIRTY,'1');
-   setCloudMeta({dirty:true,verified:false,conflict:false});
-   cloudLogMsg('Erro ao guardar cliente V10: '+cloudErrText(e));
-   renderCloudUI();
-   toast('Cliente guardado localmente; Cloud pendente')
- }
+ if(remap.size){(db.orders||[]).forEach(o=>{if(remap.has(o.clientId))o.clientId=remap.get(o.clientId)});(db.quotes||[]).forEach(q=>{if(remap.has(q.clientId))q.clientId=remap.get(q.clientId)});db.clients=keep}
+ return remap.size
 }
-function editClient(id){const c=(db.clients||[]).find(x=>x.id===id);if(!c)return;clientEditId.value=c.id;clientName.value=c.name||'';clientPhone.value=c.phone||'';clientEmail.value=c.email||'';clientNotes.value=c.notes||'';window.scrollTo({top:0,behavior:'smooth'})}
-function clearClientForm(){clientEditId.value='';clientName.value='';clientPhone.value='';clientEmail.value='';clientNotes.value=''}
+function renderClients(){ensureClientsFromOrders();mergeDuplicateClients();const stats={};db.orders.filter(completed).forEach(o=>{if(o.clientDeleted)return;const id=o.clientId||upsertClientFromOrder(o.client,o.contact,o.email||'');if(!stats[id])stats[id]={count:0,total:0,last:''};stats[id].count++;stats[id].total+=calcOrder(o).total;if(!stats[id].last||o.created>stats[id].last)stats[id].last=o.created});const rows=(db.clients||[]).slice().sort((a,b)=>a.name.localeCompare(b.name,'pt'));clientsBody.innerHTML=rows.length?rows.map(c=>{const st=stats[c.id]||{count:0,total:0,last:''};return `<tr><td>${c.name}${c.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${c.phone||'—'}</td><td>${c.email||'—'}</td><td>${st.count}</td><td>${euro(st.total)}</td><td>${st.last||'—'}</td><td class="client-actions"><button class="btn small" onclick="editClient('${c.id}')">Editar</button><button class="btn small" onclick="startOrderForClient('${c.id}')">Nova encomenda</button><button class="btn small danger" onclick="deleteClient('${c.id}')">Apagar</button></td></tr>`}).join(''):`<tr><td colspan="7" class="empty">Sem clientes</td></tr>`;renderClientSuggestions()}
 async function deleteClient(id){
  const c=db.clients.find(x=>x.id===id);if(!c)return;
  const cPhone=normalizePhone(c.phone),cName=normText(c.name);
@@ -885,7 +815,7 @@ function showOrder(id){
  <div class="section-title">Anulação / eliminação</div><div class="soft-note">${o.status==='Cancelado'?'Esta encomenda está anulada e não entra nos resultados. ':''}${produced?'Produção já concluída: se anular, o stock consumido é mantido.':'Ainda não existe produção concluída.'}</div><div class="btnrow">${o.status!=='Cancelado'?`<button class="btn danger" onclick="voidOrder('${o.id}')">Anular encomenda</button>`:''}${canDeleteOrder(o)?`<button class="btn danger" onclick="deleteOrder('${o.id}')">Eliminar definitivamente</button>`:''}</div>`;
  orderDialog.showModal();
 }
-function updateOrderDetails(id){const o=db.orders.find(x=>x.id===id);if(!o)return;o.client=detailClient.value.trim();o.contact=detailContact.value.trim();o.clientId=upsertClientFromOrder(o.client,o.contact);o.clientDeleted=false;if(!isOrderProduced(id))o.delivery=detailDelivery.value;const pay=detailPayment.value;o.payment=pay==='Por definir'?'A definir':pay;const box=detailBox.value;o.box=box==='Sem embalagem definida'?'':box;o.boxes=o.box?Math.max(1,+detailBoxes.value||1):0;const pk=(db.packaging||[]).find(p=>p.name===o.box);o.boxCostSnapshot=pk?+pk.cost||0:0;save();showOrder(id);toast('Encomenda corrigida')}
+function updateOrderDetails(id){const o=db.orders.find(x=>x.id===id);if(!o)return;o.client=detailClient.value.trim();o.contact=detailContact.value.trim();o.clientId=upsertClientFromOrder(o.client,o.contact,o.email||'');o.clientDeleted=false;if(!isOrderProduced(id))o.delivery=detailDelivery.value;const pay=detailPayment.value;o.payment=pay==='Por definir'?'A definir':pay;const box=detailBox.value;o.box=box==='Sem embalagem definida'?'':box;o.boxes=o.box?Math.max(1,+detailBoxes.value||1):0;const pk=(db.packaging||[]).find(p=>p.name===o.box);o.boxCostSnapshot=pk?+pk.cost||0:0;save();showOrder(id);toast('Encomenda corrigida')}
 
 function addOrderPaymentCash(o,payment){
  db.cash=db.cash||[];
@@ -1633,7 +1563,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.5',
+   app_version:'10.1.6',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
