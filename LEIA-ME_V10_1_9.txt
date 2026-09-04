@@ -1,0 +1,17 @@
+DONART V10.1.9 — ENTREGAS E DISPONIBILIDADE
+
+Novo módulo "Entregas Loja":
+- Ativar/desativar levantamento.
+- Ativar/desativar entrega local.
+- Taxa de levantamento.
+- Taxa de entrega local.
+- Encomenda mínima para entrega local.
+- Antecedência mínima em dias.
+- Dias da semana disponíveis.
+- Horários de levantamento e entrega.
+- Prefixos de código postal aceites.
+- Nota ao cliente.
+
+As definições ficam em db.settings.shopDelivery e sincronizam com a base atual da V10.
+
+Necessita do SQL SUPABASE_DONART_ENTREGAS_V1_4_LIMPO.txt para a loja conseguir ler estas definições.

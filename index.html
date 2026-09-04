@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.8 · Loja Etapa 13 · Receber Pagamento Online · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.9 · Loja Etapa 14 · Entregas e Disponibilidade · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -947,6 +947,79 @@ const DEFAULT_PRODUCT_RECIPES={
   "P004":[{"item":"Chocolate branco","qty":8.18},{"item":"Creme pistácio","qty":5.00},{"item":"Pistácio sem sal","qty":2.50}]
 };
 
+
+function ensureShopDeliverySettings(){
+ db.settings=db.settings||{};
+ db.settings.shopDelivery=db.settings.shopDelivery||{
+   pickupEnabled:true,
+   localDeliveryEnabled:true,
+   pickupFee:0,
+   localDeliveryFee:0,
+   minOrderLocalDelivery:0,
+   leadDays:1,
+   allowedWeekdays:[1,2,3,4,5,6],
+   pickupStart:'10:00',
+   pickupEnd:'19:00',
+   localStart:'11:00',
+   localEnd:'19:00',
+   postalPrefixes:['6230','6231','6232','6233','6234','6235','6236','6237','6238','6239'],
+   note:''
+ };
+ const s=db.settings.shopDelivery;
+ if(!Array.isArray(s.allowedWeekdays))s.allowedWeekdays=[1,2,3,4,5,6];
+ if(!Array.isArray(s.postalPrefixes))s.postalPrefixes=[];
+}
+function shopDeliverySettings(){ensureShopDeliverySettings();return db.settings.shopDelivery}
+async function saveShopDeliverySettings(){
+ const s=shopDeliverySettings();
+ s.pickupEnabled=!!document.getElementById('setPickupEnabled')?.checked;
+ s.localDeliveryEnabled=!!document.getElementById('setLocalEnabled')?.checked;
+ s.pickupFee=Math.max(0,Number(document.getElementById('setPickupFee')?.value)||0);
+ s.localDeliveryFee=Math.max(0,Number(document.getElementById('setLocalFee')?.value)||0);
+ s.minOrderLocalDelivery=Math.max(0,Number(document.getElementById('setLocalMin')?.value)||0);
+ s.leadDays=Math.max(0,Math.min(30,Number(document.getElementById('setLeadDays')?.value)||0));
+ s.pickupStart=document.getElementById('setPickupStart')?.value||'10:00';
+ s.pickupEnd=document.getElementById('setPickupEnd')?.value||'19:00';
+ s.localStart=document.getElementById('setLocalStart')?.value||'11:00';
+ s.localEnd=document.getElementById('setLocalEnd')?.value||'19:00';
+ s.postalPrefixes=String(document.getElementById('setPostalPrefixes')?.value||'').split(',').map(x=>x.trim()).filter(Boolean);
+ s.note=document.getElementById('setDeliveryNote')?.value.trim()||'';
+ s.allowedWeekdays=[...document.querySelectorAll('[data-weekday]:checked')].map(x=>Number(x.dataset.weekday));
+ save();renderShopDeliverySettings();
+ try{
+   const u=cloudUser||await ensureCloudSession();
+   if(!u||!cloudClient)throw new Error('Sem sessão cloud');
+   const {error}=await cloudClient.from('donart_shop_settings').upsert({user_id:u.id,data:{shopDelivery:s},updated_at:new Date().toISOString()},{onConflict:'user_id'});
+   if(error)throw error;
+   cloudLogMsg('Definições de entrega da loja enviadas');
+   toast('Entregas da loja atualizadas')
+ }catch(e){
+   cloudLogMsg('Falha ao enviar definições de entrega: '+cloudErrText(e));
+   toast('Guardado localmente, mas falhou na cloud')
+ }
+}
+function renderShopDeliverySettings(){
+ const s=shopDeliverySettings();
+ const box=document.getElementById('shopDeliverySettingsBox'); if(!box)return;
+ box.innerHTML=`<div class="section-title">Loja Online · Entregas e disponibilidade</div>
+ <div class="form-grid">
+  <div class="field"><label><input id="setPickupEnabled" type="checkbox" ${s.pickupEnabled?'checked':''}> Levantamento ativo</label></div>
+  <div class="field"><label><input id="setLocalEnabled" type="checkbox" ${s.localDeliveryEnabled?'checked':''}> Entrega local ativa</label></div>
+  <div class="field"><label>Taxa levantamento (€)</label><input id="setPickupFee" type="number" min="0" step="0.01" value="${s.pickupFee||0}"></div>
+  <div class="field"><label>Taxa entrega local (€)</label><input id="setLocalFee" type="number" min="0" step="0.01" value="${s.localDeliveryFee||0}"></div>
+  <div class="field"><label>Mínimo entrega local (€)</label><input id="setLocalMin" type="number" min="0" step="0.01" value="${s.minOrderLocalDelivery||0}"></div>
+  <div class="field"><label>Antecedência mínima (dias)</label><input id="setLeadDays" type="number" min="0" max="30" value="${s.leadDays||0}"></div>
+  <div class="field"><label>Levantamento desde</label><input id="setPickupStart" type="time" value="${s.pickupStart||'10:00'}"></div>
+  <div class="field"><label>Levantamento até</label><input id="setPickupEnd" type="time" value="${s.pickupEnd||'19:00'}"></div>
+  <div class="field"><label>Entrega local desde</label><input id="setLocalStart" type="time" value="${s.localStart||'11:00'}"></div>
+  <div class="field"><label>Entrega local até</label><input id="setLocalEnd" type="time" value="${s.localEnd||'19:00'}"></div>
+  <div class="field span2"><label>Prefixos de código postal permitidos</label><input id="setPostalPrefixes" value="${(s.postalPrefixes||[]).join(', ')}" placeholder="Ex.: 6230, 6231"></div>
+  <div class="field span2"><label>Dias disponíveis</label><div class="btnrow">${[['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6],['Dom',0]].map(([l,n])=>`<label><input type="checkbox" data-weekday="${n}" ${(s.allowedWeekdays||[]).includes(n)?'checked':''}> ${l}</label>`).join(' ')}</div></div>
+  <div class="field span2"><label>Nota ao cliente</label><textarea id="setDeliveryNote">${s.note||''}</textarea></div>
+  <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveShopDeliverySettings()">Guardar entregas</button></div>
+ </div>`;
+}
+
 function ensureCostModel(){
   db.settings=db.settings||{};
   if(db.settings.laborRate==null)db.settings.laborRate=8;
@@ -1608,7 +1681,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.8',
+   app_version:'10.1.9',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
