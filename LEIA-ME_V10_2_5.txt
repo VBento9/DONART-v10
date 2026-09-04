@@ -1,0 +1,5 @@
+DONART V10.2.5 — Encomendas Temáticas
+
+- Mostra a configuração temática recebida da loja.
+- O total passa a incluir o acréscimo temático validado no servidor.
+- Produção continua a receber os donuts como linhas de produto.

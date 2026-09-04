@@ -1,0 +1,12 @@
+DONART V10.2.4 — PREÇOS DO CRIADOR
+
+Novos campos no Criador de Caixas:
+- Acréscimo base temático
+- Preço extra Fita
+- Preço extra Etiqueta
+- Preço extra Cartão
+
+Nome, Data e Mensagem continuam sem acréscimo por defeito.
+Guardar Criador sincroniza estes valores para a Cloud através da RPC já existente.
+
+Não requer SQL novo.

@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.3.2 · Loja Etapa 16C · Criador RPC Persistente · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.5 · Loja Etapa 16E · Encomendas Temáticas · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -299,6 +299,9 @@
           </div>
         </div>
         <div class="field"><label>Acréscimo base temático €</label><input id="creatorBaseExtra" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Preço extra · Fita €</label><input id="creatorPriceRibbon" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Preço extra · Etiqueta €</label><input id="creatorPriceLabel" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Preço extra · Cartão €</label><input id="creatorPriceCard" type="number" min="0" step="0.01"></div>
         <div class="field"><label>Disponível na loja</label><select id="creatorEnabled"><option value="1">Sim</option><option value="0">Não</option></select></div>
         <div class="field span2"><label>&nbsp;</label><button class="btn primary" onclick="saveBoxCreatorSettings()">Guardar Criador de Caixas</button></div>
       </div>
@@ -875,7 +878,14 @@ function showOrder(id){
  <div class="soft-note" style="margin-top:8px">Sequência recomendada: Pedido → Confirmada → Em produção → Pronta → Entregue.</div>
  ${deliveredInfo}
  ${onlineInfo}
- ${isOnline&&Number(o.deliveryFee)>0?`<div class="soft-note" style="margin-top:8px;line-height:1.65"><strong>Composição do total:</strong> Produtos ${euro(c.productsTotal)} + Entrega ${euro(c.deliveryFee)} = <strong>${euro(c.total)}</strong></div>`:''}
+ ${isOnline&&Array.isArray(o.thematicBoxes)&&o.thematicBoxes.length?`<div class="section-title">Caixas Temáticas</div>
+ <div class="soft-note" style="line-height:1.7">${o.thematicBoxes.map((b,idx)=>{
+   const p=b.personalization||{};
+   const donuts=(b.donuts||[]).map(d=>`${d.qty}× ${d.name}`).join(', ');
+   const pers=[p.name?`Nome: ${p.name}`:'',p.date?`Data: ${p.date}`:'',p.message?`Mensagem: ${p.message}`:'',p.ribbon?'Fita':'',p.label?'Etiqueta':'',p.card?'Cartão':''].filter(Boolean).join(' · ')||'Sem extras';
+   return `<strong>Caixa ${idx+1}:</strong> ${b.qty||1}× ${b.box||'—'} · ${b.occasion||'—'} · ${b.style||'—'} · ${b.color||'—'}<br><strong>Donuts:</strong> ${donuts||'—'}<br><strong>Personalização:</strong> ${pers}<br><strong>Acréscimo temático:</strong> ${euro(b.thematicExtra||0)}`;
+ }).join('<hr style="border:0;border-top:1px solid #eaded8;margin:10px 0">')}</div>`:''}
+ ${isOnline&&(Number(o.thematicExtra)>0||Number(o.deliveryFee)>0)?`<div class="soft-note" style="margin-top:8px;line-height:1.65"><strong>Composição do total:</strong> Produtos ${euro(c.productsTotal)}${c.thematicExtra>0?' + Personalização '+euro(c.thematicExtra):''}${c.deliveryFee>0?' + Entrega '+euro(c.deliveryFee):''} = <strong>${euro(c.total)}</strong></div>`:''}
  ${isOnline?`<div class="section-title">Pagamento Online</div>
  <div class="soft-note" style="line-height:1.65">
  <strong>Preferência do cliente:</strong> ${o.paymentRequested==='mbway_manual'?'MB Way':o.paymentRequested==='bank_transfer'?'Transferência':o.paymentRequested==='pay_later'?'Pagar no levantamento/entrega':'Por definir'}<br>
@@ -1141,12 +1151,13 @@ function minPriceForMargin(cost){
 function calcOrder(o){
  const qty=o.items.reduce((sum,x)=>sum+(Number(x.qty)||0),0);
  const productsTotal=o.items.reduce((sum,x)=>sum+(Number(x.qty)||0)*(Number(x.price)||0),0);
+ const thematicExtra=o.source==='online_store'?Math.max(0,Number(o.thematicExtra)||0):0;
  const deliveryFee=o.source==='online_store'?Math.max(0,Number(o.deliveryFee)||0):0;
- const total=productsTotal+deliveryFee;
+ const total=productsTotal+thematicExtra+deliveryFee;
  const pack=(db.packaging||[]).find(p=>p.name===o.box),packUnit=(o.boxCostSnapshot!=null?Number(o.boxCostSnapshot)||0:(pack?Number(pack.cost)||0:0)),packCost=packUnit*(Number(o.boxes)||1);
  const productCost=o.items.reduce((sum,x)=>sum+(Number(x.qty)||0)*(Number(x.cost)||0),0);
  const cost=productCost+packCost,profit=total-cost;
- return{qty,total,productsTotal,deliveryFee,cost,productCost,packCost,profit,margin:total?profit/total:0}
+ return{qty,total,productsTotal,thematicExtra,deliveryFee,cost,productCost,packCost,profit,margin:total?profit/total:0}
 }
 
 function addToCart(code){
@@ -1383,13 +1394,13 @@ function renderSettingsThemedBoxesSummary(){
 }
 
 
-function boxCreatorDefaults(){return {enabled:false,baseExtra:0,occasions:['Aniversário','Batizado','Comunhão','Natal'],styles:['Dinossauro','Princesa','Futebol'],colors:['Rosa','Azul','Dourado'],custom:{name:true,date:true,message:true,ribbon:true,label:true,card:true}}}
+function boxCreatorDefaults(){return {enabled:false,baseExtra:0,priceRibbon:0,priceLabel:0,priceCard:0,occasions:['Aniversário','Batizado','Comunhão','Natal'],styles:['Dinossauro','Princesa','Futebol'],colors:['Rosa','Azul','Dourado'],custom:{name:true,date:true,message:true,ribbon:true,label:true,card:true}}}
 function boxCreatorSettings(){db.settings=db.settings||{};const d=boxCreatorDefaults();db.settings.boxCreator=Object.assign(d,db.settings.boxCreator||{});db.settings.boxCreator.custom=Object.assign(d.custom,db.settings.boxCreator.custom||{});return db.settings.boxCreator}
 function creatorLines(id){return String(document.getElementById(id)?.value||'').split('\n').map(x=>x.trim()).filter(Boolean)}
 function renderBoxCreatorSettings(){
  const s=boxCreatorSettings(), set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v};
  set('creatorOccasions',(s.occasions||[]).join('\n'));set('creatorStyles',(s.styles||[]).join('\n'));set('creatorColors',(s.colors||[]).join('\n'));
- set('creatorBaseExtra',Number(s.baseExtra||0).toFixed(2));set('creatorEnabled',s.enabled?'1':'0');
+ set('creatorBaseExtra',Number(s.baseExtra||0).toFixed(2));set('creatorPriceRibbon',Number(s.priceRibbon||0).toFixed(2));set('creatorPriceLabel',Number(s.priceLabel||0).toFixed(2));set('creatorPriceCard',Number(s.priceCard||0).toFixed(2));set('creatorEnabled',s.enabled?'1':'0');
  const map={creatorName:'name',creatorDate:'date',creatorMessage:'message',creatorRibbon:'ribbon',creatorLabel:'label',creatorCard:'card'};
  Object.entries(map).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.checked=s.custom?.[k]!==false});
 }
@@ -1397,6 +1408,9 @@ async function saveBoxCreatorSettings(){
  const s=boxCreatorSettings();
  s.enabled=document.getElementById('creatorEnabled')?.value==='1';
  s.baseExtra=Math.max(0,Number(document.getElementById('creatorBaseExtra')?.value)||0);
+ s.priceRibbon=Math.max(0,Number(document.getElementById('creatorPriceRibbon')?.value)||0);
+ s.priceLabel=Math.max(0,Number(document.getElementById('creatorPriceLabel')?.value)||0);
+ s.priceCard=Math.max(0,Number(document.getElementById('creatorPriceCard')?.value)||0);
  s.occasions=creatorLines('creatorOccasions');
  s.styles=creatorLines('creatorStyles');
  s.colors=creatorLines('creatorColors');
@@ -1428,6 +1442,9 @@ async function saveBoxCreatorSettings(){
   const boxCreatorPayload={
     enabled:!!s.enabled,
     baseExtra:Math.max(0,Number(s.baseExtra)||0),
+    priceRibbon:Math.max(0,Number(s.priceRibbon)||0),
+    priceLabel:Math.max(0,Number(s.priceLabel)||0),
+    priceCard:Math.max(0,Number(s.priceCard)||0),
     occasions:[...(s.occasions||[])],
     styles:[...(s.styles||[])],
     colors:[...(s.colors||[])],
@@ -1893,7 +1910,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.2.3.2',
+   app_version:'10.2.5',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
