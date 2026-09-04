@@ -1,0 +1,18 @@
+DONART V10.2.7 — Edições Especiais
+
+Novo módulo:
+- Menu “Edições Especiais”.
+- Criar e editar coleções sazonais.
+- Nome, identificador, estado ativo/inativo, datas, ordem, emoji, descrição, etiqueta e nota.
+- Upload de imagem de capa para o bucket donart-shop.
+- Listagem das coleções guardadas na Cloud.
+- Apagar coleção.
+- Usa os RPC já criados pelo SQL da Loja V2.8.
+- Não altera encomendas, caixa, produção, checkout, preços, PDF nem email.
+
+Teste recomendado:
+1. Publicar esta V10.2.7.
+2. Entrar em Edições Especiais.
+3. Criar “Natal 2026” sem imagem primeiro.
+4. Guardar e confirmar que aparece na lista.
+5. Abrir a Loja V2.8 e confirmar que a coleção aparece quando estiver ativa e dentro das datas.
