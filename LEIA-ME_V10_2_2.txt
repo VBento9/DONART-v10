@@ -1,0 +1,3 @@
+DONART V10.2.2 — Estrutura do Criador de Caixas.
+Ocasiões, temas, cores, personalizações e acréscimo base reutilizáveis.
+Executar primeiro o SQL fornecido.

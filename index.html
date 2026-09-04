@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.1 · Loja Etapa 16A · Caixas Temáticas na Configuração · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.2 · Loja Etapa 16B · Criador de Caixas · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -280,6 +280,28 @@
         <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveThemedBox()">Guardar caixa</button></div>
       </div>
       <div style="margin-top:10px"><img id="themeBoxPreview" class="image-preview hidden" alt="Pré-visualização"></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="section-title" style="margin-top:0">Estrutura do Criador de Caixas</div>
+      <p class="muted">Opções reutilizáveis para “Cria a tua DONART”. Não precisas criar uma caixa diferente para cada combinação.</p>
+      <div class="form-grid">
+        <div class="field"><label>Ocasiões (uma por linha)</label><textarea id="creatorOccasions" rows="5"></textarea></div>
+        <div class="field"><label>Estilos / Temas (um por linha)</label><textarea id="creatorStyles" rows="5"></textarea></div>
+        <div class="field"><label>Cores disponíveis (uma por linha)</label><textarea id="creatorColors" rows="5"></textarea></div>
+        <div class="field"><label>Personalizações permitidas</label>
+          <div class="checkgrid">
+            <label><input id="creatorName" type="checkbox"> Nome</label>
+            <label><input id="creatorDate" type="checkbox"> Data</label>
+            <label><input id="creatorMessage" type="checkbox"> Mensagem</label>
+            <label><input id="creatorRibbon" type="checkbox"> Fita</label>
+            <label><input id="creatorLabel" type="checkbox"> Etiqueta</label>
+            <label><input id="creatorCard" type="checkbox"> Cartão</label>
+          </div>
+        </div>
+        <div class="field"><label>Acréscimo base temático €</label><input id="creatorBaseExtra" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Disponível na loja</label><select id="creatorEnabled"><option value="1">Sim</option><option value="0">Não</option></select></div>
+        <div class="field span2"><label>&nbsp;</label><button class="btn primary" onclick="saveBoxCreatorSettings()">Guardar Criador de Caixas</button></div>
+      </div>
     </div>
     <div class="section-title">Caixas temáticas guardadas</div>
     <div id="themedBoxesGrid" class="catalog-grid"></div>
@@ -1346,8 +1368,32 @@ function renderSettingsThemedBoxesSummary(){
  }).join('');
 }
 
+
+function boxCreatorDefaults(){return {enabled:false,baseExtra:0,occasions:['Aniversário','Batizado','Comunhão','Natal'],styles:['Dinossauro','Princesa','Futebol'],colors:['Rosa','Azul','Dourado'],custom:{name:true,date:true,message:true,ribbon:true,label:true,card:true}}}
+function boxCreatorSettings(){db.settings=db.settings||{};const d=boxCreatorDefaults();db.settings.boxCreator=Object.assign(d,db.settings.boxCreator||{});db.settings.boxCreator.custom=Object.assign(d.custom,db.settings.boxCreator.custom||{});return db.settings.boxCreator}
+function creatorLines(id){return String(document.getElementById(id)?.value||'').split('\n').map(x=>x.trim()).filter(Boolean)}
+function renderBoxCreatorSettings(){
+ const s=boxCreatorSettings(), set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v};
+ set('creatorOccasions',(s.occasions||[]).join('\n'));set('creatorStyles',(s.styles||[]).join('\n'));set('creatorColors',(s.colors||[]).join('\n'));
+ set('creatorBaseExtra',Number(s.baseExtra||0).toFixed(2));set('creatorEnabled',s.enabled?'1':'0');
+ const map={creatorName:'name',creatorDate:'date',creatorMessage:'message',creatorRibbon:'ribbon',creatorLabel:'label',creatorCard:'card'};
+ Object.entries(map).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.checked=s.custom?.[k]!==false});
+}
+async function saveBoxCreatorSettings(){
+ const s=boxCreatorSettings();
+ s.enabled=document.getElementById('creatorEnabled')?.value==='1';s.baseExtra=Math.max(0,Number(document.getElementById('creatorBaseExtra')?.value)||0);
+ s.occasions=creatorLines('creatorOccasions');s.styles=creatorLines('creatorStyles');s.colors=creatorLines('creatorColors');
+ s.custom={name:!!creatorName?.checked,date:!!creatorDate?.checked,message:!!creatorMessage?.checked,ribbon:!!creatorRibbon?.checked,label:!!creatorLabel?.checked,card:!!creatorCard?.checked};
+ save();
+ try{
+  const c=cloudClient();
+  if(c&&db.cloud?.email){const u=(await c.auth.getUser()).data?.user;if(u){const q=await c.from('donart_shop_settings').select('data').eq('user_id',u.id).maybeSingle();const old=q.data?.data||{};const {error}=await c.from('donart_shop_settings').upsert({user_id:u.id,data:{...old,boxCreator:s},updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error}}
+  toast('Criador de Caixas guardado');
+ }catch(e){console.error(e);toast('Guardado localmente; falhou sincronização Cloud')}
+}
+
 function renderCatalogs(){
- syncThemedPackagingSelect();
+ syncThemedPackagingSelect();renderBoxCreatorSettings();
  const grid=document.getElementById('themedBoxesGrid');if(!grid)return;
  const arr=db.themedBoxes||[];
  grid.innerHTML=arr.length?arr.map(b=>{
@@ -1787,7 +1833,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.2.1',
+   app_version:'10.2.2',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
