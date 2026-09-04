@@ -1,0 +1,19 @@
+DONART V10.2.1 — CAIXAS TEMÁTICAS NA CONFIGURAÇÃO
+
+Alterações:
+- Em Configuração, “Embalagens” passa a “Caixas físicas / Embalagens”.
+- Nova área “Caixas Temáticas” visível na própria Configuração.
+- As caixas temáticas continuam a ser geridas em Catálogos, mas agora ficam ligadas à configuração.
+- Cada caixa temática pode indicar:
+  • capacidade;
+  • caixa física base;
+  • custo extra de decoração;
+  • preço ao cliente;
+  • descrição;
+  • fotografia;
+  • visibilidade.
+- O custo estimado da caixa temática passa a ser:
+  custo da caixa física + custo extra de decoração.
+
+Esta versão prepara a base para o configurador “Cria a tua DONART”.
+Não requer SQL nesta etapa.

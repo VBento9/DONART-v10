@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.0 · Loja Etapa 15 · Capacidade e Agenda · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.1 · Loja Etapa 16A · Caixas Temáticas na Configuração · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -271,6 +271,8 @@
       <div class="form-grid">
         <div class="field span2"><label>Nome</label><input id="themeBoxName" placeholder="Ex.: Caixa Natal 12"></div>
         <div class="field"><label>Capacidade</label><input id="themeBoxCapacity" type="number" min="1" placeholder="12"></div>
+        <div class="field"><label>Caixa física base</label><select id="themeBoxBasePackaging"></select></div>
+        <div class="field"><label>Custo extra decoração €</label><input id="themeBoxDecorationCost" type="number" step="0.01" min="0" placeholder="0,00"></div>
         <div class="field"><label>Preço ao cliente €</label><input id="themeBoxPrice" type="number" step="0.01" min="0" placeholder="6,50"></div>
         <div class="field span2"><label>Descrição</label><input id="themeBoxDesc" placeholder="Ex.: Caixa natalícia com laço e etiqueta personalizada"></div>
         <div class="field span2"><label>Imagem</label><input id="themeBoxImage" type="file" accept="image/*" onchange="previewThemeBoxImage()"></div>
@@ -285,9 +287,15 @@
 
   <section id="settings" class="screen">
     <div class="grid2">
-      <div class="card"><div class="section-title" style="margin-top:0">Embalagens</div>
+      <div class="card"><div class="section-title" style="margin-top:0">Caixas físicas / Embalagens</div>
+        <p class="muted">Aqui defines a embalagem base por capacidade. Ex.: Caixa 6, Caixa 12, Caixa 24.</p>
         <div class="form-grid"><div class="field span2"><label>Nome</label><input id="packName" placeholder="Ex.: Caixa 6"></div><div class="field"><label>Capacidade</label><input id="packCapacity" type="number"></div><div class="field"><label>Custo €</label><input id="packCost" type="number" step="0.01"></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="savePackaging()">Guardar</button></div></div>
         <div id="packList" style="margin-top:10px"></div>
+      </div>
+      <div class="card"><div class="section-title" style="margin-top:0">Caixas Temáticas</div>
+        <p class="muted">São apresentações personalizadas associadas a uma caixa física. Podem ter fotografia, preço ao cliente e custo extra de decoração.</p>
+        <div id="settingsThemedBoxesSummary"></div>
+        <div class="btnrow" style="margin-top:10px"><button class="btn primary" onclick="go('catalogs')">Gerir caixas temáticas</button></div>
       </div>
       <div class="card"><div class="section-title" style="margin-top:0">Receita base</div>
         <div><strong>Rendimento:</strong> <input id="recipeYield" type="number" style="width:90px;padding:8px;border-radius:8px;border:1px solid #ddd"> donuts</div>
@@ -1284,11 +1292,71 @@ function consumeProduction(){
 function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function previewThemeBoxImage(){const f=document.getElementById('themeBoxImage')?.files?.[0],img=document.getElementById('themeBoxPreview');if(!img)return;if(!f){img.classList.add('hidden');return}const r=new FileReader();r.onload=()=>{img.src=r.result;img.classList.remove('hidden')};r.readAsDataURL(f)}
 async function compressImageFile(file,maxW=900,maxH=700,quality=.82){return new Promise((resolve,reject)=>{const r=new FileReader();r.onerror=reject;r.onload=()=>{const im=new Image();im.onerror=reject;im.onload=()=>{let w=im.width,h=im.height,scale=Math.min(1,maxW/w,maxH/h);w=Math.max(1,Math.round(w*scale));h=Math.max(1,Math.round(h*scale));const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.fillStyle='#ffffff';x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);resolve(c.toDataURL('image/jpeg',quality))};im.src=r.result};r.readAsDataURL(file)})}
-async function saveThemedBox(){const id=themeBoxId.value||uid('BOX'),name=themeBoxName.value.trim(),capacity=Math.max(1,Number(themeBoxCapacity.value)||1),price=Math.max(0,Number(themeBoxPrice.value)||0),description=themeBoxDesc.value.trim(),active=themeBoxActive.value==='1';if(!name)return toast('Indique o nome da caixa temática');let existing=(db.themedBoxes||[]).find(x=>x.id===id),image=existing?.image||'';const f=themeBoxImage.files?.[0];if(f){try{image=await compressImageFile(f)}catch(e){return toast('Não foi possível processar a imagem')}}if(!image)return toast('Adicione uma imagem da caixa');const obj={id,name,capacity,price,description,image,active,updatedAt:new Date().toISOString()};if(existing)Object.assign(existing,obj);else{db.themedBoxes=db.themedBoxes||[];db.themedBoxes.push(obj)}save();clearThemedBoxForm();toast('Caixa temática guardada')}
-function clearThemedBoxForm(){for(const id of ['themeBoxId','themeBoxName','themeBoxCapacity','themeBoxPrice','themeBoxDesc']){const e=document.getElementById(id);if(e)e.value=''}if(document.getElementById('themeBoxImage'))themeBoxImage.value='';if(document.getElementById('themeBoxActive'))themeBoxActive.value='1';const img=document.getElementById('themeBoxPreview');if(img){img.src='';img.classList.add('hidden')}}
-function editThemedBox(id){const b=(db.themedBoxes||[]).find(x=>x.id===id);if(!b)return;themeBoxId.value=b.id;themeBoxName.value=b.name||'';themeBoxCapacity.value=b.capacity||'';themeBoxPrice.value=b.price??0;themeBoxDesc.value=b.description||'';themeBoxActive.value=b.active===false?'0':'1';themeBoxImage.value='';themeBoxPreview.src=b.image||'';themeBoxPreview.classList.toggle('hidden',!b.image);window.scrollTo({top:0,behavior:'smooth'})}
+async function saveThemedBox(){
+ const id=themeBoxId.value||uid('BOX'),
+ name=themeBoxName.value.trim(),
+ capacity=Math.max(1,Number(themeBoxCapacity.value)||1),
+ basePackaging=themeBoxBasePackaging?.value||'',
+ decorationCost=Math.max(0,Number(themeBoxDecorationCost?.value)||0),
+ price=Math.max(0,Number(themeBoxPrice.value)||0),
+ description=themeBoxDesc.value.trim(),
+ active=themeBoxActive.value==='1';
+ if(!name)return toast('Indique o nome da caixa temática');
+ let existing=(db.themedBoxes||[]).find(x=>x.id===id),image=existing?.image||'';
+ const f=themeBoxImage.files?.[0];
+ if(f){try{image=await compressImageFile(f)}catch(e){return toast('Não foi possível processar a imagem')}}
+ if(!image)return toast('Adicione uma imagem da caixa');
+ const obj={id,name,capacity,basePackaging,decorationCost,price,description,image,active,updatedAt:new Date().toISOString()};
+ if(existing)Object.assign(existing,obj);else{db.themedBoxes=db.themedBoxes||[];db.themedBoxes.push(obj)}
+ save();clearThemedBoxForm();renderSettingsThemedBoxesSummary();toast('Caixa temática guardada')
+}
+function clearThemedBoxForm(){for(const id of ['themeBoxId','themeBoxName','themeBoxCapacity','themeBoxDecorationCost','themeBoxPrice','themeBoxDesc']){const e=document.getElementById(id);if(e)e.value=''}if(document.getElementById('themeBoxImage'))themeBoxImage.value='';if(document.getElementById('themeBoxActive'))themeBoxActive.value='1';const img=document.getElementById('themeBoxPreview');if(img){img.src='';img.classList.add('hidden')}}
+function editThemedBox(id){
+ const b=(db.themedBoxes||[]).find(x=>x.id===id);if(!b)return;
+ themeBoxId.value=b.id;themeBoxName.value=b.name||'';themeBoxCapacity.value=b.capacity||'';
+ syncThemedPackagingSelect();
+ if(document.getElementById('themeBoxBasePackaging'))themeBoxBasePackaging.value=b.basePackaging||'';
+ if(document.getElementById('themeBoxDecorationCost'))themeBoxDecorationCost.value=b.decorationCost??0;
+ themeBoxPrice.value=b.price??0;themeBoxDesc.value=b.description||'';
+ themeBoxActive.value=b.active===false?'0':'1';themeBoxImage.value='';
+ themeBoxPreview.src=b.image||'';themeBoxPreview.classList.toggle('hidden',!b.image);
+ window.scrollTo({top:0,behavior:'smooth'})
+}
 function deleteThemedBox(id){const b=(db.themedBoxes||[]).find(x=>x.id===id);if(!b)return;if(!confirm('Apagar a caixa temática "'+b.name+'"?'))return;db.themedBoxes=db.themedBoxes.filter(x=>x.id!==id);save();toast('Caixa temática apagada')}
-function renderCatalogs(){const grid=document.getElementById('themedBoxesGrid');if(!grid)return;const arr=db.themedBoxes||[];grid.innerHTML=arr.length?arr.map(b=>`<div class="catalog-card"><img src="${b.image}" alt="${escapeHtml(b.name)}"><div class="body"><h3>${escapeHtml(b.name)}</h3><div class="meta">${Number(b.capacity)||0} mini donuts · ${b.active===false?'Oculta':'Visível no catálogo'}</div><div class="customer-price">${euro(b.price)}</div>${b.description?`<div class="meta">${escapeHtml(b.description)}</div>`:''}<div class="btnrow"><button class="btn" onclick="editThemedBox('${b.id}')">Editar</button><button class="btn danger" onclick="deleteThemedBox('${b.id}')">Apagar</button></div></div></div>`).join(''):'<div class="card empty">Ainda não existem caixas temáticas. Adiciona a primeira com fotografia e preço.</div>'}
+
+function syncThemedPackagingSelect(){
+ const e=document.getElementById('themeBoxBasePackaging');if(!e)return;
+ const cur=e.value;
+ e.innerHTML='<option value="">Sem associação</option>'+(db.packaging||[]).map(p=>`<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)} · ${Number(p.capacity)||0} un.</option>`).join('');
+ if([...e.options].some(o=>o.value===cur))e.value=cur;
+}
+function renderSettingsThemedBoxesSummary(){
+ const box=document.getElementById('settingsThemedBoxesSummary');if(!box)return;
+ const arr=db.themedBoxes||[];
+ if(!arr.length){box.innerHTML='<div class="soft-note">Ainda não existem caixas temáticas configuradas.</div>';return}
+ box.innerHTML=arr.map(b=>{
+   const physical=(db.packaging||[]).find(p=>p.name===b.basePackaging);
+   const baseCost=physical?Number(physical.cost)||0:0;
+   const deco=Number(b.decorationCost)||0;
+   return `<div class="cart-row" style="grid-template-columns:1fr 110px 110px">
+     <div><strong>${escapeHtml(b.name)}</strong><br><small>${escapeHtml(b.basePackaging||'Sem caixa base')} · ${Number(b.capacity)||0} un.</small></div>
+     <span>${euro(baseCost+deco)} custo</span>
+     <strong>${euro(b.price)} venda</strong>
+   </div>`;
+ }).join('');
+}
+
+function renderCatalogs(){
+ syncThemedPackagingSelect();
+ const grid=document.getElementById('themedBoxesGrid');if(!grid)return;
+ const arr=db.themedBoxes||[];
+ grid.innerHTML=arr.length?arr.map(b=>{
+   const physical=(db.packaging||[]).find(p=>p.name===b.basePackaging);
+   const totalCost=(physical?Number(physical.cost)||0:0)+(Number(b.decorationCost)||0);
+   return `<div class="catalog-card"><img src="${b.image}" alt="${escapeHtml(b.name)}"><div class="body"><h3>${escapeHtml(b.name)}</h3><div class="meta">${Number(b.capacity)||0} mini donuts · ${b.active===false?'Oculta':'Visível no catálogo'}</div><div class="meta">Base: ${escapeHtml(b.basePackaging||'não definida')} · custo estimado ${euro(totalCost)}</div><div class="customer-price">${euro(b.price)}</div>${b.description?`<div class="meta">${escapeHtml(b.description)}</div>`:''}<div class="btnrow"><button class="btn" onclick="editThemedBox('${b.id}')">Editar</button><button class="btn danger" onclick="deleteThemedBox('${b.id}')">Apagar</button></div></div></div>`;
+ }).join(''):'<div class="card empty">Ainda não existem caixas temáticas. Adiciona a primeira com fotografia e preço.</div>';
+ renderSettingsThemedBoxesSummary();
+}
 function loadCanvasImage(src){return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=src})}
 async function drawDonartHeader(ctx,title,subtitle){ctx.fillStyle='#fffdf9';ctx.fillRect(0,0,1240,1754);try{const logo=await loadCanvasImage('logo-donart-ui.png');const ratio=Math.min(300/logo.width,135/logo.height);ctx.drawImage(logo,70,50,logo.width*ratio,logo.height*ratio)}catch(e){ctx.fillStyle='#5A240B';ctx.font='900 50px Arial';ctx.fillText('DONART',70,110)}ctx.fillStyle='#5A240B';ctx.textAlign='right';ctx.font='900 40px Arial';ctx.fillText(title,1170,90);ctx.font='20px Arial';ctx.fillStyle='#806b62';ctx.fillText(subtitle||'',1170,125);ctx.textAlign='left';ctx.strokeStyle='#F12473';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(70,175);ctx.lineTo(1170,175);ctx.stroke()}
 function drawCatalogFooter(ctx){ctx.fillStyle='#fff4cc';ctx.fillRect(70,1640,1100,70);ctx.fillStyle='#5A240B';ctx.font='18px Arial';ctx.textAlign='left';const contact=(db.settings.businessPhone||'').trim();ctx.fillText(contact?'Encomendas / MB Way: '+contact:'DONART Mini Donuts',90,1683);ctx.textAlign='right';ctx.fillText('Preços sujeitos a confirmação de disponibilidade.',1150,1683);ctx.textAlign='left'}
@@ -1324,6 +1392,7 @@ function downloadThemedBoxesPDF(){return downloadPdfBlob(buildThemedBoxesPdfBlob
 function shareThemedBoxesPDF(){return sharePdfBlob(buildThemedBoxesPdfBlob,'DONART_Caixas_Tematicas.pdf','Caixas temáticas DONART','Olá! Segue o catálogo de caixas temáticas DONART em PDF. 🍩')}
 
 function renderSettings(){
+ syncThemedPackagingSelect();renderSettingsThemedBoxesSummary();
  if(!document.getElementById('packList'))return;
  recipeYield.value=db.settings.yield||28;minMarginInput.value=db.settings.minMargin??0.65;laborRate.value=db.settings.laborRate??8;wasteRate.value=db.settings.wasteRate??0.10;
  if(document.getElementById('laborMinutes'))laborMinutes.value=db.settings.laborMinutes??0;
@@ -1718,7 +1787,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.2.0',
+   app_version:'10.2.1',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
