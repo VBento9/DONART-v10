@@ -1,0 +1,21 @@
+DONART V10.1.8 — RECEBER PAGAMENTO ONLINE
+
+Novidades:
+- Bloco dedicado "Pagamento Online" no detalhe das encomendas ONLINE.
+- Mostra preferência do cliente, recebido, falta e estado PENDENTE/PAGO.
+- Botão "Receber X €" para liquidar o saldo total.
+- Botão "Pagamento parcial" para receber apenas uma parte.
+- Meio de pagamento vem pré-selecionado a partir da preferência da loja.
+- Ao receber, atualiza automaticamente o estado para PAGO quando o total fica liquidado.
+- Cria automaticamente o movimento correspondente no Caixa com origem "via Encomenda".
+- Não duplica valores nos KPIs do Caixa.
+
+Não necessita de SQL Supabase.
+
+TESTE:
+1. Publicar por cima de donart-v10.
+2. Abrir a nova encomenda WEB-CABA5FF770.
+3. No bloco "Pagamento Online", confirmar que MB Way vem pré-selecionado.
+4. Tocar "Receber 0,70 €".
+5. Confirmar que o badge passa de PENDENTE para PAGO.
+6. Abrir Caixa e confirmar o movimento de 0,70 € via Encomenda.
