@@ -1,0 +1,25 @@
+DONART V10.1.9.2 — FORMULÁRIO ENTREGAS CORRIGIDO
+
+Correção:
+- Remove um erro JavaScript que impedia o formulário de Entregas Loja de ser renderizado.
+- O menu Entregas Loja mantém-se entre Catálogos e Configuração.
+- Ao abrir Entregas Loja, o formulário é carregado explicitamente.
+- Mantém todas as funcionalidades anteriores.
+
+Não necessita de SQL novo.
+
+TESTE:
+1. Publicar por cima de donart-v10.
+2. Abrir Entregas Loja.
+3. Confirmar que aparecem:
+   - Levantamento ativo
+   - Entrega local ativa
+   - Taxas
+   - Mínimo de entrega local
+   - Antecedência mínima
+   - Horários
+   - Códigos postais
+   - Dias da semana
+   - Nota ao cliente
+   - Botão Guardar entregas
+4. Ainda não publicar a Loja V1.4 até validar este ecrã.

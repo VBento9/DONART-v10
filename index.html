@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.9.1 · Loja Etapa 14 · Menu Entregas Corrigido · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.9.2 · Loja Etapa 14 · Formulário Entregas Corrigido · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -495,12 +495,11 @@ function ensureRecordIds(){
 }
 function isOrderProduced(id){return (db.productionRuns||[]).some(r=>(r.orders||[]).includes(id))}
 function orderAlreadyProducedIds(){return new Set((db.productionRuns||[]).flatMap(r=>r.orders||[]))}
-function go(id){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));const target=document.getElementById(id);if(!target)return toast('Módulo não encontrado');target.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';renderAll();window.scrollTo({top:0,behavior:'smooth'})}
+function go(id){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));const target=document.getElementById(id);if(!target)return toast('Módulo não encontrado');target.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';renderAll();if(id==='delivery')renderShopDeliverySettings();window.scrollTo({top:0,behavior:'smooth'})}
 function completed(o){return o.status!=='Cancelado'&&!o.voidedAt}function filteredOrders(){
  const y=+(document.getElementById('dashYear')?.value||new Date().getFullYear());
  const m=+(document.getElementById('dashMonth')?.value||0);
  return db.orders.filter(o=>{if(!completed(o))return false;const d=new Date((o.delivery||o.created)+'T12:00:00');return d.getFullYear()===y&&(m===0||d.getMonth()+1===m)})
- if(id==='delivery'||page==='delivery')renderShopDeliverySettings();
 }
 function dash(){
  const v=filteredOrders(),total=v.reduce((s,o)=>s+calcOrder(o).total,0),paid=v.reduce((s,o)=>s+Math.min(Math.max(+o.paid||0,0),calcOrder(o).total),0),cost=v.reduce((s,o)=>s+calcOrder(o).cost,0),profit=total-cost,pending=v.filter(o=>o.status!=='Entregue').length,stockLow=db.stock.filter(x=>+x.qty<=+x.min).length;
@@ -1690,7 +1689,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.9.1',
+   app_version:'10.1.9.2',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
