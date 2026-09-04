@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.0 · Loja Etapa 5 · Fluxo de Estados Online · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.1 · Loja Etapa 6 · Produção Online · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -145,7 +145,7 @@
   </section>
 
   <section id="orders" class="screen">
-    <div class="card"><div class="form-grid"><div class="field span2"><label>Pesquisar</label><input id="orderSearch" placeholder="N.º ou cliente" oninput="renderOrders()"></div><div class="field"><label>Estado</label><select id="orderFilter" onchange="renderOrders()"><option value="">Todos</option><option>Pedido</option><option>Confirmado</option><option>Produção</option><option>Pronto</option><option>Entregue</option><option>Cancelado</option></select></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="go('sale')">＋ Nova encomenda</button></div></div></div>
+    <div class="card"><div class="form-grid"><div class="field span2"><label>Pesquisar</label><input id="orderSearch" placeholder="N.º ou cliente" oninput="renderOrders()"></div><div class="field"><label>Estado</label><select id="orderFilter" onchange="renderOrders()"><option value="">Todos</option><option>Pedido</option><option>Confirmada</option><option>Em produção</option><option>Pronta</option><option>Entregue</option><option>Cancelado</option></select></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="go('sale')">＋ Nova encomenda</button></div></div></div>
     <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>N.º</th><th>Cliente</th><th>Entrega</th><th>Donuts</th><th>Total</th><th>Pago</th><th>Estado</th><th>Ações</th></tr></thead><tbody id="ordersBody"></tbody></table></div>
   </section>
 
@@ -181,7 +181,7 @@
 
   <section id="production" class="screen">
     <div class="card"><div class="form-grid"><div class="field"><label>Data de produção</label><input id="prodDate" type="date" onchange="renderProduction()"></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="renderProduction()">Atualizar</button></div><div class="field"><label>&nbsp;</label><button class="btn" onclick="consumeProduction()">Concluir produção + descontar stock</button></div></div></div>
-    <div class="grid2" style="margin-top:12px"><div class="card"><div class="section-title" style="margin-top:0">Produção ainda por concluir</div><div id="productionProducts"></div></div><div class="card"><div class="section-title" style="margin-top:0">Massa base</div><div id="productionRecipe"></div></div></div>
+    <div class="grid2" style="margin-top:12px"><div class="card"><div class="section-title" style="margin-top:0">Encomendas confirmadas / em produção</div><div id="productionProducts"></div></div><div class="card"><div class="section-title" style="margin-top:0">Massa base</div><div id="productionRecipe"></div></div></div>
     <div class="grid2" style="margin-top:12px"><div class="card"><div class="section-title" style="margin-top:0">Folha de produção do dia</div><div id="productionOrders"></div></div><div class="card"><div class="section-title" style="margin-top:0">Embalagens necessárias</div><div id="productionPackaging"></div></div></div>
     <div class="card" style="margin-top:12px"><div class="section-title" style="margin-top:0">Sessões concluídas neste dia</div><div id="productionHistory"></div></div>
   </section>
@@ -590,8 +590,8 @@ async function saveOrder(){
  go('orders')
 }
 function canDeleteOrder(o){return !!o&&(+o.paid||0)===0&&!isOrderProduced(o.id)&&['Pedido','Cancelado'].includes(o.status)}
-function renderOrders(){const q=(orderSearch?.value||'').toLowerCase(),f=orderFilter?.value||'';const rows=db.orders.filter(o=>(!q||(o.id+' '+o.client).toLowerCase().includes(q))&&(!f||o.status===f)).slice().reverse();ordersBody.innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o),del=canDeleteOrder(o)?` <button class="btn danger" style="padding:8px 10px" onclick="deleteOrder('${o.id}')">Eliminar</button>`:'';return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${c.qty}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}</td><td><span class="badge ${o.status==='Entregue'?'ok':o.status==='Cancelado'?'bad':'warn'}">${o.status}</span></td><td><select onchange="setStatus('${o.id}',this.value)">${['Pedido','Confirmado','Produção','Pronto','Entregue','Cancelado'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select><button class="btn" style="margin-left:6px;padding:8px 10px" onclick="showOrder('${o.id}')">Ver</button> <button class="btn" style="padding:8px 10px" onclick="sendWhatsApp('${o.id}')">WhatsApp</button>${del}</td></tr>`}).join(''):`<tr><td colspan="8" class="empty">Sem encomendas</td></tr>`}
-function setStatus(id,s){const o=db.orders.find(x=>x.id===id);if(!o)return;if(s==='Cancelado'&&o.status!=='Cancelado')return voidOrder(id);o.status=s;save();toast('Estado atualizado')}
+function renderOrders(){const q=(orderSearch?.value||'').toLowerCase(),f=orderFilter?.value||'';const rows=db.orders.filter(o=>(!q||(o.id+' '+o.client).toLowerCase().includes(q))&&(!f||o.status===f)).slice().reverse();ordersBody.innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o),del=canDeleteOrder(o)?` <button class="btn danger" style="padding:8px 10px" onclick="deleteOrder('${o.id}')">Eliminar</button>`:'';return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${c.qty}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}</td><td><span class="badge ${o.status==='Entregue'?'ok':o.status==='Cancelado'?'bad':'warn'}">${o.status}</span></td><td><select onchange="setStatus('${o.id}',this.value)">${['Pedido','Confirmada','Em produção','Pronta','Entregue','Cancelado'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select><button class="btn" style="margin-left:6px;padding:8px 10px" onclick="showOrder('${o.id}')">Ver</button> <button class="btn" style="padding:8px 10px" onclick="sendWhatsApp('${o.id}')">WhatsApp</button>${del}</td></tr>`}).join(''):`<tr><td colspan="8" class="empty">Sem encomendas</td></tr>`}
+function setStatus(id,s){const o=db.orders.find(x=>x.id===id);if(!o)return;if(s==='Cancelado'&&o.status!=='Cancelado')return voidOrder(id);if(typeof setOrderStatus==='function')return setOrderStatus(id,s);o.status=s;save();toast('Estado atualizado')}
 function voidOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const produced=isOrderProduced(id),paid=+o.paid||0;let msg='Anular esta encomenda? Ela deixa de contar na faturação, lucro e valores por receber.';if(paid>0)msg+=' O valor pago fica guardado no histórico de anulação, mas deixa de contar como receita.';if(produced)msg+=' A produção já foi concluída, por isso o stock consumido NÃO será reposto.';if(!confirm(msg)){renderOrders();return}o.voidedAt=new Date().toISOString();o.voidedFrom=o.status;o.voidedPaid=paid;o.status='Cancelado';save();toast('Encomenda anulada')}
 async function deleteOrder(id){
  const o=db.orders.find(x=>x.id===id);
@@ -620,7 +620,7 @@ async function deleteOrder(id){
 }
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
- const ords=db.orders.filter(o=>o.delivery===d&&['Confirmado','Produção','Pronto'].includes(o.status)&&!done.has(o.id)),counts={};
+ const ords=db.orders.filter(o=>o.delivery===d&&['Confirmada','Em produção','Confirmado','Produção'].includes(o.status)&&!done.has(o.id)),counts={};
  ords.forEach(o=>o.items.forEach(i=>counts[i.name]=(counts[i.name]||0)+(Number(i.qty)||0)));
  const total=Object.values(counts).reduce((a,b)=>a+b,0),batches=Math.ceil(total/(db.settings.yield||28));
  productionProducts.innerHTML=Object.keys(counts).length?Object.entries(counts).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><strong>${n}</strong><strong>${q} un.</strong></div>`).join(''):'<div class="empty">Sem produção pendente para esta data</div>';
@@ -808,6 +808,9 @@ function setOrderStatus(id,status){
  if(status==='Em produção'&&!o.productionStartedAt)o.productionStartedAt=new Date().toISOString();
  if(status==='Pronta'&&!o.readyAt)o.readyAt=new Date().toISOString();
  save();showOrder(id);toast('Estado atualizado');
+ if(status==='Em produção'){
+   setTimeout(()=>{try{orderDialog.close();go('production');if(typeof prodDate!=='undefined'){prodDate.value=o.delivery||todayISO();renderProduction()}}catch(e){}},250);
+ }
 }
 function statusActionButtons(o){
  const s=o.status||'Pedido', id=o.id;
@@ -1121,7 +1124,7 @@ function saveCostSettings(){
 
 function consumeProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
- const ords=db.orders.filter(o=>o.delivery===d&&['Confirmado','Produção','Pronto'].includes(o.status)&&!done.has(o.id));if(!ords.length)return toast('Sem encomendas pendentes para produzir');
+ const ords=db.orders.filter(o=>o.delivery===d&&['Em produção','Produção'].includes(o.status)&&!done.has(o.id));if(!ords.length)return toast('Sem encomendas em produção para concluir');
  const total=ords.reduce((sum,o)=>sum+calcOrder(o).qty,0),batches=Math.ceil(total/(db.settings.yield||28)),needs={};
  const addNeed=(name,qty)=>needs[name]=(needs[name]||0)+(Number(qty)||0);
  SEED.recipe.forEach(r=>addNeed(r.name,(Number(r.qty)||0)*batches));
@@ -1129,7 +1132,8 @@ function consumeProduction(){
  const shortages=Object.entries(needs).filter(([name,need])=>{const x=stockByName(name);return !x||(Number(x.qty)||0)+1e-9<need});
  if(shortages.length){const msg=shortages.slice(0,5).map(([name,need])=>{const x=stockByName(name),have=x?Number(x.qty)||0:0,unit=x?x.unit:'';return `${name}: precisa ${need.toLocaleString('pt-PT')} ${unit}, tem ${have.toLocaleString('pt-PT')} ${unit}`}).join(' · ');return toast('Produção bloqueada — stock insuficiente. '+msg)}
  Object.entries(needs).forEach(([name,need])=>{const x=stockByName(name);x.qty=(Number(x.qty)||0)-need;db.stockMoves.push({date:new Date().toISOString(),item:x.name,type:'production',qty:need,note:'Produção '+d})});
- ords.forEach(o=>o.status='Pronto');db.productionRuns.push({id:uid('PROD'),date:d,createdAt:new Date().toISOString(),total,batches,orders:ords.map(o=>o.id),missing:[]});save();toast('Sessão de produção concluída e stock descontado')
+ ords.forEach(o=>{const prev=o.status||'Em produção';o.status='Pronta';o.readyAt=o.readyAt||new Date().toISOString();o.statusHistory=Array.isArray(o.statusHistory)?o.statusHistory:[];o.statusHistory.push({from:prev,to:'Pronta',date:new Date().toISOString(),source:'production'})});
+ db.productionRuns.push({id:uid('PROD'),date:d,createdAt:new Date().toISOString(),total,batches,orders:ords.map(o=>o.id),missing:[]});save();renderProduction();toast('Produção concluída · encomendas marcadas como Pronta')
 }
 
 function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
@@ -1569,7 +1573,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.0',
+   app_version:'10.1.1',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1

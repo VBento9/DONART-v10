@@ -1,0 +1,19 @@
+DONART V10.1.1 — PRODUÇÃO ONLINE
+
+Alterações:
+- Corrige o seletor de estado na lista de Encomendas para os mesmos estados do novo fluxo.
+- "Iniciar produção" muda para "Em produção" e abre automaticamente o módulo Produção na data da encomenda.
+- Produção mostra encomendas Confirmadas e Em produção.
+- "Concluir produção + descontar stock" processa apenas encomendas Em produção.
+- Ao concluir, o estado muda automaticamente para "Pronta".
+- A alteração para "Pronta" é registada no histórico de estados.
+- Mantém compatibilidade de leitura com estados antigos Confirmado/Produção em áreas de produção.
+
+Não necessita de SQL Supabase.
+
+TESTE:
+1. Publicar por cima do projeto donart-v10.
+2. Abrir a encomenda WEB-EE22AEFB1F (Confirmada).
+3. Tocar "Iniciar produção".
+4. Confirmar que abre Produção e aparece Chocolate × 1 na data 05/09/2026.
+5. NÃO concluir produção ainda; primeiro validar apenas a passagem para o módulo Produção.
