@@ -49,7 +49,7 @@
 
 .cloud-status{display:inline-flex;align-items:center;gap:7px;font-weight:900}.cloud-dot{width:9px;height:9px;border-radius:50%;background:#999}.cloud-status.ok .cloud-dot{background:#16a34a}.cloud-status.pending .cloud-dot{background:#f59e0b}.cloud-status.offline .cloud-dot{background:#dc2626}.cloud-status.neutral .cloud-dot{background:#94a3b8}.cloud-status.error .cloud-dot{background:#dc2626}.cloud-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cloud-log{max-height:180px;overflow:auto;font-size:12px;line-height:1.55;background:#fffaf2;border:1px solid var(--line);border-radius:13px;padding:10px}.cloud-kpi{font-size:12px;color:#765b50;margin-top:8px}@media(max-width:650px){.cloud-grid{grid-template-columns:1fr}}
 
-/* iPhone de apoio: interface compacta, mesma base funcional V10.0.4 */
+/* iPhone de apoio: interface compacta, mesma base funcional V10.0.5 */
 @media(max-width:650px){
  html,body{height:auto;min-height:100%;overflow-x:hidden}
  body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.4 · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.5 · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -667,11 +667,9 @@ async function saveClient(){
    created:c?.created||todayISO()
  };
 
- // Preserve the permanent relational UUID when editing.
  if(c&&c._rid)data._rid=c._rid;
  relUuid(data);
 
- // 1) Save locally immediately. Do not call renderAll() here.
  if(c)Object.assign(c,data);
  else{
    db.clients=db.clients||[];
@@ -681,7 +679,6 @@ async function saveClient(){
  renderClients();
  clearClientForm();
 
- // 2) Save exactly this client as one independent Supabase row.
  const u=cloudUser||await ensureCloudSession();
  if(!u){
    localStorage.setItem(REL_DIRTY,'1');
@@ -700,14 +697,26 @@ async function saveClient(){
      data:relClone(data),
      updated_at:new Date().toISOString()
    };
-   const {error}=await cloudClient.from(REL_TABLES.clients).upsert(row,{onConflict:'id'});
+   const {data:saved,error}=await cloudClient.from(REL_TABLES.clients)
+     .upsert(row,{onConflict:'id'})
+     .select('*')
+     .single();
    if(error)throw error;
+   if(!saved||saved.id!==data._rid)throw new Error('A Cloud não confirmou o cliente guardado');
+
+   const {data:verify,error:verifyError}=await cloudClient.from(REL_TABLES.clients)
+     .select('id,name,data,updated_at')
+     .eq('user_id',u.id)
+     .eq('id',data._rid)
+     .maybeSingle();
+   if(verifyError)throw verifyError;
+   if(!verify)throw new Error('Cliente não encontrado após gravação');
+
    localStorage.removeItem(REL_DIRTY);
    setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
-   renderClients();
-   cloudLogMsg('Cliente V10 guardado em linha própria: '+data.name+' · total local '+(db.clients||[]).length);
-   renderCloudUI();
-   toast('Cliente guardado')
+   cloudLogMsg('Cliente confirmado na Cloud: '+data.name+' · '+data._rid.slice(0,8));
+   renderClients();renderCloudUI();
+   toast('Cliente guardado e sincronizado')
  }catch(e){
    localStorage.setItem(REL_DIRTY,'1');
    setCloudMeta({dirty:true,verified:false,conflict:false});
@@ -1243,6 +1252,62 @@ async function cloudConnect(){
 }
 async function cloudDisconnect(){try{if(cloudChannel&&cloudClient)await cloudClient.removeChannel(cloudChannel);cloudChannel=null;if(cloudClient)await cloudClient.auth.signOut()}catch(e){}cloudUser=null;cloudConflict=null;cloudStartupDone=true;setCloudMeta({conflict:false,verified:false});cloudLogMsg('Sessão cloud terminada');renderCloudUI()}
 async function ensureCloudSession(){const c=initCloudClient();if(!c)return null;try{const {data}=await c.auth.getSession();cloudUser=data?.session?.user||null;return cloudUser}catch(e){return null}}
+
+function mergeRemoteRelationalRow(kind,row,eventType='UPDATE'){
+ if(!row)return false;
+ const map={
+   clients:{key:'clients',table:'client'},
+   orders:{key:'orders',table:'order'},
+   quotes:{key:'quotes',table:'quote'}
+ };
+ const cfg=map[kind];
+ if(!cfg)return false;
+ const arr=db[cfg.key]||[];
+
+ if(eventType==='DELETE'){
+   const rid=row.id;
+   const next=arr.filter(x=>x?._rid!==rid);
+   if(next.length!==arr.length){
+     db[cfg.key]=next;
+     localStorage.setItem(KEY,JSON.stringify(db));
+     renderAll();
+     return true
+   }
+   return false
+ }
+
+ const d=(row.data&&typeof row.data==='object')?relClone(row.data):{};
+ let base;
+ if(cfg.table==='client'){
+   base={...d,_rid:row.id,id:d.id||row.id,name:d.name||row.name||'',phone:d.phone||row.phone||'',email:d.email||row.email||'',notes:d.notes||row.notes||'',created:d.created||(row.created_at||'').slice(0,10)||todayISO()}
+ }else if(cfg.table==='order'){
+   base={...d,_rid:row.id,id:d.id||('ORD-'+String(row.id).slice(0,8)),status:d.status||row.status||'Pedido',created:d.created||(row.order_date||todayISO())};
+   if(!base.clientId&&row.client_id){
+     const c=(db.clients||[]).find(x=>x._rid===row.client_id);
+     if(c)base.clientId=c.id
+   }
+ }else{
+   base={...d,_rid:row.id,id:d.id||('ORC-'+String(row.id).slice(0,8)),status:d.status||row.status||'Rascunho',created:d.created||(row.quote_date||todayISO())};
+   if(!base.clientId&&row.client_id){
+     const c=(db.clients||[]).find(x=>x._rid===row.client_id);
+     if(c)base.clientId=c.id
+   }
+ }
+
+ let target=arr.find(x=>x?._rid===row.id);
+ if(!target&&base.id)target=arr.find(x=>String(x?.id)===String(base.id));
+ if(target)Object.assign(target,base);
+ else arr.push(base);
+
+ db[cfg.key]=arr;
+ localStorage.setItem(KEY,JSON.stringify(db));
+ localStorage.setItem(REL_MIGRATED,'1');
+ localStorage.removeItem(REL_DIRTY);
+ setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
+ renderAll();
+ return true
+}
+
 async function subscribeCloud(){
  if(!cloudClient||!cloudUser)return;
  if(cloudChannel)try{await cloudClient.removeChannel(cloudChannel)}catch(e){}
@@ -1255,11 +1320,12 @@ async function subscribeCloud(){
      table:REL_TABLES[k],
      filter:'user_id=eq.'+cloudUser.id
    },payload=>{
-     // V10.0.4: do NOT auto-reload the whole local database after each row write.
-     // The previous automatic hydrate could replace the freshly saved local list
-     // with a transient/stale snapshot and make a client disappear from the UI.
-     const rid=payload?.new?.id||payload?.old?.id||'';
-     cloudLogMsg('Alteração V10 confirmada em '+k+(rid?' · '+rid.slice(0,8):''));
+     if(cloudApplying)return;
+     const eventType=payload?.eventType||'UPDATE';
+     const row=eventType==='DELETE'?payload?.old:payload?.new;
+     const rid=row?.id||'';
+     const changed=mergeRemoteRelationalRow(k,row,eventType);
+     cloudLogMsg((changed?'Alteração recebida':'Alteração confirmada')+' em '+k+(rid?' · '+rid.slice(0,8):''));
      setCloudMeta({verified:true,lastSync:new Date().toISOString(),conflict:false});
      renderCloudUI();
    })
@@ -1267,7 +1333,7 @@ async function subscribeCloud(){
 
  cloudChannel.subscribe(status=>{
    if(status==='SUBSCRIBED'){
-     cloudLogMsg('V10 multi-registo ativo · atualização automática protegida');
+     cloudLogMsg('V10 multi-dispositivo ativo · alterações recebidas automaticamente');
      renderCloudUI()
    }
  })
@@ -1418,9 +1484,15 @@ async function cloudPushNow(showToast=true){
 function hasMeaningfulLocalData(){return meaningfulState(db)}
 async function cloudPullNow(force=false){
  if(cloudMeta().dirty&&!force){cloudLogMsg('Receção V10 adiada: existem alterações locais');return false}
- const ok=await relationalHydrateCore(force);
- if(force&&ok)toast('Dados V10 recebidos');
- return ok
+ const ok1=await relationalHydrateCore(force);
+ if(!ok1)return false;
+ await cloudSleep(250);
+ const ok2=await relationalHydrateCore(force);
+ if(force&&ok2){
+   cloudLogMsg(`Receção manual concluída · ${db.clients.length} clientes · ${db.orders.length} encomendas · ${(db.quotes||[]).length} orçamentos`);
+   toast('Dados V10 recebidos')
+ }
+ return ok2
 }
 async function cloudResolveConflict(choice){
  setCloudMeta({conflict:false});
@@ -1531,7 +1603,7 @@ async function relationalSyncCore(showToast=false){
      if(error)throw error
    }
 
-   // V10.0.4: nunca apagar linhas remotas apenas porque não apareceram num snapshot local.
+   // V10.0.5: nunca apagar linhas remotas apenas porque não apareceram num snapshot local.
    // Eliminações passam a ser explícitas por registo.
 
 

@@ -1,0 +1,28 @@
+DONART V10.0.5 — SINCRONIZAÇÃO TABLET + IPHONE
+
+Base: V10.0.4 estável.
+
+Correção principal:
+- Alterações recebidas por Realtime são agora integradas registo a registo.
+- Um cliente criado no iPhone pode aparecer no tablet sem substituir a lista local.
+- Um cliente criado no tablet pode aparecer no iPhone da mesma forma.
+- Eliminações remotas são removidas no outro dispositivo.
+- Guardar cliente exige confirmação real do Supabase e uma leitura de verificação.
+- “Receber agora” executa duas leituras e faz merge sem apagar os dados locais.
+
+Mantido:
+- múltiplos registos relacionais
+- persistência ao fechar/reabrir
+- eliminação definitiva
+- proteção contra substituição destrutiva da base local
+- V10.0.4 permanece intacta como versão de recuperação
+
+TESTE CONTROLADO:
+1. Atualizar o projeto DONART-v10 e aguardar o Vercel.
+2. Abrir/atualizar a app no tablet e no iPhone.
+3. Confirmar que ambos mostram V10.0.5.
+4. Criar “Teste iPhone 2” no iPhone.
+5. Confirmar que aparece no tablet.
+6. Criar “Teste Tablet 3” no tablet.
+7. Confirmar que aparece no iPhone.
+Não apagar os testes anteriores até concluir este teste.
