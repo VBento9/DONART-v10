@@ -1,0 +1,14 @@
+DONART V10.2.8 — Catálogo das Edições Especiais
+
+Novo:
+- Cada Edição Especial pode ter produtos associados.
+- Só aparecem para seleção produtos publicados e já sincronizados na Cloud.
+- A seleção fica guardada dentro da própria edição no Supabase.
+- Não altera preços, encomendas, produção, caixa, PDF, email ou checkout.
+
+Teste:
+1. Abrir Edições Especiais.
+2. Criar/editar uma edição.
+3. Selecionar 1 ou mais produtos.
+4. Guardar.
+5. Confirmar que o cartão da edição mostra o número de produtos associados.

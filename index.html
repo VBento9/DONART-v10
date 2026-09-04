@@ -100,6 +100,14 @@
 .special-edition-status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:900}
 .special-edition-status.on{background:#e8f8ef;color:#176b3a}
 .special-edition-status.off{background:#f3efec;color:#806b62}
+
+.special-product-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin-top:8px}
+.special-product-option{display:flex;align-items:center;gap:9px;border:1px solid #eaded6;background:#fff;border-radius:13px;padding:10px}
+.special-product-option img{width:42px;height:42px;border-radius:9px;object-fit:cover;background:#f5efeb}
+.special-product-option input{width:18px;height:18px;flex:0 0 auto}
+.special-product-option b{display:block;font-size:13px}
+.special-product-option small{display:block;color:#806b62;margin-top:2px}
+.special-products-empty{padding:12px;border:1px dashed #d9c8be;border-radius:12px;color:#806b62}
 </style>
 </head>
 <body>
@@ -115,7 +123,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.7 · Loja Etapa 17 · Edições Especiais · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.8 · Loja Etapa 18 · Catálogo das Edições · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -352,6 +360,11 @@
         <div class="field span2"><label>Subtítulo / descrição</label><input id="specialEditionSubtitle" placeholder="Ex.: A magia do Natal em mini donuts"></div>
         <div class="field"><label>Etiqueta</label><input id="specialEditionBadge" placeholder="EDIÇÃO LIMITADA"></div>
         <div class="field span2"><label>Nota opcional</label><input id="specialEditionNote" placeholder="Ex.: Encomendas até 20 de dezembro"></div>
+        <div class="field span2">
+          <label>Produtos desta edição</label>
+          <div class="muted" style="font-size:12px;margin-bottom:7px">Seleciona os produtos publicados que devem aparecer dentro desta coleção na loja.</div>
+          <div id="specialEditionProducts" class="special-product-picker"></div>
+        </div>
         <div class="field span2"><label>Imagem de capa</label><input id="specialEditionImageFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewSpecialEditionImageFile()"></div>
         <div class="field"><label>&nbsp;</label><button class="btn" onclick="uploadSpecialEditionImage()">Carregar imagem</button></div>
         <div class="field"><label>&nbsp;</label><button class="btn danger" onclick="removeSpecialEditionImage()">Remover imagem</button></div>
@@ -589,7 +602,7 @@ function ensureRecordIds(){
 }
 function isOrderProduced(id){return (db.productionRuns||[]).some(r=>(r.orders||[]).includes(id))}
 function orderAlreadyProducedIds(){return new Set((db.productionRuns||[]).flatMap(r=>r.orders||[]))}
-function go(id){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));const target=document.getElementById(id);if(!target)return toast('Módulo não encontrado');target.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';renderAll();if(id==='delivery'){renderShopDeliverySettings();renderShopCapacityAgenda();}if(id==='specialEditions'){loadSpecialEditionsAdmin(false);}window.scrollTo({top:0,behavior:'smooth'})}
+function go(id){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));const target=document.getElementById(id);if(!target)return toast('Módulo não encontrado');target.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';renderAll();if(id==='delivery'){renderShopDeliverySettings();renderShopCapacityAgenda();}if(id==='specialEditions'){renderSpecialEditionProductPicker([]);loadSpecialEditionsAdmin(false);}window.scrollTo({top:0,behavior:'smooth'})}
 function completed(o){return o.status!=='Cancelado'&&!o.voidedAt}function filteredOrders(){
  const y=+(document.getElementById('dashYear')?.value||new Date().getFullYear());
  const m=+(document.getElementById('dashMonth')?.value||0);
@@ -1613,7 +1626,38 @@ function clearSpecialEditionForm(){
  const o=document.getElementById('specialEditionOrder');if(o)o.value='0';
  const f=document.getElementById('specialEditionImageFile');if(f)f.value='';
  setSpecialEditionPreview('');
+ renderSpecialEditionProductPicker([]);
 }
+
+function selectedSpecialEditionProductIds(){
+ return [...document.querySelectorAll('#specialEditionProducts input[type="checkbox"]:checked')].map(x=>x.value);
+}
+function renderSpecialEditionProductPicker(selected=[]){
+ const box=document.getElementById('specialEditionProducts');if(!box)return;
+ const chosen=new Set((selected||[]).map(x=>String(x)));
+ const rows=(db.products||[]).filter(p=>p.shopVisible&&p._rid);
+ if(!rows.length){
+   box.innerHTML='<div class="special-products-empty">Não existem produtos publicados com identificação Cloud. Sincroniza a V10 e publica primeiro os produtos que queres usar.</div>';
+   return;
+ }
+ box.innerHTML=rows.map(p=>{
+   const img=p.shopImageUrl||'';
+   const checked=chosen.has(String(p._rid))?'checked':'';
+   return `<label class="special-product-option">
+     <input type="checkbox" value="${escapeHtml(p._rid)}" ${checked}>
+     ${img?`<img src="${escapeHtml(img)}" alt="">`:`<div style="width:42px;height:42px;display:grid;place-items:center;background:#f5efeb;border-radius:9px">🍩</div>`}
+     <span><b>${escapeHtml(p.name)}</b><small>${escapeHtml(p.category||'DONART')} · ${euro(p.price)}</small></span>
+   </label>`;
+ }).join('');
+}
+function specialEditionProductSnapshot(){
+ const ids=selectedSpecialEditionProductIds();
+ return ids.map(id=>{
+   const p=(db.products||[]).find(x=>String(x._rid)===String(id));
+   return p?{id:p._rid,name:p.name,category:p.category||'',price:Number(p.price)||0}:null
+ }).filter(Boolean);
+}
+
 function renderSpecialEditionsAdmin(){
  const grid=document.getElementById('specialEditionsGrid');if(!grid)return;
  const arr=Array.isArray(specialEditionsAdmin)?specialEditionsAdmin:[];
@@ -1627,6 +1671,7 @@ function renderSpecialEditionsAdmin(){
        <div><span class="special-edition-status ${ed.active?'on':'off'}">${ed.active?'ATIVA':'INATIVA'}</span></div>
        <h3>${escapeHtml(ed.name||'Edição Especial')}</h3>
        <div class="special-edition-meta">${escapeHtml(d.subtitle||'')}</div>
+       <div class="special-edition-meta"><b>${Array.isArray(d.products)?d.products.length:0}</b> produto(s) associados</div>
        <div class="special-edition-meta">${escapeHtml(start)}<br>${escapeHtml(end)}</div>
        <div class="btnrow"><button class="btn" onclick="editSpecialEdition('${ed.id}')">Editar</button><button class="btn danger" onclick="deleteSpecialEdition('${ed.id}')">Apagar</button></div>
      </div>
@@ -1658,6 +1703,7 @@ function editSpecialEdition(id){
  document.getElementById('specialEditionSubtitle').value=d.subtitle||d.description||'';
  document.getElementById('specialEditionBadge').value=d.badge||'';
  document.getElementById('specialEditionNote').value=d.note||'';
+ renderSpecialEditionProductPicker((d.products||[]).map(x=>typeof x==='string'?x:x.id).filter(Boolean));
  setSpecialEditionPreview(d.imageUrl||d.image_url||'');
  window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1673,7 +1719,8 @@ async function saveSpecialEdition(){
    subtitle:(document.getElementById('specialEditionSubtitle')?.value||'').trim(),
    badge:(document.getElementById('specialEditionBadge')?.value||'').trim(),
    note:(document.getElementById('specialEditionNote')?.value||'').trim(),
-   imageUrl:(document.getElementById('specialEditionImageUrl')?.value||'').trim()
+   imageUrl:(document.getElementById('specialEditionImageUrl')?.value||'').trim(),
+   products:specialEditionProductSnapshot()
  };
  try{
    const {data:rid,error}=await c.rpc('donart_save_shop_special_edition_v1',{
