@@ -1,0 +1,32 @@
+DONART V9.0.0 — NOVO PROJETO LIMPO
+
+Esta versão NÃO deve substituir o projeto V8.
+
+ISOLAMENTO
+- Nova tabela Supabase: public.donart_v9_state
+- Novo estado local: donart_v9_app_state
+- Nova configuração cloud: donart_v9_cloud_config
+- Novos metadados de sync: donart_v9_cloud_meta
+- Novo shadow confirmado: donart_v9_cloud_shadow
+- Novo ID de dispositivo: donart_v9_device_id
+- Novo cache PWA: donart-v9-0-0-clean
+- Não lê automaticamente dados nem metadados V8.
+
+INSTALAÇÃO
+1. Manter projeto V8 intacto.
+2. Executar SUPABASE_V9_SETUP.txt uma vez no Supabase.
+3. Criar NOVO repositório GitHub, por exemplo DONART-V9.
+4. Carregar os ficheiros desta pasta para a raiz.
+5. Criar NOVO projeto Vercel importando esse repositório.
+6. Abrir o NOVO domínio.
+7. Configurar URL Supabase + publishable/anon key + email na app.
+8. Entrar e testar primeiro apenas no tablet.
+
+TESTE OBRIGATÓRIO
+A. Criar cliente -> Sincronizado -> fechar/reabrir -> permanece.
+B. Editar -> Sincronizado -> reiniciar -> alteração permanece.
+C. Eliminar -> Sincronizado -> reiniciar -> continua eliminado.
+D. Repetir A/B/C pelo menos 3 vezes.
+E. Só depois testar tablet <-> iPhone.
+
+Não migrar dados reais da V8 antes de a V9 passar estes testes.

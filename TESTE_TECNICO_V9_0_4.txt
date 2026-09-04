@@ -1,0 +1,24 @@
+DONART V9.0.4 — RESOLUÇÃO MANUAL DE CONFLITOS
+
+Problema confirmado:
+- A V9.0.3 encontra corretamente a revisão cloud 2.
+- Ao escolher “Usar dados da cloud”, a proteção automática rejeitava a mesma revisão
+  porque o shadow local da revisão 2 tinha conteúdo diferente.
+- Resultado: “resposta inconsistente na revisão 2”.
+
+Correções V9.0.4:
+1. Nova função forceApplyCloudRow() exclusivamente para ações manuais explícitas.
+2. “Usar dados da cloud” passa a substituir local + shadow + meta com a linha cloud escolhida.
+3. A resolução manual limpa dirty/conflict e fixa baseRevision/remoteRevision na revisão cloud.
+4. A proteção automática contra regressões continua ativa em arranque/Realtime.
+5. “Receber agora” manual também usa aplicação autoritativa quando não há conflito local pendente.
+6. Nenhuma alteração de SQL/RLS/Supabase.
+
+TESTE DE REFERÊNCIA:
+- Supabase: revisão 2
+- Cliente correto: “Teste 1 editado”
+- Abrir app -> conflito antigo pode ainda aparecer uma vez.
+- Tocar “Usar dados da cloud”.
+- Deve ficar Sincronizado e mostrar “Teste 1 editado”.
+- Fechar totalmente e reabrir.
+- Deve continuar “Teste 1 editado”.

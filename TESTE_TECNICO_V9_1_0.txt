@@ -1,0 +1,22 @@
+DONART V9.1.0 — MOTOR CLOUD SIMPLIFICADO
+
+Alteração principal:
+- Removido o bloqueio normal por baseRevision/shadow.
+- Cada alteração local é guardada imediatamente no dispositivo.
+- Antes de enviar, a app lê a revisão cloud atual.
+- Grava os dados com revisão atual + 1 e confirma o retorno do Supabase.
+- Falhas de rede mantêm os dados locais e repetem automaticamente.
+- Realtime não cria conflitos artificiais.
+
+Migração:
+Na primeira abertura da V9.1.0, a versão cloud atual é usada como ponto de partida.
+A função de aplicação cloud cria a cópia de segurança pré-cloud antes de substituir local.
+
+Sem novo SQL, nova tabela ou novo projeto.
+
+TESTES:
+1. Abrir -> Sincronizado -> Teste 1 editado presente.
+2. Criar Teste 2 -> esperar Sincronizado -> fechar/reabrir -> manter.
+3. Editar Teste 2 -> esperar Sincronizado -> fechar/reabrir -> manter.
+4. Apagar Teste 2 -> esperar Sincronizado -> fechar/reabrir -> continuar apagado.
+5. Criar encomenda de teste -> sincronizar -> fechar/reabrir -> manter.

@@ -1,0 +1,20 @@
+DONART V9.0.1 — CORREÇÃO DE LEITURA CLOUD
+
+Problema confirmado em teste real:
+- O cliente Teste 1 estava efetivamente gravado em public.donart_v9_state.
+- A app registou depois "Cloud vazia" / "a linha cloud desapareceu inesperadamente".
+- A linha continuava presente no Supabase.
+
+Correções:
+1. Validação de sessão antes das leituras críticas.
+2. Até 4 tentativas de leitura com pequeno intervalo.
+3. Leitura sem linha deixa de significar automaticamente "cloud vazia".
+4. Se já existe revision/shadow confirmado, os dados locais e a revisão são preservados.
+5. Push fica pendente e é repetido automaticamente em vez de gerar falso conflito.
+6. Arranque preserva estado confirmado perante leitura transitória.
+7. Nenhum SQL novo é necessário.
+
+Teste obrigatório:
+Criar -> Sincronizar -> reiniciar -> permanece.
+Editar -> Sincronizar -> reiniciar -> permanece.
+Apagar -> Sincronizar -> reiniciar -> continua apagado.

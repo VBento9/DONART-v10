@@ -1,0 +1,20 @@
+DONART V9.0.2 — PROTEÇÃO CONTRA REGRESSÃO DE REVISÃO
+
+Falha confirmada:
+- Supabase ficou corretamente na revisão 2.
+- A revisão 2 contém "Teste 1 editado".
+- Ao reabrir, a app aplicava revisão 1.
+
+Correções:
+1. applyCloudRow nunca aplica uma revisão inferior à maior revisão conhecida.
+2. Eventos Realtime antigos são ignorados.
+3. O arranque ignora uma revisão antiga e agenda nova leitura.
+4. O shadow confirmado também é usado para impedir regressões.
+5. Sem alterações no SQL, RLS, Supabase ou Vercel.
+
+Teste:
+- Abrir a app: deve manter "Teste 1 editado".
+- Editar para "Teste 1 editado 2".
+- Esperar Sincronizado.
+- Fechar totalmente e reabrir.
+- Deve continuar "Teste 1 editado 2".

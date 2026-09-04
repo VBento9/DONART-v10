@@ -1,0 +1,27 @@
+DONART V10.0.0 — NÚCLEO RELACIONAL
+
+Esta versão deixa de usar donart_v9_state para sincronizar Clientes, Encomendas e Orçamentos.
+
+Cada registo é guardado numa linha independente:
+- donart_v10_clients
+- donart_v10_orders
+- donart_v10_quotes
+
+A aplicação mantém o funcionamento local/offline e usa _rid UUID interno para ligar cada objeto à sua linha Supabase.
+Os códigos visíveis (ex.: AS-2026-0001) continuam a ser usados na interface.
+
+ANTES DE PUBLICAR:
+1. Executar SUPABASE_V10_APP_COMPLEMENTO.txt no SQL Editor.
+2. Deve aparecer Success.
+3. Depois publicar estes ficheiros no repositório DONART-V10 (novo projeto recomendado).
+4. Ligar a Cloud com a configuração Supabase já usada.
+5. Na primeira ligação, se as tabelas estiverem vazias, a app migra os clientes/encomendas/orçamentos locais para linhas independentes.
+
+TESTE:
+- Criar Cliente A, Cliente B, Cliente C.
+- Confirmar 3 linhas em donart_v10_clients.
+- Criar 2 encomendas e confirmar 2 linhas em donart_v10_orders.
+- Criar 2 orçamentos e confirmar 2 linhas em donart_v10_quotes.
+- Fechar/reabrir e confirmar que tudo permanece.
+
+Nesta etapa, Stock/Caixa/Compras/Produção continuam locais; passam para tabelas V10 na etapa seguinte.

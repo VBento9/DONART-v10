@@ -1,0 +1,24 @@
+DONART V9.0.3 — ARRANQUE AUTORITATIVO
+
+Problema confirmado:
+- Supabase estava na revisão 2 com "Teste 1 editado".
+- No arranque a app aplicava revisão 1.
+- Pouco depois a própria app detetava cloud revisão 2.
+
+Correção:
+1. No arranque, Realtime NÃO é ativado antes da leitura inicial.
+2. A app faz 3 leituras sequenciais e escolhe a maior revisão observada.
+3. Só depois de aplicar a versão cloud escolhida é que ativa Realtime.
+4. Enquanto a validação inicial decorre, nenhum push é permitido.
+5. Eventos Realtime recebidos durante a validação inicial são ignorados.
+6. O login manual segue a mesma ordem: autenticar -> validar Data API -> hidratar -> Realtime.
+7. Service Worker força navegação de rede sem cache HTTP quando online.
+8. Mantém as proteções V9.0.1 e V9.0.2 contra cloud vazia transitória e regressão de revisão.
+9. Não requer alterações no Supabase/SQL/RLS.
+
+TESTE DE REFERÊNCIA:
+- Supabase: revisão 2
+- Cliente: Teste 1 editado
+- Abrir app: deve aplicar revisão 2.
+- Atividade deve mostrar "Leitura autoritativa cloud · revisão 2"
+  antes de "Realtime ativo".

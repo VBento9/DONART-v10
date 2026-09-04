@@ -1,0 +1,21 @@
+DONART V9.0.0 — TESTE TÉCNICO FINAL
+
+Projeto novo/isolado da V8: OK
+Tabela cloud: public.donart_v9_state
+Estado local: donart_v9_app_state
+Metadados cloud: donart_v9_cloud_meta
+ID dispositivo: donart_v9_device_id
+Cache PWA: donart-v9-0-0-clean
+
+Validações:
+- JavaScript: OK
+- IDs HTML duplicados: 0
+- Referências críticas V8 no runtime: 0
+- Tabela cloud V9 configurada no código: OK
+- Logótipo aprovado preservado: OK
+- SHA-256 logo: 28655c0274b49b4238a6b51fd83316deaec0af14193eb940d2faaa2324e2714a
+
+Nota:
+A V9 deve ser publicada num NOVO GitHub e NOVO Vercel.
+O projeto V8 deve permanecer intacto como backup.
+O teste funcional final é feito apenas depois de executar SUPABASE_V9_SETUP.txt.
