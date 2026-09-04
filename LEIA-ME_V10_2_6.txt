@@ -1,0 +1,12 @@
+DONART V10.2.6 — Preços de Personalizações
+
+Novos preços configuráveis:
+- Nome
+- Data
+- Mensagem
+- Fita
+- Etiqueta
+- Cartão
+- Acréscimo base temático
+
+Todos sincronizam para a loja e são revalidados no servidor.

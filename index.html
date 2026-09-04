@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.5 · Loja Etapa 16E · Encomendas Temáticas · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.6 · Loja Etapa 16F · Preços Personalizações · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -299,6 +299,9 @@
           </div>
         </div>
         <div class="field"><label>Acréscimo base temático €</label><input id="creatorBaseExtra" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Preço extra · Nome €</label><input id="creatorPriceName" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Preço extra · Data €</label><input id="creatorPriceDate" type="number" min="0" step="0.01"></div>
+        <div class="field"><label>Preço extra · Mensagem €</label><input id="creatorPriceMessage" type="number" min="0" step="0.01"></div>
         <div class="field"><label>Preço extra · Fita €</label><input id="creatorPriceRibbon" type="number" min="0" step="0.01"></div>
         <div class="field"><label>Preço extra · Etiqueta €</label><input id="creatorPriceLabel" type="number" min="0" step="0.01"></div>
         <div class="field"><label>Preço extra · Cartão €</label><input id="creatorPriceCard" type="number" min="0" step="0.01"></div>
@@ -1394,13 +1397,13 @@ function renderSettingsThemedBoxesSummary(){
 }
 
 
-function boxCreatorDefaults(){return {enabled:false,baseExtra:0,priceRibbon:0,priceLabel:0,priceCard:0,occasions:['Aniversário','Batizado','Comunhão','Natal'],styles:['Dinossauro','Princesa','Futebol'],colors:['Rosa','Azul','Dourado'],custom:{name:true,date:true,message:true,ribbon:true,label:true,card:true}}}
+function boxCreatorDefaults(){return {enabled:false,baseExtra:0,priceName:0,priceDate:0,priceMessage:0,priceRibbon:0,priceLabel:0,priceCard:0,occasions:['Aniversário','Batizado','Comunhão','Natal'],styles:['Dinossauro','Princesa','Futebol'],colors:['Rosa','Azul','Dourado'],custom:{name:true,date:true,message:true,ribbon:true,label:true,card:true}}}
 function boxCreatorSettings(){db.settings=db.settings||{};const d=boxCreatorDefaults();db.settings.boxCreator=Object.assign(d,db.settings.boxCreator||{});db.settings.boxCreator.custom=Object.assign(d.custom,db.settings.boxCreator.custom||{});return db.settings.boxCreator}
 function creatorLines(id){return String(document.getElementById(id)?.value||'').split('\n').map(x=>x.trim()).filter(Boolean)}
 function renderBoxCreatorSettings(){
  const s=boxCreatorSettings(), set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v};
  set('creatorOccasions',(s.occasions||[]).join('\n'));set('creatorStyles',(s.styles||[]).join('\n'));set('creatorColors',(s.colors||[]).join('\n'));
- set('creatorBaseExtra',Number(s.baseExtra||0).toFixed(2));set('creatorPriceRibbon',Number(s.priceRibbon||0).toFixed(2));set('creatorPriceLabel',Number(s.priceLabel||0).toFixed(2));set('creatorPriceCard',Number(s.priceCard||0).toFixed(2));set('creatorEnabled',s.enabled?'1':'0');
+ set('creatorBaseExtra',Number(s.baseExtra||0).toFixed(2));set('creatorPriceName',Number(s.priceName||0).toFixed(2));set('creatorPriceDate',Number(s.priceDate||0).toFixed(2));set('creatorPriceMessage',Number(s.priceMessage||0).toFixed(2));set('creatorPriceRibbon',Number(s.priceRibbon||0).toFixed(2));set('creatorPriceLabel',Number(s.priceLabel||0).toFixed(2));set('creatorPriceCard',Number(s.priceCard||0).toFixed(2));set('creatorEnabled',s.enabled?'1':'0');
  const map={creatorName:'name',creatorDate:'date',creatorMessage:'message',creatorRibbon:'ribbon',creatorLabel:'label',creatorCard:'card'};
  Object.entries(map).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.checked=s.custom?.[k]!==false});
 }
@@ -1408,6 +1411,9 @@ async function saveBoxCreatorSettings(){
  const s=boxCreatorSettings();
  s.enabled=document.getElementById('creatorEnabled')?.value==='1';
  s.baseExtra=Math.max(0,Number(document.getElementById('creatorBaseExtra')?.value)||0);
+ s.priceName=Math.max(0,Number(document.getElementById('creatorPriceName')?.value)||0);
+ s.priceDate=Math.max(0,Number(document.getElementById('creatorPriceDate')?.value)||0);
+ s.priceMessage=Math.max(0,Number(document.getElementById('creatorPriceMessage')?.value)||0);
  s.priceRibbon=Math.max(0,Number(document.getElementById('creatorPriceRibbon')?.value)||0);
  s.priceLabel=Math.max(0,Number(document.getElementById('creatorPriceLabel')?.value)||0);
  s.priceCard=Math.max(0,Number(document.getElementById('creatorPriceCard')?.value)||0);
@@ -1442,6 +1448,9 @@ async function saveBoxCreatorSettings(){
   const boxCreatorPayload={
     enabled:!!s.enabled,
     baseExtra:Math.max(0,Number(s.baseExtra)||0),
+    priceName:Math.max(0,Number(s.priceName)||0),
+    priceDate:Math.max(0,Number(s.priceDate)||0),
+    priceMessage:Math.max(0,Number(s.priceMessage)||0),
     priceRibbon:Math.max(0,Number(s.priceRibbon)||0),
     priceLabel:Math.max(0,Number(s.priceLabel)||0),
     priceCard:Math.max(0,Number(s.priceCard)||0),
@@ -1910,7 +1919,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.2.5',
+   app_version:'10.2.6',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
