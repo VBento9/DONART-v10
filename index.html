@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.9 · Loja Etapa 14 · Entregas e Disponibilidade · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.9.1 · Loja Etapa 14 · Menu Entregas Corrigido · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -362,6 +362,14 @@
     <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Custo</th><th>PVP</th><th>Margem</th><th>Loja</th><th>Ações</th></tr></thead><tbody id="productsBody"></tbody></table></div>
   </section>
 
+  <section id="delivery" class="screen">
+    <div class="card">
+      <h2 style="margin-top:0">Entregas Loja</h2>
+      <p class="soft-note">Configura levantamento, entrega local, taxas, antecedência, horários e zonas de código postal da loja online.</p>
+      <div id="shopDeliverySettingsBox"></div>
+    </div>
+  </section>
+
   <section id="cloud" class="screen">
     <div class="grid2">
       <div class="card">
@@ -467,7 +475,7 @@ function lockNow(){unlocked=false;configureLock()}
 function resetIdle(){if(!unlocked)return;clearTimeout(idleTimer);const mins=Number(sec().lockMinutes??15);if(mins>0)idleTimer=setTimeout(lockNow,mins*60000)}
 ['click','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
 
-const pages=[['dashboard','Início'],['sale','Nova venda'],['orders','Encomendas'],['quotes','Orçamentos'],['production','Produção'],['costs','Custos'],['stock','Stock'],['purchases','Compras'],['cash','Caixa'],['clients','Clientes'],['reports','Relatórios'],['products','Produtos'],['catalogs','Catálogos'],['settings','Configuração'],['cloud','Cloud Sync'],['backup','Backup']];
+const pages=[['dashboard','Início'],['sale','Nova venda'],['orders','Encomendas'],['quotes','Orçamentos'],['production','Produção'],['costs','Custos'],['stock','Stock'],['purchases','Compras'],['cash','Caixa'],['clients','Clientes'],['reports','Relatórios'],['products','Produtos'],['catalogs','Catálogos'],['delivery','Entregas Loja'],['settings','Configuração'],['cloud','Cloud Sync'],['backup','Backup']];
 document.getElementById('nav').innerHTML=pages.map(([id,l])=>`<button data-page="${id}" onclick="go('${id}')">${l}</button>`).join('');
 document.getElementById('today').textContent=new Date().toLocaleDateString('pt-PT',{weekday:'short',day:'2-digit',month:'short'});
 function todayISO(){const d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}document.getElementById('saleDate').value=todayISO();document.getElementById('prodDate').value=todayISO();
@@ -492,6 +500,7 @@ function completed(o){return o.status!=='Cancelado'&&!o.voidedAt}function filter
  const y=+(document.getElementById('dashYear')?.value||new Date().getFullYear());
  const m=+(document.getElementById('dashMonth')?.value||0);
  return db.orders.filter(o=>{if(!completed(o))return false;const d=new Date((o.delivery||o.created)+'T12:00:00');return d.getFullYear()===y&&(m===0||d.getMonth()+1===m)})
+ if(id==='delivery'||page==='delivery')renderShopDeliverySettings();
 }
 function dash(){
  const v=filteredOrders(),total=v.reduce((s,o)=>s+calcOrder(o).total,0),paid=v.reduce((s,o)=>s+Math.min(Math.max(+o.paid||0,0),calcOrder(o).total),0),cost=v.reduce((s,o)=>s+calcOrder(o).cost,0),profit=total-cost,pending=v.filter(o=>o.status!=='Entregue').length,stockLow=db.stock.filter(x=>+x.qty<=+x.min).length;
@@ -1681,7 +1690,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.9',
+   app_version:'10.1.9.1',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1

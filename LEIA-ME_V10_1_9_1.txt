@@ -1,0 +1,14 @@
+DONART V10.1.9.1 — MENU ENTREGAS CORRIGIDO
+
+Correção:
+- "Entregas Loja" aparece no menu lateral entre Catálogos e Configuração.
+- O módulo abre um painel com levantamento, entrega local, taxas, horários, dias, antecedência e códigos postais.
+- Mantém todas as funcionalidades da V10.1.9.
+
+Não necessita de SQL novo.
+
+TESTE:
+1. Publicar por cima do projeto donart-v10.
+2. Confirmar que aparece "Entregas Loja" no menu.
+3. Abrir e enviar uma foto do ecrã.
+4. Ainda não publicar a Loja V1.4.
