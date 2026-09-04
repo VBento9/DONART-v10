@@ -102,7 +102,7 @@
 .special-edition-status.off{background:#f3efec;color:#806b62}
 
 .special-product-picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:9px;margin-top:8px}
-.special-product-option{display:flex;align-items:center;gap:9px;border:1px solid #eaded6;background:#fff;border-radius:13px;padding:10px}
+.special-product-option{display:grid;grid-template-columns:auto 42px 1fr;align-items:center;gap:9px;border:1px solid #eaded6;background:#fff;border-radius:13px;padding:10px}.special-product-exclusive{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:11px;color:#806b62;padding-left:2px}.special-product-exclusive input{width:16px;height:16px}
 .special-product-option img{width:42px;height:42px;border-radius:9px;object-fit:cover;background:#f5efeb}
 .special-product-option input{width:18px;height:18px;flex:0 0 auto}
 .special-product-option b{display:block;font-size:13px}
@@ -123,7 +123,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.8 · Loja Etapa 18 · Catálogo das Edições · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.9 · Loja Etapa 19 · Produtos Exclusivos · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -1630,31 +1630,42 @@ function clearSpecialEditionForm(){
 }
 
 function selectedSpecialEditionProductIds(){
- return [...document.querySelectorAll('#specialEditionProducts input[type="checkbox"]:checked')].map(x=>x.value);
+ return [...document.querySelectorAll('#specialEditionProducts input[data-role="include"]:checked')].map(x=>x.value);
 }
 function renderSpecialEditionProductPicker(selected=[]){
  const box=document.getElementById('specialEditionProducts');if(!box)return;
- const chosen=new Set((selected||[]).map(x=>String(x)));
+ const selectedMap=new Map((selected||[]).map(x=>{
+   if(typeof x==='string')return [String(x),{id:String(x),exclusive:false}];
+   return [String(x?.id||''),x||{}];
+ }).filter(x=>x[0]));
  const rows=(db.products||[]).filter(p=>p.shopVisible&&p._rid);
  if(!rows.length){
    box.innerHTML='<div class="special-products-empty">Não existem produtos publicados com identificação Cloud. Sincroniza a V10 e publica primeiro os produtos que queres usar.</div>';
    return;
  }
  box.innerHTML=rows.map(p=>{
-   const img=p.shopImageUrl||'';
-   const checked=chosen.has(String(p._rid))?'checked':'';
-   return `<label class="special-product-option">
-     <input type="checkbox" value="${escapeHtml(p._rid)}" ${checked}>
+   const img=p.shopImageUrl||'',cfg=selectedMap.get(String(p._rid))||null;
+   const checked=cfg?'checked':'',exclusive=cfg?.exclusive?'checked':'';
+   const safeId=escapeHtml(p._rid);
+   return `<div class="special-product-option">
+     <input data-role="include" type="checkbox" value="${safeId}" ${checked} onchange="syncSpecialExclusiveState('${safeId}')">
      ${img?`<img src="${escapeHtml(img)}" alt="">`:`<div style="width:42px;height:42px;display:grid;place-items:center;background:#f5efeb;border-radius:9px">🍩</div>`}
      <span><b>${escapeHtml(p.name)}</b><small>${escapeHtml(p.category||'DONART')} · ${euro(p.price)}</small></span>
-   </label>`;
+     <label class="special-product-exclusive"><input data-role="exclusive" data-product-id="${safeId}" type="checkbox" ${exclusive} ${checked?'':'disabled'}> Exclusivo desta edição — não mostrar em “Sabores”</label>
+   </div>`;
  }).join('');
+}
+function syncSpecialExclusiveState(id){
+ const include=[...document.querySelectorAll('#specialEditionProducts input[data-role="include"]')].find(x=>x.value===String(id));
+ const exclusive=[...document.querySelectorAll('#specialEditionProducts input[data-role="exclusive"]')].find(x=>x.dataset.productId===String(id));
+ if(exclusive){exclusive.disabled=!include?.checked;if(!include?.checked)exclusive.checked=false}
 }
 function specialEditionProductSnapshot(){
  const ids=selectedSpecialEditionProductIds();
  return ids.map(id=>{
    const p=(db.products||[]).find(x=>String(x._rid)===String(id));
-   return p?{id:p._rid,name:p.name,category:p.category||'',price:Number(p.price)||0}:null
+   const ex=[...document.querySelectorAll('#specialEditionProducts input[data-role="exclusive"]')].find(x=>x.dataset.productId===String(id));
+   return p?{id:p._rid,name:p.name,category:p.category||'',price:Number(p.price)||0,exclusive:!!ex?.checked}:null
  }).filter(Boolean);
 }
 
@@ -1671,7 +1682,7 @@ function renderSpecialEditionsAdmin(){
        <div><span class="special-edition-status ${ed.active?'on':'off'}">${ed.active?'ATIVA':'INATIVA'}</span></div>
        <h3>${escapeHtml(ed.name||'Edição Especial')}</h3>
        <div class="special-edition-meta">${escapeHtml(d.subtitle||'')}</div>
-       <div class="special-edition-meta"><b>${Array.isArray(d.products)?d.products.length:0}</b> produto(s) associados</div>
+       <div class="special-edition-meta"><b>${Array.isArray(d.products)?d.products.length:0}</b> produto(s) associados · <b>${Array.isArray(d.products)?d.products.filter(x=>x&&typeof x==='object'&&x.exclusive).length:0}</b> exclusivo(s)</div>
        <div class="special-edition-meta">${escapeHtml(start)}<br>${escapeHtml(end)}</div>
        <div class="btnrow"><button class="btn" onclick="editSpecialEdition('${ed.id}')">Editar</button><button class="btn danger" onclick="deleteSpecialEdition('${ed.id}')">Apagar</button></div>
      </div>
@@ -1703,7 +1714,7 @@ function editSpecialEdition(id){
  document.getElementById('specialEditionSubtitle').value=d.subtitle||d.description||'';
  document.getElementById('specialEditionBadge').value=d.badge||'';
  document.getElementById('specialEditionNote').value=d.note||'';
- renderSpecialEditionProductPicker((d.products||[]).map(x=>typeof x==='string'?x:x.id).filter(Boolean));
+ renderSpecialEditionProductPicker(d.products||[]);
  setSpecialEditionPreview(d.imageUrl||d.image_url||'');
  window.scrollTo({top:0,behavior:'smooth'});
 }
