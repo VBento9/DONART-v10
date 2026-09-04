@@ -1,0 +1,13 @@
+DONART V10.0.8 — ENCOMENDAS ONLINE
+
+Objetivo:
+Receber explicitamente na V10 as encomendas criadas pela Loja DONART.
+
+Antes de publicar:
+1. Executar SUPABASE_V10_0_8_ENCOMENDAS_ONLINE_LIMPO.txt no Supabase.
+2. Publicar esta V10.0.8 por cima do projeto privado donart-v10.
+3. Abrir Cloud Sync e tocar em "Receber agora".
+4. Confirmar se a encomenda WEB-EE22AEFB1F aparece em Encomendas com badge ONLINE.
+
+A função Supabase só devolve encomendas online cujo user_id corresponde ao utilizador autenticado.
+Não dá acesso público às encomendas privadas.

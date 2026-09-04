@@ -1,0 +1,40 @@
+create or replace function public.donart_get_online_orders_v1()
+returns table(
+  id uuid,
+  status text,
+  order_date date,
+  due_at timestamptz,
+  subtotal numeric,
+  total numeric,
+  notes text,
+  data jsonb,
+  created_at timestamptz,
+  updated_at timestamptz
+)
+language sql
+security definer
+set search_path = ''
+stable
+as $$
+  select
+    o.id,
+    o.status,
+    o.order_date,
+    o.due_at,
+    o.subtotal,
+    o.total,
+    o.notes,
+    o.data,
+    o.created_at,
+    o.updated_at
+  from public.donart_v10_orders o
+  where o.user_id = auth.uid()
+    and coalesce(o.data->>'source','') = 'online_store'
+  order by o.created_at desc;
+$$;
+
+revoke all on function public.donart_get_online_orders_v1() from public;
+revoke all on function public.donart_get_online_orders_v1() from anon;
+grant execute on function public.donart_get_online_orders_v1() to authenticated;
+
+notify pgrst, 'reload schema';
