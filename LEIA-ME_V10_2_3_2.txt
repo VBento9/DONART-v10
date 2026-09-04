@@ -1,0 +1,10 @@
+DONART V10.2.3.2 — CRIADOR RPC PERSISTENTE
+
+Correção definitiva da persistência:
+- O Criador deixa de fazer SELECT + UPSERT direto no browser.
+- Usa uma função RPC autenticada no Supabase.
+- O merge do JSON é feito no servidor.
+- boxCreator e shopPackaging são preservados juntamente com shopDelivery.
+- Também foi corrigido o Guardar Entregas para não apagar boxCreator no futuro.
+
+Executar primeiro o SQL fornecido.

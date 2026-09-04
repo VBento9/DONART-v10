@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.3.1 · Loja Etapa 16C · Criador Cloud Persistente · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.3.2 · Loja Etapa 16C · Criador RPC Persistente · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -1050,7 +1050,7 @@ async function saveShopDeliverySettings(){
  try{
    const u=cloudUser||await ensureCloudSession();
    if(!u||!cloudClient)throw new Error('Sem sessão cloud');
-   const {error}=await cloudClient.from('donart_shop_settings').upsert({user_id:u.id,data:{shopDelivery:s},updated_at:new Date().toISOString()},{onConflict:'user_id'});
+   const {error}=await cloudClient.rpc('donart_save_shop_delivery_v1',{p_shop_delivery:s});
    if(error)throw error;
    cloudLogMsg('Definições de entrega da loja enviadas');
    toast('Entregas da loja atualizadas')
@@ -1418,18 +1418,6 @@ async function saveBoxCreatorSettings(){
   const u=auth.data?.user;
   if(!u)throw new Error('Sessão Cloud não autenticada');
 
-  const current=await c
-    .from('donart_shop_settings')
-    .select('data')
-    .eq('user_id',u.id)
-    .maybeSingle();
-
-  if(current.error)throw current.error;
-
-  const oldData=(current.data&&current.data.data&&typeof current.data.data==='object')
-    ? current.data.data
-    : {};
-
   const shopPackaging=(db.packaging||[])
     .map(p=>({
       name:String(p.name||'').trim(),
@@ -1437,40 +1425,29 @@ async function saveBoxCreatorSettings(){
     }))
     .filter(p=>p.name&&p.capacity>0);
 
-  const mergedData={
-    ...oldData,
-    boxCreator:{
-      enabled:!!s.enabled,
-      baseExtra:Math.max(0,Number(s.baseExtra)||0),
-      occasions:[...(s.occasions||[])],
-      styles:[...(s.styles||[])],
-      colors:[...(s.colors||[])],
-      custom:{...s.custom}
-    },
-    shopPackaging
+  const boxCreatorPayload={
+    enabled:!!s.enabled,
+    baseExtra:Math.max(0,Number(s.baseExtra)||0),
+    occasions:[...(s.occasions||[])],
+    styles:[...(s.styles||[])],
+    colors:[...(s.colors||[])],
+    custom:{...s.custom}
   };
 
-  const up=await c
-    .from('donart_shop_settings')
-    .upsert({
-      user_id:u.id,
-      data:mergedData,
-      updated_at:new Date().toISOString()
-    },{onConflict:'user_id'})
-    .select('data')
-    .single();
+  const rpc=await c.rpc('donart_save_box_creator_v1',{
+    p_box_creator:boxCreatorPayload,
+    p_shop_packaging:shopPackaging
+  });
 
-  if(up.error)throw up.error;
+  if(rpc.error)throw rpc.error;
+  if(!rpc.data?.boxCreator)throw new Error('Supabase não devolveu boxCreator');
 
-  const savedBox=up.data?.data?.boxCreator;
-  if(!savedBox)throw new Error('boxCreator não ficou gravado no Supabase');
-
-  db.settings.boxCreator=JSON.parse(JSON.stringify(savedBox));
+  db.settings.boxCreator=JSON.parse(JSON.stringify(rpc.data.boxCreator));
   save();
   renderBoxCreatorSettings();
   toast('Criador de Caixas guardado e sincronizado');
  }catch(e){
-  console.error('boxCreator cloud',e);
+  console.error('boxCreator rpc',e);
   toast('Guardado localmente; falhou sincronização Cloud');
  }
 }
@@ -1916,7 +1893,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.2.3.1',
+   app_version:'10.2.3.2',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
