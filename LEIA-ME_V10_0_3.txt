@@ -1,0 +1,17 @@
+DONART V10.0.3 — persistência ao fechar/reabrir
+
+Correções:
+- Ao iniciar a app, dados cloud e locais são fundidos; a cloud já não substitui cegamente as listas locais.
+- Clientes e encomendas permanecem após fechar e reabrir.
+- Nova encomenda grava diretamente uma linha em donart_v10_orders.
+- A sincronização genérica deixou de apagar linhas remotas por ausência num snapshot local.
+- Realtime continua sem recarregar toda a base automaticamente.
+
+Teste recomendado:
+1. Atualizar o repositório DONART-v10.
+2. Aguardar o deploy.
+3. Abrir a app e ligar Cloud.
+4. Criar Teste Cliente A e Teste Cliente B.
+5. Criar uma encomenda.
+6. Fechar completamente a app.
+7. Reabrir e confirmar que tudo continua visível.
