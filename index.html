@@ -49,7 +49,7 @@
 
 .cloud-status{display:inline-flex;align-items:center;gap:7px;font-weight:900}.cloud-dot{width:9px;height:9px;border-radius:50%;background:#999}.cloud-status.ok .cloud-dot{background:#16a34a}.cloud-status.pending .cloud-dot{background:#f59e0b}.cloud-status.offline .cloud-dot{background:#dc2626}.cloud-status.neutral .cloud-dot{background:#94a3b8}.cloud-status.error .cloud-dot{background:#dc2626}.cloud-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cloud-log{max-height:180px;overflow:auto;font-size:12px;line-height:1.55;background:#fffaf2;border:1px solid var(--line);border-radius:13px;padding:10px}.cloud-kpi{font-size:12px;color:#765b50;margin-top:8px}@media(max-width:650px){.cloud-grid{grid-template-columns:1fr}}
 
-/* iPhone de apoio: interface compacta, mesma base funcional V10.0.3 */
+/* iPhone de apoio: interface compacta, mesma base funcional V10.0.4 */
 @media(max-width:650px){
  html,body{height:auto;min-height:100%;overflow-x:hidden}
  body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.3 · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.4 · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -575,7 +575,31 @@ function canDeleteOrder(o){return !!o&&(+o.paid||0)===0&&!isOrderProduced(o.id)&
 function renderOrders(){const q=(orderSearch?.value||'').toLowerCase(),f=orderFilter?.value||'';const rows=db.orders.filter(o=>(!q||(o.id+' '+o.client).toLowerCase().includes(q))&&(!f||o.status===f)).slice().reverse();ordersBody.innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o),del=canDeleteOrder(o)?` <button class="btn danger" style="padding:8px 10px" onclick="deleteOrder('${o.id}')">Eliminar</button>`:'';return`<tr><td>${o.id}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${c.qty}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}</td><td><span class="badge ${o.status==='Entregue'?'ok':o.status==='Cancelado'?'bad':'warn'}">${o.status}</span></td><td><select onchange="setStatus('${o.id}',this.value)">${['Pedido','Confirmado','Produção','Pronto','Entregue','Cancelado'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select><button class="btn" style="margin-left:6px;padding:8px 10px" onclick="showOrder('${o.id}')">Ver</button> <button class="btn" style="padding:8px 10px" onclick="sendWhatsApp('${o.id}')">WhatsApp</button>${del}</td></tr>`}).join(''):`<tr><td colspan="8" class="empty">Sem encomendas</td></tr>`}
 function setStatus(id,s){const o=db.orders.find(x=>x.id===id);if(!o)return;if(s==='Cancelado'&&o.status!=='Cancelado')return voidOrder(id);o.status=s;save();toast('Estado atualizado')}
 function voidOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const produced=isOrderProduced(id),paid=+o.paid||0;let msg='Anular esta encomenda? Ela deixa de contar na faturação, lucro e valores por receber.';if(paid>0)msg+=' O valor pago fica guardado no histórico de anulação, mas deixa de contar como receita.';if(produced)msg+=' A produção já foi concluída, por isso o stock consumido NÃO será reposto.';if(!confirm(msg)){renderOrders();return}o.voidedAt=new Date().toISOString();o.voidedFrom=o.status;o.voidedPaid=paid;o.status='Cancelado';save();toast('Encomenda anulada')}
-function deleteOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;if(!canDeleteOrder(o))return toast('Só pode eliminar pedidos/cancelados sem pagamento e sem produção');if(!confirm('Eliminar definitivamente a encomenda '+o.id+'? Esta ação não pode ser anulada.'))return;db.orders=db.orders.filter(x=>x.id!==id);save();try{orderDialog.close()}catch(e){}toast('Encomenda eliminada definitivamente')}
+async function deleteOrder(id){
+ const o=db.orders.find(x=>x.id===id);
+ if(!o)return;
+ if(!canDeleteOrder(o))return toast('Só pode eliminar encomendas em estado Pedido');
+ if(!confirm('Eliminar esta encomenda definitivamente?'))return;
+ const u=cloudUser||await ensureCloudSession();
+ if(u&&o._rid){
+   try{
+     const {error:itemsError}=await cloudClient.from('donart_v10_order_items').delete().eq('user_id',u.id).eq('order_id',o._rid);
+     if(itemsError)throw itemsError;
+     const {error}=await cloudClient.from(REL_TABLES.orders).delete().eq('user_id',u.id).eq('id',o._rid);
+     if(error)throw error;
+   }catch(e){
+     cloudLogMsg('Falha ao eliminar encomenda na cloud: '+cloudErrText(e));
+     toast('Não foi possível eliminar da Cloud. Nada foi apagado.');
+     return
+   }
+ }
+ db.orders=db.orders.filter(x=>x.id!==id);
+ localStorage.setItem(KEY,JSON.stringify(db));
+ setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
+ cloudLogMsg('Encomenda eliminada definitivamente: '+id);
+ renderOrders();renderClients();renderCloudUI();
+ toast('Encomenda eliminada definitivamente')
+}
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Confirmado','Produção','Pronto'].includes(o.status)&&!done.has(o.id)),counts={};
@@ -699,30 +723,24 @@ async function deleteClient(id){
  if((db.quotes||[]).some(q=>q.clientId===id))return toast('Este cliente tem orçamentos associados e não pode ser apagado');
  const c=(db.clients||[]).find(x=>x.id===id);
  if(!c)return;
- if(!confirm('Apagar este cliente?'))return;
-
- db.clients=db.clients.filter(x=>x.id!==id);
- localStorage.setItem(KEY,JSON.stringify(db));
- renderClients();
-
- if(c._rid){
-   const u=cloudUser||await ensureCloudSession();
-   if(u){
-     try{
-       const {error}=await cloudClient.from(REL_TABLES.clients).delete().eq('user_id',u.id).eq('id',c._rid);
-       if(error)throw error;
-       cloudLogMsg('Cliente V10 apagado: '+(c.name||id));
-       setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
-       renderCloudUI()
-     }catch(e){
-       localStorage.setItem(REL_DIRTY,'1');
-       setCloudMeta({dirty:true,verified:false,conflict:false});
-       cloudLogMsg('Erro ao apagar cliente V10: '+cloudErrText(e));
-       renderCloudUI()
-     }
+ if(!confirm('Apagar este cliente definitivamente?'))return;
+ const u=cloudUser||await ensureCloudSession();
+ if(u&&c._rid){
+   try{
+     const {error}=await cloudClient.from(REL_TABLES.clients).delete().eq('user_id',u.id).eq('id',c._rid);
+     if(error)throw error;
+   }catch(e){
+     cloudLogMsg('Falha ao eliminar cliente na cloud: '+cloudErrText(e));
+     toast('Não foi possível eliminar da Cloud. Nada foi apagado.');
+     return
    }
  }
- toast('Cliente apagado')
+ db.clients=db.clients.filter(x=>x.id!==id);
+ localStorage.setItem(KEY,JSON.stringify(db));
+ setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
+ cloudLogMsg('Cliente eliminado definitivamente: '+(c.name||id));
+ renderClients();renderCloudUI();
+ toast('Cliente eliminado definitivamente')
 }
 function startOrderForClient(id){const c=(db.clients||[]).find(x=>x.id===id);if(!c)return;go('sale');setTimeout(()=>{saleClient.value=c.name;saleContact.value=c.phone||''},0)}
 function simpleHash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).padStart(8,'0')}
@@ -1120,7 +1138,30 @@ async function quotePDF(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)ret
 async function shareQuotePDF(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return;try{const blob=await buildQuotePdfBlob(q),file=new File([blob],quoteFileName(q),{type:'application/pdf'}),text=`Olá ${q.client||''}! Segue em anexo o orçamento ${q.id} da ${db.settings.businessName||'DONART'}.`;if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'Orçamento '+q.id,text,files:[file]});if(q.status==='Rascunho'){q.status='Enviado';save()}toast('Orçamento partilhado')}else{await quotePDF(id);toast('O dispositivo não permite anexar diretamente. O PDF foi guardado para anexares no WhatsApp ou email.')}}catch(e){if(e.name!=='AbortError')toast('Não foi possível partilhar o PDF')}}
 function quotePdfLines(q){const c=quoteCalc(q),lines=['DONART MINI DONUTS - ORCAMENTO',q.id,'Emitido em: '+q.created,'Cliente: '+(q.client||'-'),'Contacto cliente: '+(q.contact||'-'),q.eventDate?'Data do evento: '+q.eventDate:'',q.validUntil?'Valido ate: '+q.validUntil:'','','ITENS'];(q.items||[]).forEach(i=>lines.push(`${i.qty} x ${i.name} | ${euro(i.price)}/un | ${euro(i.qty*i.price)}`));lines.push('','Subtotal: '+euro(c.sub));if(q.discount)lines.push('Desconto: '+euro(q.discount));if(q.box)lines.push('Embalagem: '+q.box+' x '+Math.max(1,Number(q.boxes)||1));lines.push('TOTAL: '+euro(c.total),'','Pagamento: '+quotePaymentLabel(q),'Para confirmar: '+euro(quoteDepositRequired(q)));const due=quoteBalanceDueDate(q);if(due)lines.push('Saldo ate: '+due);if(db.settings.businessPhone)lines.push('Contacto / MB Way: '+db.settings.businessPhone);if(db.settings.iban)lines.push('IBAN: '+db.settings.iban);if(db.settings.paymentNote)lines.push(db.settings.paymentNote);if(q.notes)lines.push('','Observacoes: '+q.notes);lines.push('','Estado: '+(q.orderId?'Convertido':q.status),'Este documento e um orcamento e nao substitui fatura.');return lines.filter(Boolean)}
 function convertQuoteToOrder(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q||q.orderId)return;if(q.status!=='Aceite')return toast('Marque primeiro o orçamento como Aceite');const required=quoteDepositRequired(q),paid=Math.max(0,Number(q.depositPaid)||0);if(paid+0.001<required)return toast(`Pagamento insuficiente para confirmar. Necessário: ${euro(required)}; registado: ${euro(paid)}`);const y=new Date().getFullYear(),nums=db.orders.filter(o=>o.id?.startsWith('AS-'+y+'-')).map(o=>+o.id.split('-').pop()||0),oid='AS-'+y+'-'+String(Math.max(0,...nums)+1).padStart(4,'0');const items=[];(q.items||[]).forEach((i,n)=>{if(i.type==='free'){items.push({code:'ORC-EXTRA-'+String(n+1).padStart(2,'0'),name:i.name,qty:Number(i.qty)||1,price:Number(i.price)||0,cost:Number(i.cost)||0,type:'quote_extra'})}else{const p=db.products.find(x=>x.code===i.code);if(p)items.push({code:i.code,name:i.name,qty:Number(i.qty)||1,price:Number(i.price)||0,cost:calculatedProductCost(p)})}});if(!items.length)return toast('O orçamento não tem linhas convertíveis');if(Number(q.discount)>0)items.push({code:'ORC-DESCONTO',name:'Desconto do orçamento',qty:1,price:-Math.abs(Number(q.discount)||0),cost:0,type:'quote_discount'});const target=quoteCalc(q).total,current=items.reduce((a,i)=>a+i.qty*i.price,0),roundAdjust=Math.round((target-current)*100)/100;if(Math.abs(roundAdjust)>0.009)items.push({code:'ORC-AJUSTE',name:'Ajuste do orçamento',qty:1,price:roundAdjust,cost:0,type:'quote_adjustment'});db.orders.push({id:oid,clientId:q.clientId,client:q.client,contact:q.contact,delivery:q.eventDate||'',payment:q.paymentMethod||'MB Way',box:q.box||'Caixa 6',boxCostSnapshot:q.boxCostSnapshot!=null?Number(q.boxCostSnapshot)||0:((db.packaging||[]).find(p=>p.name===(q.box||''))?.cost||0),boxes:Math.max(1,Number(q.boxes)||1),paid:Math.min(paid,target),status:'Confirmado',created:todayISO(),items,sourceQuoteId:q.id,notes:q.notes||'',quotePaymentTerms:q.paymentTerms,quoteBalanceDue:quoteBalanceDueDate(q),paymentHistory:(q.paymentHistory||[]).map(x=>({...x,source:'quote'}))});q.orderId=oid;q.convertedAt=todayISO();q.status='Convertido';save();toast('Orçamento convertido em '+oid);go('orders')}
-function deleteQuote(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return;if(q.orderId)return toast('Este orçamento já foi convertido em encomenda e deve permanecer no histórico');if(q.status!=='Rascunho')return toast('Só orçamentos em Rascunho podem ser eliminados. Os restantes ficam no histórico.');if(!confirm('Eliminar definitivamente '+q.id+'?'))return;db.quotes=db.quotes.filter(x=>x.id!==id);save();toast('Orçamento eliminado')}
+async function deleteQuote(id){
+ const q=(db.quotes||[]).find(x=>x.id===id);
+ if(!q)return;
+ if(!confirm('Eliminar este orçamento definitivamente?'))return;
+ const u=cloudUser||await ensureCloudSession();
+ if(u&&q._rid){
+   try{
+     const {error:itemsError}=await cloudClient.from('donart_v10_quote_items').delete().eq('user_id',u.id).eq('quote_id',q._rid);
+     if(itemsError)throw itemsError;
+     const {error}=await cloudClient.from(REL_TABLES.quotes).delete().eq('user_id',u.id).eq('id',q._rid);
+     if(error)throw error;
+   }catch(e){
+     cloudLogMsg('Falha ao eliminar orçamento na cloud: '+cloudErrText(e));
+     toast('Não foi possível eliminar da Cloud. Nada foi apagado.');
+     return
+   }
+ }
+ db.quotes=(db.quotes||[]).filter(x=>x.id!==id);
+ localStorage.setItem(KEY,JSON.stringify(db));
+ setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
+ cloudLogMsg('Orçamento eliminado definitivamente: '+id);
+ renderQuotes();renderCloudUI();
+ toast('Orçamento eliminado definitivamente')
+}
 function quoteConversion(){const qs=db.quotes||[],decided=qs.filter(q=>q.orderId||['Aceite','Convertido','Recusado'].includes(q.status)),accepted=decided.filter(q=>q.orderId||['Aceite','Convertido'].includes(q.status)).length;return{total:qs.length,accepted,refused:decided.filter(q=>q.status==='Recusado').length,rate:decided.length?accepted/decided.length:0}}
 
 function renderReports(){const el=document.getElementById('reportSummary');if(!el)return;const d=dash();el.innerHTML=`<div class="totalbox"><div class="mini"><span>Faturação</span><strong>${euro(d.total)}</strong></div><div class="mini"><span>Recebido</span><strong>${euro(d.paid)}</strong></div><div class="mini"><span>Lucro</span><strong>${euro(d.profit)}</strong></div><div class="mini"><span>Margem</span><strong>${pct(d.margin)}</strong></div></div>`}
@@ -1214,7 +1255,7 @@ async function subscribeCloud(){
      table:REL_TABLES[k],
      filter:'user_id=eq.'+cloudUser.id
    },payload=>{
-     // V10.0.3: do NOT auto-reload the whole local database after each row write.
+     // V10.0.4: do NOT auto-reload the whole local database after each row write.
      // The previous automatic hydrate could replace the freshly saved local list
      // with a transient/stale snapshot and make a client disappear from the UI.
      const rid=payload?.new?.id||payload?.old?.id||'';
@@ -1490,7 +1531,7 @@ async function relationalSyncCore(showToast=false){
      if(error)throw error
    }
 
-   // V10.0.3: nunca apagar linhas remotas apenas porque não apareceram num snapshot local.
+   // V10.0.4: nunca apagar linhas remotas apenas porque não apareceram num snapshot local.
    // Eliminações passam a ser explícitas por registo.
 
 

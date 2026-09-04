@@ -1,0 +1,15 @@
+DONART V10.0.4 — Eliminação definitiva
+
+Correção:
+- Eliminar cliente apaga primeiro a linha no Supabase e só depois a remove da app.
+- Eliminar encomenda apaga os itens associados e a encomenda no Supabase antes de remover localmente.
+- Eliminar orçamento apaga os itens associados e o orçamento no Supabase antes de remover localmente.
+- Se a eliminação Cloud falhar, o registo NÃO desaparece localmente, evitando que reapareça depois.
+- Mantém as correções de persistência da V10.0.3.
+
+Teste:
+1. Atualizar DONART-v10 no GitHub e aguardar Vercel.
+2. Eliminar apenas um registo de teste pela app.
+3. Fechar completamente.
+4. Reabrir.
+5. Confirmar que o registo eliminado não regressa.
