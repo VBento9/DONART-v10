@@ -1,0 +1,33 @@
+DONART V10.0.6 — LOJA ONLINE · ETAPA 1
+
+Base: V10.0.5 estável.
+
+ALTERAÇÕES
+- Produtos passam a sincronizar pela tabela donart_v10_products.
+- Alterações de produtos podem ser recebidas automaticamente entre tablet e iPhone.
+- Cada produto passa a ter:
+  • Mostrar / ocultar na futura loja online
+  • Descrição para a loja
+  • Campo interno preparado para futura fotografia
+- Mantém clientes, encomendas e orçamentos da V10.0.5.
+- Não cria ainda a loja pública, carrinho ou checkout.
+
+ANTES DE PUBLICAR A V10.0.6
+1. Abrir o Supabase SQL Editor.
+2. Executar SUPABASE_V10_0_6_LOJA_ETAPA1.sql uma única vez.
+3. Publicar os ficheiros da V10.0.6 no mesmo projeto Vercel/GitHub.
+4. Abrir a app no tablet e no iPhone e confirmar V10.0.6.
+
+TESTE OBRIGATÓRIO
+1. No tablet, abrir Produtos.
+2. Escolher um produto e ativar “Mostrar este produto na loja”.
+3. Escrever uma descrição curta e Guardar.
+4. Confirmar que o iPhone recebe a alteração.
+5. Alterar o PVP no iPhone.
+6. Confirmar que o tablet recebe o novo PVP.
+7. Fechar e voltar a abrir ambos e confirmar que os dados permanecem.
+
+SEGURANÇA
+- Custos e restante informação interna continuam protegidos por RLS.
+- A loja pública ainda não recebe permissão de leitura nesta etapa.
+- Não usar service_role no browser/app.

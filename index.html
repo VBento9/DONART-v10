@@ -49,7 +49,7 @@
 
 .cloud-status{display:inline-flex;align-items:center;gap:7px;font-weight:900}.cloud-dot{width:9px;height:9px;border-radius:50%;background:#999}.cloud-status.ok .cloud-dot{background:#16a34a}.cloud-status.pending .cloud-dot{background:#f59e0b}.cloud-status.offline .cloud-dot{background:#dc2626}.cloud-status.neutral .cloud-dot{background:#94a3b8}.cloud-status.error .cloud-dot{background:#dc2626}.cloud-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cloud-log{max-height:180px;overflow:auto;font-size:12px;line-height:1.55;background:#fffaf2;border:1px solid var(--line);border-radius:13px;padding:10px}.cloud-kpi{font-size:12px;color:#765b50;margin-top:8px}@media(max-width:650px){.cloud-grid{grid-template-columns:1fr}}
 
-/* iPhone de apoio: interface compacta, mesma base funcional V10.0.5 */
+/* iPhone de apoio: interface compacta, mesma base funcional V10.0.6 */
 @media(max-width:650px){
  html,body{height:auto;min-height:100%;overflow-x:hidden}
  body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.5 · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.6 · Loja Etapa 1 · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -338,10 +338,13 @@
         <div class="field"><label>Código</label><input id="prodCode" placeholder="Ex.: P006"></div>
         <div class="field"><label>Custo/un. automático</label><input id="prodCost" type="number" step="0.0001" readonly style="background:#DDF4D2"></div>
         <div class="field"><label>PVP/un.</label><input id="prodPrice" type="number" step="0.01"></div>
+        <div class="field span2"><label>Descrição para a loja online</label><textarea id="prodShopDescription" rows="3" placeholder="Descrição curta que o cliente verá na loja"></textarea></div>
+        <div class="field"><label>Loja online</label><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input id="prodShopVisible" type="checkbox" style="width:auto"> Mostrar este produto na loja</label></div>
         <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveProduct()">Guardar produto</button></div>
       </div>
+      <p class="security-note">Etapa 1 da loja: produtos e informação pública ficam sincronizados no Supabase. Fotografias serão adicionadas na etapa seguinte através do Supabase Storage.</p>
     </div>
-    <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Custo</th><th>PVP</th><th>Margem</th><th>Ações</th></tr></thead><tbody id="productsBody"></tbody></table></div>
+    <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Custo</th><th>PVP</th><th>Margem</th><th>Loja</th><th>Ações</th></tr></thead><tbody id="productsBody"></tbody></table></div>
   </section>
 
   <section id="cloud" class="screen">
@@ -397,7 +400,7 @@ const KEY='donart_v9_app_state', SEC='donart_v9_security', LAST='donart_v9_last_
 const CLOUD_V91_MIGRATION='donart_v91_clean_start', CLOUD_CFG='donart_v9_cloud_config', CLOUD_META='donart_v9_cloud_meta', CLOUD_TABLE='donart_v9_state', CLOUD_SHADOW='donart_v9_cloud_shadow', CLOUD_LOG='donart_v9_cloud_log', DEVICE_KEY='donart_v9_device_id';
 const REL_DIRTY='donart_v10_rel_dirty',
       REL_MIGRATED='donart_v10_rel_migrated',
-      REL_TABLES={clients:'donart_v10_clients',orders:'donart_v10_orders',quotes:'donart_v10_quotes',sales:'donart_v10_sales'};
+      REL_TABLES={clients:'donart_v10_clients',products:'donart_v10_products',orders:'donart_v10_orders',quotes:'donart_v10_quotes',sales:'donart_v10_sales'};
 let db=load(), cart=[], quoteCart=[], unlocked=false, deferredPrompt=null, idleTimer=null, editingPurchaseId=null, editingCashId=null;
 let cloudClient=null, cloudUser=null, cloudChannel=null, cloudPushTimer=null, cloudApplying=false, cloudBusy=false, cloudConflict=null, cloudStartupDone=false, cloudHydrating=false;
 
@@ -914,20 +917,20 @@ function renderPicker(){
 function saveProduct(){
  const code=prodCode.value.trim()||('X'+String(db.products.length+1).padStart(3,'0')),name=prodName.value.trim();if(!name)return toast('Indique o nome do produto');
  const existing=db.products.find(x=>x.code===code);
- const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0};
+ const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:existing?.shopImageUrl||''};
  existing?Object.assign(existing,obj):db.products.push(obj);
  if(!db.productRecipes[code])db.productRecipes[code]=[];
- save();prodName.value=prodCode.value=prodPrice.value='';toast('Produto guardado')
+ save();prodName.value=prodCode.value=prodPrice.value=prodShopDescription.value='';prodShopVisible.checked=false;toast('Produto guardado')
 }
 function editProduct(code){
  const p=db.products.find(x=>x.code===code);if(!p)return;
- prodCode.value=p.code;prodName.value=p.name;prodCat.value=p.category;prodCost.value=calculatedProductCost(p).toFixed(4);prodPrice.value=p.price;window.scrollTo({top:0,behavior:'smooth'})
+ prodCode.value=p.code;prodName.value=p.name;prodCat.value=p.category;prodCost.value=calculatedProductCost(p).toFixed(4);prodPrice.value=p.price;prodShopVisible.checked=!!p.shopVisible;prodShopDescription.value=p.shopDescription||'';window.scrollTo({top:0,behavior:'smooth'})
 }
 function renderProducts(){
  const body=document.getElementById('productsBody');if(!body)return;
  body.innerHTML=db.products.map(p=>{
    const c=calculatedProductCost(p),m=p.price?(p.price-c)/p.price:0;
-   return `<tr><td>${p.name}</td><td>${p.category}</td><td>${euro(c)}</td><td>${euro(p.price)}</td><td><span class="badge ${m>=(db.settings.minMargin||.65)?'ok':'warn'}">${pct(m)}</span></td><td><button class="btn" onclick="editProduct('${p.code}')">Editar</button> <button class="btn danger" onclick="deleteProduct('${p.code}')">Apagar</button></td></tr>`
+   return `<tr><td>${p.name}</td><td>${p.category}</td><td>${euro(c)}</td><td>${euro(p.price)}</td><td><span class="badge ${m>=(db.settings.minMargin||.65)?'ok':'warn'}">${pct(m)}</span></td><td><span class="badge ${p.shopVisible?'ok':'warn'}">${p.shopVisible?'Publicado':'Oculto'}</span></td><td><button class="btn" onclick="editProduct('${p.code}')">Editar</button> <button class="btn danger" onclick="deleteProduct('${p.code}')">Apagar</button></td></tr>`
  }).join('')
 }
 
@@ -1257,6 +1260,7 @@ function mergeRemoteRelationalRow(kind,row,eventType='UPDATE'){
  if(!row)return false;
  const map={
    clients:{key:'clients',table:'client'},
+   products:{key:'products',table:'product'},
    orders:{key:'orders',table:'order'},
    quotes:{key:'quotes',table:'quote'}
  };
@@ -1280,6 +1284,8 @@ function mergeRemoteRelationalRow(kind,row,eventType='UPDATE'){
  let base;
  if(cfg.table==='client'){
    base={...d,_rid:row.id,id:d.id||row.id,name:d.name||row.name||'',phone:d.phone||row.phone||'',email:d.email||row.email||'',notes:d.notes||row.notes||'',created:d.created||(row.created_at||'').slice(0,10)||todayISO()}
+ }else if(cfg.table==='product'){
+   base={...d,_rid:row.id,code:d.code||('P-'+String(row.id).slice(0,8)),name:d.name||row.name||'',category:d.category||row.category||'Classic',price:Number(d.price??row.price)||0,cost:Number(d.cost??row.cost)||0,shopVisible:!!d.shopVisible,shopDescription:d.shopDescription||'',shopImageUrl:d.shopImageUrl||''}
  }else if(cfg.table==='order'){
    base={...d,_rid:row.id,id:d.id||('ORD-'+String(row.id).slice(0,8)),status:d.status||row.status||'Pedido',created:d.created||(row.order_date||todayISO())};
    if(!base.clientId&&row.client_id){
@@ -1295,6 +1301,7 @@ function mergeRemoteRelationalRow(kind,row,eventType='UPDATE'){
  }
 
  let target=arr.find(x=>x?._rid===row.id);
+ if(!target&&cfg.table==='product'&&base.code)target=arr.find(x=>String(x?.code)===String(base.code));
  if(!target&&base.id)target=arr.find(x=>String(x?.id)===String(base.id));
  if(target)Object.assign(target,base);
  else arr.push(base);
@@ -1313,7 +1320,7 @@ async function subscribeCloud(){
  if(cloudChannel)try{await cloudClient.removeChannel(cloudChannel)}catch(e){}
  cloudChannel=cloudClient.channel('donart-v10-'+cloudUser.id);
 
- ['clients','orders','quotes'].forEach(k=>{
+ ['clients','products','orders','quotes'].forEach(k=>{
    cloudChannel.on('postgres_changes',{
      event:'*',
      schema:'public',
@@ -1437,7 +1444,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.0.0',
+   app_version:'10.0.6',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
@@ -1559,11 +1566,11 @@ async function relationalSyncCore(showToast=false){
  if(!navigator.onLine){localStorage.setItem(REL_DIRTY,'1');setCloudMeta({dirty:true,verified:false});if(showToast)toast('Sem internet — dados guardados localmente');return false}
  cloudBusy=true;renderCloudUI();
  try{
-   (db.clients||[]).forEach(relUuid);db.orders.forEach(relUuid);(db.quotes||[]).forEach(relUuid);
+   (db.clients||[]).forEach(relUuid);(db.products||[]).forEach(relUuid);db.orders.forEach(relUuid);(db.quotes||[]).forEach(relUuid);
    localStorage.setItem(KEY,JSON.stringify(db));
 
-   const [remoteClients,remoteOrders,remoteQuotes]=await Promise.all([
-     relFetchAll(REL_TABLES.clients),relFetchAll(REL_TABLES.orders),relFetchAll(REL_TABLES.quotes)
+   const [remoteClients,remoteProducts,remoteOrders,remoteQuotes]=await Promise.all([
+     relFetchAll(REL_TABLES.clients),relFetchAll(REL_TABLES.products),relFetchAll(REL_TABLES.orders),relFetchAll(REL_TABLES.quotes)
    ]);
 
    const clientRows=(db.clients||[]).map(c=>({
@@ -1572,6 +1579,16 @@ async function relationalSyncCore(showToast=false){
    }));
    if(clientRows.length){
      const {error}=await cloudClient.from(REL_TABLES.clients).upsert(clientRows,{onConflict:'id'});
+     if(error)throw error
+   }
+
+   const productRows=(db.products||[]).map(p=>({
+     id:relUuid(p),user_id:u.id,name:p.name||'',category:p.category||null,
+     price:Number(p.price)||0,cost:Number(calculatedProductCost(p))||0,active:true,
+     data:relClone(p),updated_at:new Date().toISOString()
+   }));
+   if(productRows.length){
+     const {error}=await cloudClient.from(REL_TABLES.products).upsert(productRows,{onConflict:'id'});
      if(error)throw error
    }
 
@@ -1611,7 +1628,7 @@ async function relationalSyncCore(showToast=false){
    localStorage.removeItem(REL_DIRTY);
    setCloudMeta({dirty:false,conflict:false,verified:true,lastSync:new Date().toISOString()});
    cloudConflict=null;
-   cloudLogMsg(`V10 sincronizada · ${clientRows.length} clientes · ${orderRows.length} encomendas · ${quoteRows.length} orçamentos`);
+   cloudLogMsg(`V10 sincronizada · ${clientRows.length} clientes · ${productRows.length} produtos · ${orderRows.length} encomendas · ${quoteRows.length} orçamentos`);
    if(showToast)toast('Dados V10 sincronizados');
    return true
  }catch(e){
@@ -1628,13 +1645,14 @@ async function relationalHydrateCore(initial=false){
  const ownBusy=!cloudBusy;
  if(ownBusy){cloudBusy=true;renderCloudUI()}
  try{
-   const [clients,orders,quotes]=await Promise.all([
-     relFetchAll(REL_TABLES.clients),relFetchAll(REL_TABLES.orders),relFetchAll(REL_TABLES.quotes)
+   const [clients,products,orders,quotes]=await Promise.all([
+     relFetchAll(REL_TABLES.clients),relFetchAll(REL_TABLES.products),relFetchAll(REL_TABLES.orders),relFetchAll(REL_TABLES.quotes)
    ]);
 
    cloudApplying=true;
    try{
      const localClients=(db.clients||[]).slice();
+     const localProducts=(db.products||[]).slice();
      const localOrders=(db.orders||[]).slice();
      const localQuotes=(db.quotes||[]).slice();
 
@@ -1644,34 +1662,39 @@ async function relationalHydrateCore(initial=false){
 
        localRows.forEach(x=>{
          if(x&&x._rid)byRid.set(x._rid,x);
-         if(x&&x.id)byAppId.set(String(x.id),x)
+         const appKey=kind==='product'?x?.code:x?.id;
+         if(appKey)byAppId.set(String(appKey),x)
        });
 
        const merged=localRows.slice();
 
        remoteRows.forEach(r=>{
          const d=(r.data&&typeof r.data==='object')?relClone(r.data):{};
-         const appId=d.id||r.id;
+         const appId=kind==='product'?(d.code||r.id):(d.id||r.id);
          let target=byRid.get(r.id)||byAppId.get(String(appId));
 
          const base=kind==='client'
            ? {...d,_rid:r.id,id:d.id||r.id,name:d.name||r.name||'',phone:d.phone||r.phone||'',email:d.email||r.email||'',notes:d.notes||r.notes||'',created:d.created||(r.created_at||'').slice(0,10)||todayISO()}
-           : kind==='order'
-             ? {...d,_rid:r.id,id:d.id||('ORD-'+r.id.slice(0,8)),status:d.status||r.status||'Pedido',created:d.created||(r.order_date||todayISO())}
-             : {...d,_rid:r.id,id:d.id||('ORC-'+r.id.slice(0,8)),status:d.status||r.status||'Rascunho',created:d.created||(r.quote_date||todayISO())};
+           : kind==='product'
+             ? {...d,_rid:r.id,code:d.code||('P-'+r.id.slice(0,8)),name:d.name||r.name||'',category:d.category||r.category||'Classic',price:Number(d.price??r.price)||0,cost:Number(d.cost??r.cost)||0,shopVisible:!!d.shopVisible,shopDescription:d.shopDescription||'',shopImageUrl:d.shopImageUrl||''}
+             : kind==='order'
+               ? {...d,_rid:r.id,id:d.id||('ORD-'+r.id.slice(0,8)),status:d.status||r.status||'Pedido',created:d.created||(r.order_date||todayISO())}
+               : {...d,_rid:r.id,id:d.id||('ORC-'+r.id.slice(0,8)),status:d.status||r.status||'Rascunho',created:d.created||(r.quote_date||todayISO())};
 
          if(target){
            Object.assign(target,base)
          }else{
            merged.push(base);
            byRid.set(r.id,base);
-           if(base.id)byAppId.set(String(base.id),base)
+           const baseKey=kind==='product'?base.code:base.id;
+           if(baseKey)byAppId.set(String(baseKey),base)
          }
        });
        return merged
      };
 
      db.clients=mergeRows(localClients,clients,'client');
+     db.products=mergeRows(localProducts,products,'product');
 
      const clientByRid=new Map((db.clients||[]).map(c=>[c._rid,c]));
      const remoteOrdersAdjusted=orders.map(r=>{
@@ -1699,7 +1722,7 @@ async function relationalHydrateCore(initial=false){
      setCloudMeta({dirty:false,conflict:false,verified:true,lastSync:new Date().toISOString()});
      cloudConflict=null;
      renderAll();
-     cloudLogMsg(`V10 restaurada sem apagar dados locais · ${db.clients.length} clientes · ${db.orders.length} encomendas · ${(db.quotes||[]).length} orçamentos`);
+     cloudLogMsg(`V10 restaurada sem apagar dados locais · ${db.clients.length} clientes · ${(db.products||[]).length} produtos · ${db.orders.length} encomendas · ${(db.quotes||[]).length} orçamentos`);
    }finally{
      cloudApplying=false
    }
