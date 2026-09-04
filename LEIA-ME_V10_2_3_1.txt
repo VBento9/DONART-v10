@@ -1,0 +1,10 @@
+DONART V10.2.3.1 — CRIADOR CLOUD PERSISTENTE
+
+Correção:
+- O botão “Guardar Criador de Caixas” grava agora boxCreator no mesmo registo donart_shop_settings.
+- Preserva os restantes dados já existentes no campo data.
+- Grava boxCreator + shopPackaging no mesmo upsert.
+- Após gravar, lê a resposta do Supabase e confirma que boxCreator existe.
+- Só mostra “guardado e sincronizado” se o objeto tiver ficado realmente persistido.
+
+Não requer novo SQL.
