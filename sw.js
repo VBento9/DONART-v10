@@ -1,4 +1,4 @@
-const CACHE='donart-v10-1-6-client-dedupe';
+const CACHE='donart-v10-1-7-online-payment';
 const CORE=['/','/manifest.webmanifest','/icon-192.png','/icon-512.png','/logo-donart.png','/logo-donart-ui.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)))});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{for(const k of await caches.keys())if(k!==CACHE)await caches.delete(k);await self.clients.claim()})())});

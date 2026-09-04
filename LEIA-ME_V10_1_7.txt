@@ -1,0 +1,10 @@
+DONART V10.1.7 — ESTADO DE PAGAMENTO ONLINE
+
+Novidades:
+- Encomendas ONLINE mostram "Pagamento pretendido".
+- Mostram badge PENDENTE / PAGO.
+- O pagamento só passa a PAGO quando o valor recebido cobre o total.
+- Não confunde preferência de pagamento com pagamento efetivamente recebido.
+- Mantém integração com Caixa, produção, clientes e estados.
+
+É necessário executar primeiro o SQL Loja V1.3 no Supabase e atualizar a loja.

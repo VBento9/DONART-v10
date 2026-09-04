@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.6 · Loja Etapa 11 · Clientes Online sem Duplicados · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.7 · Loja Etapa 12 · Estado de Pagamento Online · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -601,7 +601,7 @@ async function saveOrder(){
  go('orders')
 }
 function canDeleteOrder(o){return !!o&&(+o.paid||0)===0&&!isOrderProduced(o.id)&&['Pedido','Cancelado'].includes(o.status)}
-function renderOrders(){const q=(orderSearch?.value||'').toLowerCase(),f=orderFilter?.value||'';const rows=db.orders.filter(o=>(!q||(o.id+' '+o.client).toLowerCase().includes(q))&&(!f||o.status===f)).slice().reverse();ordersBody.innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o),del=canDeleteOrder(o)?` <button class="btn danger" style="padding:8px 10px" onclick="deleteOrder('${o.id}')">Eliminar</button>`:'';return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${c.qty}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}</td><td><span class="badge ${o.status==='Entregue'?'ok':o.status==='Cancelado'?'bad':'warn'}">${o.status}</span></td><td><select onchange="setStatus('${o.id}',this.value)">${['Pedido','Confirmada','Em produção','Pronta','Entregue','Cancelado'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select><button class="btn" style="margin-left:6px;padding:8px 10px" onclick="showOrder('${o.id}')">Ver</button> <button class="btn" style="padding:8px 10px" onclick="sendWhatsApp('${o.id}')">WhatsApp</button>${del}</td></tr>`}).join(''):`<tr><td colspan="8" class="empty">Sem encomendas</td></tr>`}
+function renderOrders(){const q=(orderSearch?.value||'').toLowerCase(),f=orderFilter?.value||'';const rows=db.orders.filter(o=>(!q||(o.id+' '+o.client).toLowerCase().includes(q))&&(!f||o.status===f)).slice().reverse();ordersBody.innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o),del=canDeleteOrder(o)?` <button class="btn danger" style="padding:8px 10px" onclick="deleteOrder('${o.id}')">Eliminar</button>`:'';return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${c.qty}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}${o.source==='online_store'?`<br><span class="badge ${(+o.paid||0)>=c.total&&c.total>0?'ok':'warn'}">${(+o.paid||0)>=c.total&&c.total>0?'PAGO':'PENDENTE'}</span>`:''}</td><td><span class="badge ${o.status==='Entregue'?'ok':o.status==='Cancelado'?'bad':'warn'}">${o.status}</span></td><td><select onchange="setStatus('${o.id}',this.value)">${['Pedido','Confirmada','Em produção','Pronta','Entregue','Cancelado'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select><button class="btn" style="margin-left:6px;padding:8px 10px" onclick="showOrder('${o.id}')">Ver</button> <button class="btn" style="padding:8px 10px" onclick="sendWhatsApp('${o.id}')">WhatsApp</button>${del}</td></tr>`}).join(''):`<tr><td colspan="8" class="empty">Sem encomendas</td></tr>`}
 function setStatus(id,s){const o=db.orders.find(x=>x.id===id);if(!o)return;if(s==='Cancelado'&&o.status!=='Cancelado')return voidOrder(id);if(typeof setOrderStatus==='function')return setOrderStatus(id,s);o.status=s;save();toast('Estado atualizado')}
 function voidOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const produced=isOrderProduced(id),paid=+o.paid||0;let msg='Anular esta encomenda? Ela deixa de contar na faturação, lucro e valores por receber.';if(paid>0)msg+=' O valor pago fica guardado no histórico de anulação, mas deixa de contar como receita.';if(produced)msg+=' A produção já foi concluída, por isso o stock consumido NÃO será reposto.';if(!confirm(msg)){renderOrders();return}o.voidedAt=new Date().toISOString();o.voidedFrom=o.status;o.voidedPaid=paid;o.status='Cancelado';save();toast('Encomenda anulada')}
 async function deleteOrder(id){
@@ -790,6 +790,8 @@ function showOrder(id){
  <strong>Origem:</strong> Loja Online<br>
  <strong>Método:</strong> ${o.deliveryMethod==='local_delivery'?'Entrega local':'Levantamento'}<br>
  <strong>Data pretendida:</strong> ${o.delivery||'—'}${o.deliveryTime?' · '+o.deliveryTime:''}<br>
+ <strong>Pagamento pretendido:</strong> ${o.paymentRequested==='mbway_manual'?'MB WAY':o.paymentRequested==='bank_transfer'?'Transferência':o.paymentRequested==='pay_later'?'No levantamento/entrega':'Por definir'}<br>
+ <strong>Estado pagamento online:</strong> <span class="badge ${(+o.paid||0)>=c.total&&c.total>0?'ok':'warn'}">${(+o.paid||0)>=c.total&&c.total>0?'PAGO':'PENDENTE'}</span><br>
  <strong>Email:</strong> ${o.email||'—'}<br>
  ${o.deliveryMethod==='local_delivery'?`<strong>Morada:</strong> ${o.address||'—'}<br>`:''}
  <strong>Observações:</strong> ${o.notes||'—'}
@@ -1563,7 +1565,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.6',
+   app_version:'10.1.7',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
