@@ -49,7 +49,7 @@
 
 .cloud-status{display:inline-flex;align-items:center;gap:7px;font-weight:900}.cloud-dot{width:9px;height:9px;border-radius:50%;background:#999}.cloud-status.ok .cloud-dot{background:#16a34a}.cloud-status.pending .cloud-dot{background:#f59e0b}.cloud-status.offline .cloud-dot{background:#dc2626}.cloud-status.neutral .cloud-dot{background:#94a3b8}.cloud-status.error .cloud-dot{background:#dc2626}.cloud-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.cloud-log{max-height:180px;overflow:auto;font-size:12px;line-height:1.55;background:#fffaf2;border:1px solid var(--line);border-radius:13px;padding:10px}.cloud-kpi{font-size:12px;color:#765b50;margin-top:8px}@media(max-width:650px){.cloud-grid{grid-template-columns:1fr}}
 
-/* iPhone de apoio: interface compacta, mesma base funcional V10.0.6 */
+/* iPhone de apoio: interface compacta, mesma base funcional V10.0.7 */
 @media(max-width:650px){
  html,body{height:auto;min-height:100%;overflow-x:hidden}
  body{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.6 · Loja Etapa 1 · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.7 · Loja Etapa 2 · Fotografias · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -339,10 +339,25 @@
         <div class="field"><label>Custo/un. automático</label><input id="prodCost" type="number" step="0.0001" readonly style="background:#DDF4D2"></div>
         <div class="field"><label>PVP/un.</label><input id="prodPrice" type="number" step="0.01"></div>
         <div class="field span2"><label>Descrição para a loja online</label><textarea id="prodShopDescription" rows="3" placeholder="Descrição curta que o cliente verá na loja"></textarea></div>
+        <div class="field span2">
+          <label>Fotografia principal da loja</label>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <img id="prodShopImagePreview" alt="Pré-visualização" style="width:120px;height:120px;object-fit:cover;border-radius:16px;border:1px solid var(--line);background:#fff8e4;display:none">
+            <div style="flex:1;min-width:220px">
+              <input id="prodShopImageFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewShopImageFile()">
+              <div class="btnrow" style="margin-top:8px">
+                <button type="button" class="btn" onclick="uploadProductShopImage()">Carregar fotografia</button>
+                <button type="button" class="btn danger" onclick="removeProductShopImage()">Remover</button>
+              </div>
+              <small>JPG, PNG ou WebP. A fotografia é guardada no Supabase Storage e fica disponível na loja.</small>
+            </div>
+          </div>
+          <input id="prodShopImageUrl" type="hidden">
+        </div>
         <div class="field"><label>Loja online</label><label style="display:flex;align-items:center;gap:8px;font-weight:800"><input id="prodShopVisible" type="checkbox" style="width:auto"> Mostrar este produto na loja</label></div>
         <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveProduct()">Guardar produto</button></div>
       </div>
-      <p class="security-note">Etapa 1 da loja: produtos e informação pública ficam sincronizados no Supabase. Fotografias serão adicionadas na etapa seguinte através do Supabase Storage.</p>
+      <p class="security-note">Etapa 2 da loja: produtos e fotografias ficam sincronizados no Supabase. A fotografia principal é enviada para o Supabase Storage e fica preparada para aparecer no catálogo público.</p>
     </div>
     <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Produto</th><th>Categoria</th><th>Custo</th><th>PVP</th><th>Margem</th><th>Loja</th><th>Ações</th></tr></thead><tbody id="productsBody"></tbody></table></div>
   </section>
@@ -914,23 +929,84 @@ function renderPicker(){
  }).join('')
 }
 
+function setProductShopImagePreview(url=''){
+ const img=document.getElementById('prodShopImagePreview'),hidden=document.getElementById('prodShopImageUrl');
+ if(hidden)hidden.value=url||'';
+ if(!img)return;
+ if(url){img.src=url;img.style.display='block'}else{img.removeAttribute('src');img.style.display='none'}
+}
+function previewShopImageFile(){
+ const f=document.getElementById('prodShopImageFile')?.files?.[0];
+ if(!f)return;
+ if(!['image/jpeg','image/png','image/webp'].includes(f.type))return toast('Escolhe uma imagem JPG, PNG ou WebP');
+ if(f.size>8*1024*1024)return toast('A fotografia é demasiado grande (máx. 8 MB)');
+ const img=document.getElementById('prodShopImagePreview');
+ if(img){img.src=URL.createObjectURL(f);img.style.display='block'}
+}
+async function uploadProductShopImage(){
+ const file=document.getElementById('prodShopImageFile')?.files?.[0];
+ if(!file)return toast('Escolhe primeiro uma fotografia');
+ const code=(prodCode.value||'').trim();
+ const name=(prodName.value||'').trim();
+ if(!name)return toast('Indica primeiro o nome do produto');
+ const c=initCloudClient();if(!c)return toast('Liga primeiro a Cloud');
+ const user=await ensureCloudSession();if(!user)return toast('Inicia sessão na Cloud');
+ if(file.size>8*1024*1024)return toast('A fotografia é demasiado grande (máx. 8 MB)');
+ const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+ const safeCode=(code||name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'produto';
+ const path=`${user.id}/products/${safeCode}/main-${Date.now()}.${ext}`;
+ toast('A carregar fotografia…');
+ try{
+   const {error}=await c.storage.from('donart-shop').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+   if(error)throw error;
+   const {data}=c.storage.from('donart-shop').getPublicUrl(path);
+   const url=data?.publicUrl||'';
+   if(!url)throw new Error('URL pública indisponível');
+   setProductShopImagePreview(url);
+   const existing=db.products.find(x=>x.code===code);
+   if(existing){existing.shopImageUrl=url;save()}
+   toast('Fotografia carregada')
+ }catch(e){cloudLogMsg('Erro fotografia produto: '+cloudErrText(e));toast('Erro ao carregar fotografia')}
+}
+async function removeProductShopImage(){
+ const code=(prodCode.value||'').trim(),url=(document.getElementById('prodShopImageUrl')?.value||'').trim();
+ if(!url){setProductShopImagePreview('');const f=document.getElementById('prodShopImageFile');if(f)f.value='';return}
+ if(!confirm('Remover a fotografia principal deste produto?'))return;
+ try{
+   const c=initCloudClient(),user=await ensureCloudSession();
+   if(c&&user){
+     const marker='/storage/v1/object/public/donart-shop/';
+     const i=url.indexOf(marker);
+     if(i>=0){
+       const path=decodeURIComponent(url.slice(i+marker.length));
+       if(path.startsWith(user.id+'/'))await c.storage.from('donart-shop').remove([path]);
+     }
+   }
+ }catch(e){cloudLogMsg('Aviso ao remover fotografia: '+cloudErrText(e))}
+ setProductShopImagePreview('');
+ const f=document.getElementById('prodShopImageFile');if(f)f.value='';
+ const existing=db.products.find(x=>x.code===code);
+ if(existing){existing.shopImageUrl='';save()}
+ toast('Fotografia removida')
+}
 function saveProduct(){
  const code=prodCode.value.trim()||('X'+String(db.products.length+1).padStart(3,'0')),name=prodName.value.trim();if(!name)return toast('Indique o nome do produto');
  const existing=db.products.find(x=>x.code===code);
- const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:existing?.shopImageUrl||''};
+ const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:(document.getElementById('prodShopImageUrl')?.value||existing?.shopImageUrl||'').trim()};
  existing?Object.assign(existing,obj):db.products.push(obj);
  if(!db.productRecipes[code])db.productRecipes[code]=[];
- save();prodName.value=prodCode.value=prodPrice.value=prodShopDescription.value='';prodShopVisible.checked=false;toast('Produto guardado')
+ save();prodName.value=prodCode.value=prodPrice.value=prodShopDescription.value='';prodShopVisible.checked=false;setProductShopImagePreview('');const f=document.getElementById('prodShopImageFile');if(f)f.value='';toast('Produto guardado')
 }
 function editProduct(code){
  const p=db.products.find(x=>x.code===code);if(!p)return;
- prodCode.value=p.code;prodName.value=p.name;prodCat.value=p.category;prodCost.value=calculatedProductCost(p).toFixed(4);prodPrice.value=p.price;prodShopVisible.checked=!!p.shopVisible;prodShopDescription.value=p.shopDescription||'';window.scrollTo({top:0,behavior:'smooth'})
+ prodCode.value=p.code;prodName.value=p.name;prodCat.value=p.category;prodCost.value=calculatedProductCost(p).toFixed(4);prodPrice.value=p.price;prodShopVisible.checked=!!p.shopVisible;prodShopDescription.value=p.shopDescription||'';setProductShopImagePreview(p.shopImageUrl||'');const f=document.getElementById('prodShopImageFile');if(f)f.value='';window.scrollTo({top:0,behavior:'smooth'})
 }
 function renderProducts(){
  const body=document.getElementById('productsBody');if(!body)return;
  body.innerHTML=db.products.map(p=>{
    const c=calculatedProductCost(p),m=p.price?(p.price-c)/p.price:0;
-   return `<tr><td>${p.name}</td><td>${p.category}</td><td>${euro(c)}</td><td>${euro(p.price)}</td><td><span class="badge ${m>=(db.settings.minMargin||.65)?'ok':'warn'}">${pct(m)}</span></td><td><span class="badge ${p.shopVisible?'ok':'warn'}">${p.shopVisible?'Publicado':'Oculto'}</span></td><td><button class="btn" onclick="editProduct('${p.code}')">Editar</button> <button class="btn danger" onclick="deleteProduct('${p.code}')">Apagar</button></td></tr>`
+   const photo=p.shopImageUrl?`<img src="${p.shopImageUrl}" alt="" style="width:42px;height:42px;object-fit:cover;border-radius:9px;vertical-align:middle;margin-right:7px">`:'';
+   return `<tr><td>${photo}${p.name}</td><td>${p.category}</td><td>${euro(c)}</td><td>${euro(p.price)}</td><td><span class="badge ${m>=(db.settings.minMargin||.65)?'ok':'warn'}">${pct(m)}</span></td><td><span class="badge ${p.shopVisible?'ok':'warn'}">${p.shopVisible?'Publicado':'Oculto'}</span></td><td><button class="btn" onclick="editProduct('${p.code}')">Editar</button> <button class="btn danger" onclick="deleteProduct('${p.code}')">Apagar</button></td></tr>`
  }).join('')
 }
 

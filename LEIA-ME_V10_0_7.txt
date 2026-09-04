@@ -1,0 +1,24 @@
+DONART V10.0.7 — Loja Etapa 2 · Fotografias
+
+Base: V10.0.6 Loja Etapa 1.
+
+Alterações:
+- Fotografia principal por produto.
+- Seleção de JPG/PNG/WebP no iPhone/iPad.
+- Upload autenticado para Supabase Storage bucket donart-shop.
+- Pré-visualização na ficha do produto.
+- Remoção da fotografia.
+- URL pública guardada no próprio produto e sincronizada pela tabela donart_v10_products.
+- Miniatura na lista de Produtos.
+
+Antes de usar:
+1. Executar SUPABASE_V10_0_7_LOJA_ETAPA2_FOTOGRAFIAS.txt no SQL Editor.
+2. Publicar os ficheiros da V10.0.7 no mesmo projeto Vercel.
+3. Abrir a V10, confirmar sessão Cloud.
+4. Produtos > Editar > escolher fotografia > Carregar fotografia > Guardar produto.
+
+Segurança:
+- Máximo 8 MB.
+- Apenas JPG/PNG/WebP.
+- Cada conta autenticada só gere a sua pasta.
+- O bucket é público apenas para servir as imagens que serão mostradas na loja.
