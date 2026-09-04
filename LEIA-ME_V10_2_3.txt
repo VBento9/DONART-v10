@@ -1,0 +1,1 @@
+V10.2.3 sincroniza as Caixas físicas/Embalagens com as definições públicas seguras da loja. Guarda novamente o Criador de Caixas após publicar.
