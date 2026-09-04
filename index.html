@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.2 · Loja Etapa 16B · Criador de Caixas · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.2.1 · Loja Etapa 16B · Criador Cloud Corrigido · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -1386,10 +1386,20 @@ async function saveBoxCreatorSettings(){
  s.custom={name:!!creatorName?.checked,date:!!creatorDate?.checked,message:!!creatorMessage?.checked,ribbon:!!creatorRibbon?.checked,label:!!creatorLabel?.checked,card:!!creatorCard?.checked};
  save();
  try{
-  const c=cloudClient();
-  if(c&&db.cloud?.email){const u=(await c.auth.getUser()).data?.user;if(u){const q=await c.from('donart_shop_settings').select('data').eq('user_id',u.id).maybeSingle();const old=q.data?.data||{};const {error}=await c.from('donart_shop_settings').upsert({user_id:u.id,data:{...old,boxCreator:s},updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error}}
-  toast('Criador de Caixas guardado');
- }catch(e){console.error(e);toast('Guardado localmente; falhou sincronização Cloud')}
+  const c=cloudClient;
+  if(!c)throw new Error('Cloud Sync não ligado');
+  const u=(await c.auth.getUser()).data?.user;
+  if(!u)throw new Error('Sessão Cloud não autenticada');
+  const q=await c.from('donart_shop_settings').select('data').eq('user_id',u.id).maybeSingle();
+  if(q.error)throw q.error;
+  const old=q.data?.data||{};
+  const {error}=await c.from('donart_shop_settings').upsert(
+    {user_id:u.id,data:{...old,boxCreator:s},updated_at:new Date().toISOString()},
+    {onConflict:'user_id'}
+  );
+  if(error)throw error;
+  toast('Criador de Caixas guardado e sincronizado');
+ }catch(e){console.error('boxCreator cloud',e);toast('Guardado localmente; falhou sincronização Cloud')}
 }
 
 function renderCatalogs(){
@@ -1833,7 +1843,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.2.2',
+   app_version:'10.2.2.1',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1

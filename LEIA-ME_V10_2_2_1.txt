@@ -1,0 +1,9 @@
+DONART V10.2.2.1 — CORREÇÃO CLOUD DO CRIADOR
+
+Corrigido:
+- O Criador de Caixas estava a tentar chamar cloudClient como função.
+- Na V10, cloudClient é a ligação Supabase já existente, não uma função.
+- O guardar agora usa a sessão Cloud autenticada e faz upsert em donart_shop_settings.
+- Mensagem de sucesso: “Criador de Caixas guardado e sincronizado”.
+
+Não requer novo SQL.
