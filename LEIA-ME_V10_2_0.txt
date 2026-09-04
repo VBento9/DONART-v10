@@ -1,0 +1,10 @@
+DONART V10.2.0 — CAPACIDADE E AGENDA
+
+- Máximo de encomendas online por dia.
+- Máximo de donuts/unidades por dia.
+- 0 = sem limite.
+- Agenda dos próximos 14 dias com DISPONÍVEL / LOTADO.
+- A loja consulta a capacidade antes do envio.
+- O Supabase bloqueia no servidor quando o limite é excedido.
+
+Executar primeiro o SQL V1.5.

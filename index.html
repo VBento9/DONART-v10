@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.9.3 · Loja Etapa 14 · Total Entrega Corrigido · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.2.0 · Loja Etapa 15 · Capacidade e Agenda · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -365,8 +365,12 @@
   <section id="delivery" class="screen">
     <div class="card">
       <h2 style="margin-top:0">Entregas Loja</h2>
-      <p class="soft-note">Configura levantamento, entrega local, taxas, antecedência, horários e zonas de código postal da loja online.</p>
+      <p class="soft-note">Configura levantamento, entrega local, taxas, antecedência, horários, zonas e capacidade diária da loja online.</p>
       <div id="shopDeliverySettingsBox"></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3 style="margin-top:0">Agenda de capacidade · próximos 14 dias</h3>
+      <div id="shopCapacityAgenda"></div>
     </div>
   </section>
 
@@ -495,7 +499,7 @@ function ensureRecordIds(){
 }
 function isOrderProduced(id){return (db.productionRuns||[]).some(r=>(r.orders||[]).includes(id))}
 function orderAlreadyProducedIds(){return new Set((db.productionRuns||[]).flatMap(r=>r.orders||[]))}
-function go(id){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));const target=document.getElementById(id);if(!target)return toast('Módulo não encontrado');target.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';renderAll();if(id==='delivery')renderShopDeliverySettings();window.scrollTo({top:0,behavior:'smooth'})}
+function go(id){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));const target=document.getElementById(id);if(!target)return toast('Módulo não encontrado');target.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';renderAll();if(id==='delivery'){renderShopDeliverySettings();renderShopCapacityAgenda();}window.scrollTo({top:0,behavior:'smooth'})}
 function completed(o){return o.status!=='Cancelado'&&!o.voidedAt}function filteredOrders(){
  const y=+(document.getElementById('dashYear')?.value||new Date().getFullYear());
  const m=+(document.getElementById('dashMonth')?.value||0);
@@ -972,6 +976,8 @@ function ensureShopDeliverySettings(){
    localStart:'11:00',
    localEnd:'19:00',
    postalPrefixes:['6230','6231','6232','6233','6234','6235','6236','6237','6238','6239'],
+   maxOrdersPerDay:0,
+   maxUnitsPerDay:0,
    note:''
  };
  const s=db.settings.shopDelivery;
@@ -992,9 +998,11 @@ async function saveShopDeliverySettings(){
  s.localStart=document.getElementById('setLocalStart')?.value||'11:00';
  s.localEnd=document.getElementById('setLocalEnd')?.value||'19:00';
  s.postalPrefixes=String(document.getElementById('setPostalPrefixes')?.value||'').split(',').map(x=>x.trim()).filter(Boolean);
+ s.maxOrdersPerDay=Math.max(0,Number(document.getElementById('setMaxOrdersDay')?.value)||0);
+ s.maxUnitsPerDay=Math.max(0,Number(document.getElementById('setMaxUnitsDay')?.value)||0);
  s.note=document.getElementById('setDeliveryNote')?.value.trim()||'';
  s.allowedWeekdays=[...document.querySelectorAll('[data-weekday]:checked')].map(x=>Number(x.dataset.weekday));
- save();renderShopDeliverySettings();
+ save();renderShopDeliverySettings();renderShopCapacityAgenda();
  try{
    const u=cloudUser||await ensureCloudSession();
    if(!u||!cloudClient)throw new Error('Sem sessão cloud');
@@ -1023,10 +1031,28 @@ function renderShopDeliverySettings(){
   <div class="field"><label>Entrega local desde</label><input id="setLocalStart" type="time" value="${s.localStart||'11:00'}"></div>
   <div class="field"><label>Entrega local até</label><input id="setLocalEnd" type="time" value="${s.localEnd||'19:00'}"></div>
   <div class="field span2"><label>Prefixos de código postal permitidos</label><input id="setPostalPrefixes" value="${(s.postalPrefixes||[]).join(', ')}" placeholder="Ex.: 6230, 6231"></div>
+  <div class="field"><label>Máx. encomendas/dia</label><input id="setMaxOrdersDay" type="number" min="0" step="1" value="${s.maxOrdersPerDay||0}"><small>0 = sem limite</small></div>
+  <div class="field"><label>Máx. donuts/unidades por dia</label><input id="setMaxUnitsDay" type="number" min="0" step="1" value="${s.maxUnitsPerDay||0}"><small>0 = sem limite</small></div>
   <div class="field span2"><label>Dias disponíveis</label><div class="btnrow">${[['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6],['Dom',0]].map(([l,n])=>`<label><input type="checkbox" data-weekday="${n}" ${(s.allowedWeekdays||[]).includes(n)?'checked':''}> ${l}</label>`).join(' ')}</div></div>
   <div class="field span2"><label>Nota ao cliente</label><textarea id="setDeliveryNote">${s.note||''}</textarea></div>
   <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveShopDeliverySettings()">Guardar entregas</button></div>
  </div>`;
+}
+
+
+function renderShopCapacityAgenda(){
+ const box=document.getElementById('shopCapacityAgenda');if(!box)return;
+ const s=shopDeliverySettings(),maxO=Number(s.maxOrdersPerDay)||0,maxU=Number(s.maxUnitsPerDay)||0;
+ const rows=[];
+ for(let i=0;i<14;i++){
+   const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+i);
+   const iso=d.toISOString().slice(0,10);
+   const os=(db.orders||[]).filter(o=>o.source==='online_store'&&o.delivery===iso&&o.status!=='Cancelado');
+   const units=os.reduce((a,o)=>a+(o.items||[]).reduce((b,x)=>b+(Number(x.qty)||0),0),0);
+   const blocked=(maxO>0&&os.length>=maxO)||(maxU>0&&units>=maxU);
+   rows.push(`<div class="listrow"><div><strong>${d.toLocaleDateString('pt-PT',{weekday:'short',day:'2-digit',month:'2-digit'})}</strong><br><small>${os.length} encomenda(s) · ${units} unidade(s)</small></div><div><span class="badge ${blocked?'warn':'ok'}">${blocked?'LOTADO':'DISPONÍVEL'}</span></div></div>`);
+ }
+ box.innerHTML=(maxO||maxU)?rows.join(''):'<div class="soft-note">Sem limites diários definidos. 0 = ilimitado.</div>';
 }
 
 function ensureCostModel(){
@@ -1692,7 +1718,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.9.3',
+   app_version:'10.2.0',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
