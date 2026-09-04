@@ -1,0 +1,17 @@
+DONART V10.0.9 — DETALHE ONLINE COMPLETO
+
+Alterações:
+- Badge ONLINE no detalhe.
+- Bloco "Dados da Loja Online".
+- Mostra método: Levantamento / Entrega local.
+- Mostra data e hora pretendidas.
+- Mostra email.
+- Mostra morada quando for entrega local.
+- Mostra observações do checkout.
+- Pagamento online começa como "Por definir", sem assumir Dinheiro.
+- Embalagem online começa como "Sem embalagem definida", sem assumir Caixa 6.
+- N.º de caixas fica 0 enquanto não houver embalagem definida.
+- Restante funcionamento da V10 mantém-se.
+
+Não necessita de novo SQL Supabase.
+Publicar por cima do projeto privado donart-v10.

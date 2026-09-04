@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.8 · Loja Etapa 3 · Encomendas Online · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.0.9 · Loja Etapa 4 · Detalhe Online Completo · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -793,11 +793,25 @@ async function saveSecurity(){const p=newPin.value.trim(),s=sec();if(p){if(p.len
 
 function showOrder(id){
  const o=db.orders.find(x=>x.id===id);if(!o)return;
- const c=calcOrder(o),remaining=Math.max(c.total-(+o.paid||0),0),produced=isOrderProduced(id);
- orderDetail.innerHTML=`<div class="grid2"><div class="mini"><span>N.º</span><strong>${o.id}</strong></div><div class="mini"><span>Estado</span><strong>${o.status}</strong></div></div>
+ const c=calcOrder(o),remaining=Math.max(c.total-(+o.paid||0),0),produced=isOrderProduced(id),isOnline=o.source==='online_store';
+ const payOptions=(isOnline?['Por definir','Dinheiro','MB Way','Transferência','Outro']:['Dinheiro','MB Way','Transferência','Outro']);
+ const currentPayment=isOnline&&(!o.payment||o.payment==='A definir')?'Por definir':(o.payment||payOptions[0]);
+ const boxOptions=(isOnline?['Sem embalagem definida',...(db.packaging||[]).map(p=>p.name)]:(db.packaging||[]).map(p=>p.name));
+ const currentBox=isOnline&&!o.box?'Sem embalagem definida':(o.box||boxOptions[0]||'');
+ const onlineInfo=isOnline?`<div class="section-title">Dados da Loja Online</div>
+ <div class="soft-note" style="line-height:1.65">
+ <strong>Origem:</strong> Loja Online<br>
+ <strong>Método:</strong> ${o.deliveryMethod==='local_delivery'?'Entrega local':'Levantamento'}<br>
+ <strong>Data pretendida:</strong> ${o.delivery||'—'}${o.deliveryTime?' · '+o.deliveryTime:''}<br>
+ <strong>Email:</strong> ${o.email||'—'}<br>
+ ${o.deliveryMethod==='local_delivery'?`<strong>Morada:</strong> ${o.address||'—'}<br>`:''}
+ <strong>Observações:</strong> ${o.notes||'—'}
+ </div>`:'';
+ orderDetail.innerHTML=`<div class="grid2"><div class="mini"><span>N.º</span><strong>${o.id}${isOnline?' <span class="badge ok">ONLINE</span>':''}</strong></div><div class="mini"><span>Estado</span><strong>${o.status}</strong></div></div>
+ ${onlineInfo}
  <div class="section-title">Dados da encomenda</div><div class="form-grid">
  <div class="field span2"><label>Cliente</label><input id="detailClient" value="${(o.client||'').replace(/"/g,'&quot;')}"></div><div class="field"><label>Contacto</label><input id="detailContact" value="${(o.contact||'').replace(/"/g,'&quot;')}"></div><div class="field"><label>Entrega</label><input id="detailDelivery" type="date" value="${o.delivery||''}" ${produced?'disabled':''}></div>
- <div class="field"><label>Pagamento</label><select id="detailPayment">${['Dinheiro','MB Way','Transferência','Outro'].map(v=>`<option ${v===o.payment?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>Embalagem</label><select id="detailBox">${db.packaging.map(p=>`<option ${p.name===o.box?'selected':''}>${p.name}</option>`).join('')}</select></div><div class="field"><label>N.º caixas</label><input id="detailBoxes" type="number" min="1" value="${+o.boxes||1}"></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="updateOrderDetails('${o.id}')">Guardar dados</button></div></div>
+ <div class="field"><label>Pagamento</label><select id="detailPayment">${payOptions.map(v=>`<option ${v===currentPayment?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>Embalagem</label><select id="detailBox">${boxOptions.map(v=>`<option ${v===currentBox?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>N.º caixas</label><input id="detailBoxes" type="number" min="0" value="${isOnline&&!o.box?0:(+o.boxes||1)}"></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="updateOrderDetails('${o.id}')">Guardar dados</button></div></div>
  ${produced?'<div class="badge warn" style="margin-top:10px">Produção já concluída: quantidades e data de entrega ficam bloqueadas.</div>':''}<div class="btnrow"><button class="btn primary" onclick="sendWhatsApp('${o.id}')">Enviar WhatsApp</button><button class="btn" onclick="shareOrderMessage('${o.id}')">Partilhar</button><button class="btn" onclick="copyOrderMessage('${o.id}')">Copiar mensagem</button></div>
  <div class="section-title">Produtos</div>${o.items.map((i,ix)=>produced?`<div class="cart-row" style="grid-template-columns:1fr 90px 100px"><span>${i.name}</span><strong>${i.qty} un.</strong><strong>${euro(i.qty*i.price)}</strong></div>`:`<div class="cart-row" style="grid-template-columns:1fr 90px 100px 74px"><span>${i.name}</span><input type="number" min="1" value="${i.qty}" onchange="editOrderQty('${o.id}',${ix},this.value)"><strong>${euro(i.qty*i.price)}</strong><button class="btn danger" onclick="removeOrderItem('${o.id}',${ix})">Remover</button></div>`).join('')}
  <div class="totalbox"><div class="mini"><span>Total</span><strong>${euro(c.total)}</strong></div><div class="mini"><span>Pago</span><strong>${euro(o.paid)}</strong></div><div class="mini"><span>Falta</span><strong>${euro(remaining)}</strong></div><div class="mini"><span>Margem</span><strong>${pct(c.margin)}</strong></div></div>
@@ -805,7 +819,7 @@ function showOrder(id){
  <div class="section-title">Anulação / eliminação</div><div class="soft-note">${o.status==='Cancelado'?'Esta encomenda está anulada e não entra nos resultados. ':''}${produced?'Produção já concluída: se anular, o stock consumido é mantido.':'Ainda não existe produção concluída.'}</div><div class="btnrow">${o.status!=='Cancelado'?`<button class="btn danger" onclick="voidOrder('${o.id}')">Anular encomenda</button>`:''}${canDeleteOrder(o)?`<button class="btn danger" onclick="deleteOrder('${o.id}')">Eliminar definitivamente</button>`:''}</div>`;
  orderDialog.showModal();
 }
-function updateOrderDetails(id){const o=db.orders.find(x=>x.id===id);if(!o)return;o.client=detailClient.value.trim();o.contact=detailContact.value.trim();o.clientId=upsertClientFromOrder(o.client,o.contact);if(!isOrderProduced(id))o.delivery=detailDelivery.value;o.payment=detailPayment.value;o.box=detailBox.value;o.boxes=Math.max(1,+detailBoxes.value||1);const pk=db.packaging.find(p=>p.name===o.box);o.boxCostSnapshot=pk?+pk.cost||0:0;save();showOrder(id);toast('Encomenda corrigida')}
+function updateOrderDetails(id){const o=db.orders.find(x=>x.id===id);if(!o)return;o.client=detailClient.value.trim();o.contact=detailContact.value.trim();o.clientId=upsertClientFromOrder(o.client,o.contact);if(!isOrderProduced(id))o.delivery=detailDelivery.value;const pay=detailPayment.value;o.payment=pay==='Por definir'?'A definir':pay;const box=detailBox.value;o.box=box==='Sem embalagem definida'?'':box;o.boxes=o.box?Math.max(1,+detailBoxes.value||1):0;const pk=(db.packaging||[]).find(p=>p.name===o.box);o.boxCostSnapshot=pk?+pk.cost||0:0;save();showOrder(id);toast('Encomenda corrigida')}
 function registerOrderPayment(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const total=calcOrder(o).total,current=Math.max(0,Number(o.paid)||0),remaining=Math.max(0,total-current),amount=Number(document.getElementById('detailNewPaid')?.value)||0,method=document.getElementById('detailPayMethod')?.value||o.payment||'Outro';if(amount<=0||amount>remaining+0.001)return toast('O pagamento deve ser superior a 0 € e não pode exceder '+euro(remaining));o.paid=current+amount;o.payment=method;o.paymentHistory=o.paymentHistory||[];o.paymentHistory.push({id:uid('PAY'),date:new Date().toISOString(),amount,method,type:'payment'});save();showOrder(id);toast('Pagamento registado: '+euro(amount))}
 function correctOrderPaid(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const total=calcOrder(o).total,current=Math.max(0,Number(o.paid)||0),raw=prompt('Corrigir total recebido da encomenda '+id+' (0 a '+euro(total)+'):',String(current.toFixed(2)).replace('.',','));if(raw===null)return;const value=Number(String(raw).replace(',','.'));if(!Number.isFinite(value)||value<0||value>total+0.001)return toast('Valor inválido');o.paid=value;o.paymentHistory=o.paymentHistory||[];o.paymentHistory.push({id:uid('PAY'),date:new Date().toISOString(),amount:value-current,method:o.payment||'Outro',type:'correction',note:'Correção do total recebido'});save();showOrder(id);toast('Total recebido corrigido')}
 function deleteProduct(code){const p=db.products.find(x=>x.code===code);if(!p)return;const used=db.orders.some(o=>(o.items||[]).some(i=>i.code===code));if(used)return toast('Este produto já existe no histórico de encomendas e não pode ser apagado. Pode alterar o nome/preço ou deixá-lo sem usar.');if(!confirm('Apagar este produto e a respetiva ficha técnica?'))return;db.products=db.products.filter(x=>x.code!==code);if(db.productRecipes)delete db.productRecipes[code];save()}
@@ -1520,7 +1534,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.0.8',
+   app_version:'10.0.9',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
