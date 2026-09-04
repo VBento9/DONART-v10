@@ -1,0 +1,20 @@
+DONART V10.1.2 — ENTREGA E CONCLUSÃO
+
+Novidades:
+- Estado final "Entregue" fechado no fluxo.
+- Botão "Confirmar entrega" quando a encomenda está Pronta.
+- Regista data/hora real da entrega.
+- Mostra bloco "Conclusão" no detalhe da encomenda entregue.
+- Mostra se ficou Pago ou qual o saldo por liquidar.
+- Depois de Entregue, a data de entrega fica bloqueada.
+- Possibilidade de "Reabrir encomenda" em caso de erro.
+- Mantém histórico completo de estados.
+
+Não necessita de SQL Supabase.
+
+TESTE:
+1. Publicar por cima do projeto donart-v10.
+2. Abrir a encomenda WEB-EE22AEFB1F, que está Pronta.
+3. Tocar em "Confirmar entrega".
+4. Confirmar se muda para Entregue.
+5. Fechar e reabrir a V10 para validar persistência.
