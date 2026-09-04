@@ -1,0 +1,16 @@
+DONART V10.0.1 — correção Clientes
+
+Correção principal:
+- Guardar cliente deixa de depender da sincronização global.
+- Cada cliente é gravado diretamente numa linha própria em donart_v10_clients.
+- A lista local é atualizada imediatamente.
+- Editar mantém o mesmo UUID relacional.
+- Apagar elimina a linha correspondente.
+- Corrigido o arranque em base V10 vazia para não bloquear a primeira gravação.
+
+Teste:
+1. Atualizar os ficheiros do repositório DONART-v10.
+2. Aguardar novo deploy Vercel.
+3. Abrir a app.
+4. Criar Teste Cliente 1.
+5. Confirmar que aparece imediatamente na lista.
