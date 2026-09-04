@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.9.2 · Loja Etapa 14 · Formulário Entregas Corrigido · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.9.3 · Loja Etapa 14 · Total Entrega Corrigido · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -832,7 +832,7 @@ function showOrder(id){
  <strong>Pagamento pretendido:</strong> ${o.paymentRequested==='mbway_manual'?'MB WAY':o.paymentRequested==='bank_transfer'?'Transferência':o.paymentRequested==='pay_later'?'No levantamento/entrega':'Por definir'}<br>
  <strong>Estado pagamento online:</strong> <span class="badge ${(+o.paid||0)>=c.total&&c.total>0?'ok':'warn'}">${(+o.paid||0)>=c.total&&c.total>0?'PAGO':'PENDENTE'}</span><br>
  <strong>Email:</strong> ${o.email||'—'}<br>
- ${o.deliveryMethod==='local_delivery'?`<strong>Morada:</strong> ${o.address||'—'}<br>`:''}
+ ${o.deliveryMethod==='local_delivery'?`<strong>Código postal:</strong> ${o.postalCode||'—'}<br><strong>Morada:</strong> ${o.address||'—'}<br><strong>Taxa de entrega:</strong> ${euro(o.deliveryFee||0)}<br>`:''}
  <strong>Observações:</strong> ${o.notes||'—'}
  </div>`:'';
  orderDetail.innerHTML=`<div class="grid2"><div class="mini"><span>N.º</span><strong>${o.id}${isOnline?' <span class="badge ok">ONLINE</span>':''}</strong></div><div class="mini"><span>Estado</span><strong>${o.status}</strong></div></div>
@@ -841,6 +841,7 @@ function showOrder(id){
  <div class="soft-note" style="margin-top:8px">Sequência recomendada: Pedido → Confirmada → Em produção → Pronta → Entregue.</div>
  ${deliveredInfo}
  ${onlineInfo}
+ ${isOnline&&Number(o.deliveryFee)>0?`<div class="soft-note" style="margin-top:8px;line-height:1.65"><strong>Composição do total:</strong> Produtos ${euro(c.productsTotal)} + Entrega ${euro(c.deliveryFee)} = <strong>${euro(c.total)}</strong></div>`:''}
  ${isOnline?`<div class="section-title">Pagamento Online</div>
  <div class="soft-note" style="line-height:1.65">
  <strong>Preferência do cliente:</strong> ${o.paymentRequested==='mbway_manual'?'MB Way':o.paymentRequested==='bank_transfer'?'Transferência':o.paymentRequested==='pay_later'?'Pagar no levantamento/entrega':'Por definir'}<br>
@@ -1069,11 +1070,13 @@ function minPriceForMargin(cost){
 
 function calcOrder(o){
  const qty=o.items.reduce((sum,x)=>sum+(Number(x.qty)||0),0);
- const total=o.items.reduce((sum,x)=>sum+(Number(x.qty)||0)*(Number(x.price)||0),0);
+ const productsTotal=o.items.reduce((sum,x)=>sum+(Number(x.qty)||0)*(Number(x.price)||0),0);
+ const deliveryFee=o.source==='online_store'?Math.max(0,Number(o.deliveryFee)||0):0;
+ const total=productsTotal+deliveryFee;
  const pack=(db.packaging||[]).find(p=>p.name===o.box),packUnit=(o.boxCostSnapshot!=null?Number(o.boxCostSnapshot)||0:(pack?Number(pack.cost)||0:0)),packCost=packUnit*(Number(o.boxes)||1);
  const productCost=o.items.reduce((sum,x)=>sum+(Number(x.qty)||0)*(Number(x.cost)||0),0);
  const cost=productCost+packCost,profit=total-cost;
- return{qty,total,cost,productCost,packCost,profit,margin:total?profit/total:0}
+ return{qty,total,productsTotal,deliveryFee,cost,productCost,packCost,profit,margin:total?profit/total:0}
 }
 
 function addToCart(code){
@@ -1689,7 +1692,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.9.2',
+   app_version:'10.1.9.3',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1

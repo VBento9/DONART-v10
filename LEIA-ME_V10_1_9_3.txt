@@ -1,0 +1,18 @@
+DONART V10.1.9.3 — TOTAL ENTREGA CORRIGIDO
+
+Corrige as encomendas de Entrega local:
+- O total da V10 passa a incluir a taxa de entrega enviada pelo servidor.
+- O pagamento pendente passa a usar Produtos + Entrega.
+- Mostra Código postal no detalhe da encomenda online.
+- Mostra Taxa de entrega no detalhe.
+- Mostra composição do total: Produtos + Entrega = Total.
+- Caixa e recebimentos passam a usar o total completo.
+
+IMPORTANTE:
+Executar primeiro o SQL SUPABASE_DONART_ENTREGAS_V1_4_1_TOTAL_SEGURO_LIMPO.txt.
+
+O SQL calcula a taxa no servidor com base nas definições da V10.
+Não confia no valor calculado pelo browser.
+
+A encomenda antiga WEB-39B91C8661 foi criada antes desta correção e continuará com os dados antigos.
+Criar uma nova encomenda de teste depois da atualização.
