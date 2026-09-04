@@ -1,0 +1,22 @@
+DONART V10.0.2 — correção do desaparecimento de clientes
+
+Diagnóstico confirmado:
+- O Supabase guarda várias linhas corretamente.
+- O problema estava na app: após uma gravação, o Realtime podia desencadear uma leitura global
+  e substituir a lista local por um snapshot transitório, fazendo o cliente desaparecer do ecrã.
+
+Correção:
+- Cada cliente continua a ser gravado diretamente em donart_v10_clients.
+- O Realtime confirma a alteração, mas NÃO recarrega automaticamente toda a base local.
+- A lista de Clientes permanece no ecrã após guardar.
+- 'Receber agora' continua disponível para sincronização manual.
+- Ao iniciar sessão/reabrir a app, a base V10 continua a ser lida normalmente.
+
+Teste:
+1. Atualizar ficheiros no repositório DONART-v10.
+2. Aguardar deploy Vercel.
+3. Limpar/recarregar apenas se o browser ainda tiver a versão anterior em cache.
+4. Criar Teste Cliente 1.
+5. Confirmar que permanece na lista.
+6. Criar Teste Cliente 2.
+7. Confirmar que ambos permanecem.
