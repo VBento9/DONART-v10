@@ -1,0 +1,19 @@
+DONART V10.1.0 — FLUXO DE ESTADOS ONLINE
+
+Novidades:
+- Fluxo manual de estados:
+  Pedido → Confirmada → Em produção → Pronta → Entregue
+- Botão Cancelar disponível antes da entrega.
+- Possibilidade de voltar a Pedido para corrigir erros.
+- Histórico de alterações de estado com data/hora.
+- Mantém badge ONLINE e todos os dados da Loja Online.
+- Continua compatível com encomendas normais da V10.
+
+Não necessita de novo SQL Supabase.
+
+TESTE:
+1. Publicar por cima do projeto privado donart-v10.
+2. Abrir a encomenda WEB-EE22AEFB1F.
+3. Tocar em "Confirmar encomenda".
+4. Confirmar se o estado muda para Confirmada e aparece no histórico.
+5. Não avançar ainda para produção real; é apenas teste funcional.
