@@ -1,4 +1,4 @@
-const CACHE='donart-v10-1-4-delete-clients-cloud';
+const CACHE='donart-v10-1-5-client-ghosts';
 const CORE=['/','/manifest.webmanifest','/icon-192.png','/icon-512.png','/logo-donart.png','/logo-donart-ui.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)))});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{for(const k of await caches.keys())if(k!==CACHE)await caches.delete(k);await self.clients.claim()})())});

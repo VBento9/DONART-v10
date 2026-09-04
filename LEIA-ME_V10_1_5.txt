@@ -1,0 +1,22 @@
+DONART V10.1.5 — CLIENTES FANTASMA
+
+Correção:
+Alguns clientes apagados reapareciam porque existiam encomendas antigas com o mesmo nome/telefone.
+A V10 recriava automaticamente o cliente a partir desse histórico.
+
+Agora:
+- Ao eliminar um cliente, a V10 apaga o registo na Cloud.
+- As encomendas/orçamentos históricos são mantidos.
+- Esses históricos ficam marcados para NÃO recriar automaticamente o cliente.
+- A marcação viaja com a encomenda/orçamento para o Supabase, evitando reaparecimento noutro dispositivo.
+- Se o cliente fizer uma nova encomenda no futuro, pode voltar a ser criado normalmente.
+
+Não necessita de SQL Supabase.
+
+TESTE:
+1. Publicar por cima de donart-v10.
+2. Eliminar "teste iPhone".
+3. Fechar completamente a app.
+4. Reabrir.
+5. Confirmar que "teste iPhone" já não reaparece.
+6. "Teste donart" deve continuar na lista.

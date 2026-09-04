@@ -103,7 +103,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.4 · Loja Etapa 9 · Eliminação Cloud de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.1.5 · Loja Etapa 10 · Clientes Fantasma · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -501,7 +501,19 @@ function normalizePhone(v){return String(v||'').replace(/\D/g,'')}
 function normText(v){return String(v||'').trim().toLocaleLowerCase('pt-PT').replace(/\s+/g,' ')}
 function ensureClientsFromOrders(){
  db.clients=db.clients||[];
- db.orders.forEach(o=>{if(!o.client)return;const phone=normalizePhone(o.contact),name=String(o.client).trim();let c=db.clients.find(x=>(phone&&normalizePhone(x.phone)===phone)||(!phone&&normText(x.name)===normText(name)));if(!c){c={id:uid('CLI'),name,phone:o.contact||'',email:'',notes:'',created:o.created||todayISO()};db.clients.push(c)}else if(!c.phone&&o.contact)c.phone=o.contact;o.clientId=c.id})
+ db.orders.forEach(o=>{
+   if(!o.client||o.clientDeleted)return;
+   const phone=normalizePhone(o.contact),name=String(o.client).trim();
+   let c=db.clients.find(x=>(phone&&normalizePhone(x.phone)===phone)||(!phone&&normText(x.name)===normText(name)));
+   if(!c){
+     c={id:uid('CLI'),name,phone:o.contact||'',email:o.email||'',notes:'',created:o.created||todayISO()};
+     db.clients.push(c)
+   }else{
+     if(!c.phone&&o.contact)c.phone=o.contact;
+     if(!c.email&&o.email)c.email=o.email
+   }
+   o.clientId=c.id
+ })
 }
 function upsertClientFromOrder(name,contact){
  name=String(name||'').trim();if(!name)return null;db.clients=db.clients||[];const phone=normalizePhone(contact);let c=db.clients.find(x=>(phone&&normalizePhone(x.phone)===phone)||normText(x.name)===normText(name));if(c){c.name=name;if(contact)c.phone=contact;return c.id}c={id:uid('CLI'),name,phone:contact||'',email:'',notes:'',created:todayISO()};db.clients.push(c);return c.id
@@ -747,7 +759,10 @@ function editClient(id){const c=(db.clients||[]).find(x=>x.id===id);if(!c)return
 function clearClientForm(){clientEditId.value='';clientName.value='';clientPhone.value='';clientEmail.value='';clientNotes.value=''}
 async function deleteClient(id){
  const c=db.clients.find(x=>x.id===id);if(!c)return;
- const used=(db.orders||[]).some(o=>o.clientId===id)||(db.quotes||[]).some(q=>q.clientId===id);
+ const cPhone=normalizePhone(c.phone),cName=normText(c.name);
+ const relatedOrders=(db.orders||[]).filter(o=>o.clientId===id||(cPhone&&normalizePhone(o.contact)===cPhone)||(!cPhone&&cName&&normText(o.client)===cName));
+ const relatedQuotes=(db.quotes||[]).filter(q=>q.clientId===id||(cPhone&&normalizePhone(q.contact)===cPhone)||(!cPhone&&cName&&normText(q.client)===cName));
+ const used=relatedOrders.length>0||relatedQuotes.length>0;
  if(used&&!confirm('Este cliente tem encomendas/orçamentos associados. Eliminar o cliente sem apagar o histórico?'))return;
  if(!used&&!confirm('Eliminar definitivamente este cliente?'))return;
 
@@ -765,8 +780,8 @@ async function deleteClient(id){
  }
 
  db.clients=db.clients.filter(x=>x.id!==id);
- (db.orders||[]).forEach(o=>{if(o.clientId===id)o.clientId=null});
- (db.quotes||[]).forEach(q=>{if(q.clientId===id)q.clientId=null});
+ relatedOrders.forEach(o=>{o.clientId=null;o.clientDeleted=true});
+ relatedQuotes.forEach(q=>{q.clientId=null;q.clientDeleted=true});
  save();
  renderClients();
 
@@ -870,7 +885,7 @@ function showOrder(id){
  <div class="section-title">Anulação / eliminação</div><div class="soft-note">${o.status==='Cancelado'?'Esta encomenda está anulada e não entra nos resultados. ':''}${produced?'Produção já concluída: se anular, o stock consumido é mantido.':'Ainda não existe produção concluída.'}</div><div class="btnrow">${o.status!=='Cancelado'?`<button class="btn danger" onclick="voidOrder('${o.id}')">Anular encomenda</button>`:''}${canDeleteOrder(o)?`<button class="btn danger" onclick="deleteOrder('${o.id}')">Eliminar definitivamente</button>`:''}</div>`;
  orderDialog.showModal();
 }
-function updateOrderDetails(id){const o=db.orders.find(x=>x.id===id);if(!o)return;o.client=detailClient.value.trim();o.contact=detailContact.value.trim();o.clientId=upsertClientFromOrder(o.client,o.contact);if(!isOrderProduced(id))o.delivery=detailDelivery.value;const pay=detailPayment.value;o.payment=pay==='Por definir'?'A definir':pay;const box=detailBox.value;o.box=box==='Sem embalagem definida'?'':box;o.boxes=o.box?Math.max(1,+detailBoxes.value||1):0;const pk=(db.packaging||[]).find(p=>p.name===o.box);o.boxCostSnapshot=pk?+pk.cost||0:0;save();showOrder(id);toast('Encomenda corrigida')}
+function updateOrderDetails(id){const o=db.orders.find(x=>x.id===id);if(!o)return;o.client=detailClient.value.trim();o.contact=detailContact.value.trim();o.clientId=upsertClientFromOrder(o.client,o.contact);o.clientDeleted=false;if(!isOrderProduced(id))o.delivery=detailDelivery.value;const pay=detailPayment.value;o.payment=pay==='Por definir'?'A definir':pay;const box=detailBox.value;o.box=box==='Sem embalagem definida'?'':box;o.boxes=o.box?Math.max(1,+detailBoxes.value||1):0;const pk=(db.packaging||[]).find(p=>p.name===o.box);o.boxCostSnapshot=pk?+pk.cost||0:0;save();showOrder(id);toast('Encomenda corrigida')}
 
 function addOrderPaymentCash(o,payment){
  db.cash=db.cash||[];
@@ -1618,7 +1633,7 @@ async function saveCloudStateSimple(user,localData){
  const currentRev=Number(remote?.revision||0);
  const payload={
    data:localData,
-   app_version:'10.1.4',
+   app_version:'10.1.5',
    device_id:getDeviceId(),
    updated_at:new Date().toISOString(),
    revision:currentRev+1
@@ -1747,7 +1762,8 @@ async function pullOnlineOrders(showToast=false){
        payment:d.payment||'A definir',
        paid:Number(d.paid)||0,
        items:Array.isArray(d.items)?d.items:[],
-       source:'online_store'
+       source:'online_store',
+       clientDeleted:false
      };
      let target=(db.orders||[]).find(x=>x?._rid===r.id);
      if(!target&&base.id)target=(db.orders||[]).find(x=>String(x?.id)===String(base.id));
