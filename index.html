@@ -246,6 +246,50 @@
 @media(max-width:850px){.capacity-month-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.capacity-month-kpis{grid-template-columns:1fr 1fr}.capacity-detail-bars{grid-template-columns:1fr}.capacity-day-pro{min-height:118px}}
 
+
+/* V10.3.6 — PIN protegido e feedback de toque */
+.pin{
+  -webkit-text-security:disc;
+  text-security:disc;
+  caret-color:#F6246D;
+}
+.pin::placeholder{letter-spacing:10px}
+.nav button,.btn,.smallbtn,.pill,button{
+  -webkit-tap-highlight-color:transparent;
+}
+.nav button{
+  transition:background .16s ease,color .16s ease,border-color .16s ease,transform .12s ease,box-shadow .16s ease;
+}
+.nav button.active{
+  background:var(--rose)!important;
+  color:#fff!important;
+  border-color:var(--rose)!important;
+  box-shadow:0 7px 18px rgba(246,36,109,.18);
+}
+.nav button:active,.btn:active,.smallbtn:active,.pill:active,button:active{
+  transform:scale(.975);
+}
+.tap-feedback{
+  animation:donartTapFeedback .34s ease;
+}
+@keyframes donartTapFeedback{
+  0%{filter:none}
+  35%{filter:brightness(.91);box-shadow:0 0 0 4px rgba(246,36,109,.10)}
+  100%{filter:none}
+}
+.btn.primary.tap-feedback,.nav button.active.tap-feedback{
+  animation:donartTapPrimary .34s ease;
+}
+@keyframes donartTapPrimary{
+  0%{transform:scale(1)}
+  40%{transform:scale(.97);filter:brightness(.88)}
+  100%{transform:scale(1);filter:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .tap-feedback,.btn.primary.tap-feedback,.nav button.active.tap-feedback{animation:none!important}
+  .nav button,.btn,.smallbtn,.pill,button{transition:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -254,14 +298,14 @@
     <img src="icon-192.png" alt="DONART">
     <h1>DONART</h1>
     <p id="lockText">Cria o teu PIN pessoal para proteger a aplicação.</p>
-    <input id="pinInput" class="pin" inputmode="numeric" maxlength="6" placeholder="••••">
+    <input id="pinInput" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="6" placeholder="••••">
     <div class="btnrow" style="justify-content:center"><button class="btn primary" onclick="submitPin()" id="pinButton">Criar PIN</button></div>
     <small>O PIN fica guardado apenas neste dispositivo.</small>
   </div>
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.5 · Loja Etapa 25 · Agenda de Capacidade Pro · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.6 · Loja Etapa 26 · PIN protegido + feedback de toque · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -723,6 +767,21 @@ async function submitPin(){const p=document.getElementById('pinInput').value.tri
 function lockNow(){unlocked=false;configureLock()}
 function resetIdle(){if(!unlocked)return;clearTimeout(idleTimer);const mins=Number(sec().lockMinutes??15);if(mins>0)idleTimer=setTimeout(lockNow,mins*60000)}
 ['click','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
+
+
+function installTapFeedback(){
+ document.addEventListener('pointerdown',e=>{
+   const b=e.target.closest('button,.btn,.smallbtn,.pill');
+   if(!b||b.disabled)return;
+   b.classList.remove('tap-feedback');
+   void b.offsetWidth;
+   b.classList.add('tap-feedback');
+ },{passive:true});
+ document.addEventListener('animationend',e=>{
+   if(e.target?.classList?.contains('tap-feedback'))e.target.classList.remove('tap-feedback');
+ });
+}
+installTapFeedback();
 
 const pages=[['dashboard','Início'],['sale','Nova venda'],['orders','Encomendas'],['quotes','Orçamentos'],['production','Produção'],['costs','Custos'],['stock','Stock'],['purchases','Compras'],['cash','Caixa'],['clients','Clientes'],['reports','Relatórios'],['products','Produtos'],['catalogs','Catálogos'],['specialEditions','Edições Especiais'],['delivery','Entregas Loja'],['settings','Configuração'],['cloud','Cloud Sync'],['backup','Backup']];
 document.getElementById('nav').innerHTML=pages.map(([id,l])=>`<button data-page="${id}" onclick="go('${id}')">${l}</button>`).join('');

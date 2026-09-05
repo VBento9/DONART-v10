@@ -1,0 +1,9 @@
+DONART V10.3.6 — PIN protegido + feedback de toque
+
+- PIN passa a ficar oculto enquanto é escrito.
+- Mantém teclado numérico e validação de 4 a 6 dígitos.
+- Botão/menu selecionado mantém cor ativa.
+- Todos os botões recebem feedback visual imediato ao toque/clique.
+- Pequena animação/escurecimento confirma que o toque foi registado.
+- Mantém toda a lógica V10.3.5, Cloud, capacidade, encomendas e configurações.
+- Sem SQL novo.
