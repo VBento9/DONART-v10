@@ -1,0 +1,41 @@
+-- DONART LOJA V1.0 — Catálogo público seguro
+-- Executar UMA VEZ no Supabase SQL Editor.
+-- Não altera nem elimina os dados existentes da V10.
+--
+-- IMPORTANTE:
+-- A loja pública NÃO recebe acesso direto à tabela donart_v10_products.
+-- Criamos uma VIEW que expõe apenas os campos necessários ao catálogo.
+
+create or replace view public.donart_shop_products
+with (security_invoker = true)
+as
+select
+  id,
+  name,
+  category,
+  price,
+  jsonb_build_object(
+    'shopDescription', coalesce(data->>'shopDescription',''),
+    'shopImageUrl', coalesce(data->>'shopImageUrl','')
+  ) as data
+from public.donart_v10_products
+where active = true
+  and coalesce((data->>'shopVisible')::boolean, false) = true;
+
+-- Para permitir leitura pública da VIEW, precisamos de uma política SELECT
+-- extremamente limitada na tabela-base: apenas produtos marcados como publicados.
+-- O PostgreSQL continua a expor pela VIEW somente id/nome/categoria/preço/dados públicos.
+
+drop policy if exists donart_v10_products_shop_public_select on public.donart_v10_products;
+create policy donart_v10_products_shop_public_select
+on public.donart_v10_products
+for select
+to anon
+using (
+  active = true
+  and coalesce((data->>'shopVisible')::boolean, false) = true
+);
+
+grant select on public.donart_shop_products to anon, authenticated;
+
+notify pgrst, 'reload schema';

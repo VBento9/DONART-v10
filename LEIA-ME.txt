@@ -1,0 +1,18 @@
+DONART LOJA V1.0 — CONFIGURADA
+
+Esta versão já está ligada ao teu projeto Supabase.
+
+SUPABASE PROJECT URL:
+https://oosumysibccagrfbomab.supabase.co
+
+A Publishable key já está configurada no index.html.
+
+PUBLICAÇÃO:
+1. Criar um NOVO projeto no Vercel.
+2. Nome sugerido: donart-loja
+3. Fazer upload dos ficheiros desta pasta/ZIP.
+4. Não publicar por cima do projeto donart-v10.
+5. Depois de publicada, abrir a loja e confirmar se aparece o produto marcado como Publicado.
+
+NOTA:
+A Publishable key pode existir no frontend público. Nunca colocar uma service_role key no site.
