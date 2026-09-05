@@ -1,0 +1,10 @@
+DONART V10.3.5 — Agenda de Capacidade Pro
+
+- Mantém o calendário mensal existente.
+- Acrescenta KPIs mensais: encomendas, unidades, dias disponíveis e pressão.
+- Cada dia mostra estado, encomendas, unidades, barra de ocupação e capacidade restante.
+- Hoje fica identificado.
+- Modal diário mostra capacidade usada/restante e barras de progresso.
+- Lista de encomendas do dia continua a abrir o detalhe da encomenda.
+- Mantém os mesmos limites e lógica Cloud.
+- Sem SQL novo.

@@ -214,6 +214,38 @@
  .capacity-summary{grid-template-columns:1fr}
 }
 
+
+/* V10.3.5 — Agenda de Capacidade Pro */
+.capacity-head-pro{align-items:flex-end}
+.capacity-kicker{font-size:9px;font-weight:900;letter-spacing:.12em;color:#a56f62}
+.capacity-nav-arrow{width:42px;min-width:42px;padding-left:0!important;padding-right:0!important;font-size:18px!important}
+.capacity-month-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:13px 0}
+.capacity-kpi-card{border:1px solid #eadfdb;background:#fff;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:3px}
+.capacity-kpi-card span{font-size:10px;font-weight:800;color:#806d66}.capacity-kpi-card b{font-size:22px;color:#5d3933}.capacity-kpi-card small{font-size:9px;color:#9a8881}
+.capacity-kpi-card.warn{background:#fffaf0;border-color:#efd9a8}
+.capacity-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
+.capacity-toolbar .capacity-legend{margin:0}
+.capacity-limits{display:flex;gap:7px;flex-wrap:wrap}.capacity-limits span{font-size:9px;color:#78665f;background:#f8f3f1;border-radius:999px;padding:6px 8px}.capacity-limits b{color:#5d3933}
+.capacity-calendar-pro{box-shadow:0 8px 24px rgba(70,43,35,.04)}
+.capacity-day-pro{min-height:132px;padding:9px!important;gap:7px!important}
+.capacity-day-top{display:flex;align-items:center;justify-content:space-between}.capacity-today{font-size:7px;font-weight:900;letter-spacing:.08em;background:#5d3933;color:#fff;border-radius:999px;padding:3px 5px}
+.capacity-day-metrics{display:flex;gap:9px;flex-wrap:wrap}.capacity-day-metrics span{font-size:9px;color:#806e68}.capacity-day-metrics b{font-size:11px;color:#5d3933}
+.capacity-mini-progress{height:5px;border-radius:999px;background:#eee7e3;overflow:hidden}.capacity-mini-progress i{display:block;height:100%;border-radius:999px;transition:width .25s}.capacity-mini-progress i.free{background:#45a977}.capacity-mini-progress i.busy{background:#e2a63a}.capacity-mini-progress i.full{background:#d45b58}
+.capacity-remaining{font-size:8px;color:#938078;margin-top:auto}
+.capacity-day-pro.closed .capacity-remaining{color:#9b9390}.capacity-day-pro.full .capacity-remaining{color:#a13c39;font-weight:800}
+.capacity-modal-pro{width:min(700px,100%)!important}
+.capacity-modal-kicker{display:block;text-transform:capitalize;color:#9b8178;font-size:10px;font-weight:800}.capacity-modal-pro h3{font-size:23px;margin:3px 0 0}
+.capacity-summary-pro>div small{font-size:9px;color:#8a7770}
+.capacity-detail-bars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:3px 0 16px}
+.capacity-detail-bars>div{border:1px solid #eadfdb;border-radius:14px;padding:10px;background:#fff}
+.capacity-detail-bars>div>span{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px}.capacity-detail-bars b{font-size:10px;color:#665049}.capacity-detail-bars em{font-style:normal;font-size:9px;color:#8b7770}
+.capacity-detail-bars>div>div{height:7px;background:#eee7e3;border-radius:999px;overflow:hidden}.capacity-detail-bars i{display:block;height:100%;border-radius:999px}.capacity-detail-bars i.free{background:#45a977}.capacity-detail-bars i.busy{background:#e2a63a}.capacity-detail-bars i.full{background:#d45b58}.capacity-detail-bars i.closed{background:#9a9290}
+.capacity-orders-title{display:flex;align-items:center;justify-content:space-between;margin:2px 0 8px}.capacity-orders-title b{font-size:12px;color:#5d3933}.capacity-orders-title span{font-size:9px;background:#f4ece9;border-radius:999px;padding:4px 7px;color:#735e56}
+.capacity-order-pro{align-items:center!important}.capacity-order-main{flex:1}.capacity-order-status{font-size:9px!important;background:#f6efec;border-radius:999px;padding:5px 7px;color:#715e57;white-space:nowrap}.capacity-order-arrow{font-size:18px;color:#b39e96}
+.capacity-empty-day{padding:24px;text-align:center;border:1px dashed #dfd2cc;border-radius:14px;background:#fcf9f7;display:flex;flex-direction:column;align-items:center;gap:4px}.capacity-empty-day>span{font-size:28px}.capacity-empty-day b{font-size:12px;color:#654e47}.capacity-empty-day small{font-size:9px;color:#8c7972;max-width:350px;line-height:1.4}
+@media(max-width:850px){.capacity-month-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.capacity-month-kpis{grid-template-columns:1fr 1fr}.capacity-detail-bars{grid-template-columns:1fr}.capacity-day-pro{min-height:118px}}
+
 </style>
 </head>
 <body>
@@ -229,7 +261,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.4 · Loja Etapa 24 · Agenda de Capacidade · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.5 · Loja Etapa 25 · Agenda de Capacidade Pro · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -578,11 +610,12 @@
       <div id="shopDeliverySettingsBox"></div>
     </div>
     <div class="card" style="margin-top:12px">
-      <div class="capacity-head">
-  <div><h3 style="margin:0">Agenda de capacidade</h3><p class="muted" style="margin:5px 0 0">Visão mensal das encomendas online e da capacidade de produção.</p></div>
-  <div class="capacity-nav"><button class="btn" onclick="changeCapacityMonth(-1)">‹</button><strong id="capacityMonthLabel"></strong><button class="btn" onclick="changeCapacityMonth(1)">›</button><button class="btn" onclick="capacityCalendarToday()">Hoje</button></div>
+      <div class="capacity-head capacity-head-pro">
+  <div><span class="capacity-kicker">PLANEAMENTO DE PRODUÇÃO</span><h3 style="margin:2px 0 0">Agenda de capacidade</h3><p class="muted" style="margin:5px 0 0">Calendário mensal das encomendas online, unidades reservadas e capacidade restante.</p></div>
+  <div class="capacity-nav"><button class="btn capacity-nav-arrow" onclick="changeCapacityMonth(-1)">‹</button><strong id="capacityMonthLabel"></strong><button class="btn capacity-nav-arrow" onclick="changeCapacityMonth(1)">›</button><button class="btn" onclick="capacityCalendarToday()">Hoje</button></div>
 </div>
-      <div id="shopCapacityAgenda"></div>
+<div id="capacityMonthKpis" class="capacity-month-kpis"></div>
+<div id="shopCapacityAgenda"></div>
     </div>
   </section>
 
@@ -1386,19 +1419,34 @@ function capacityCalendarToday(){capacityCalendarOffset=0;renderShopCapacityAgen
 function openCapacityDay(iso){
  const d=new Date(iso+'T12:00:00'),os=capacityDayOrders(iso),units=capacityDayUnits(os),s=shopDeliverySettings(),state=capacityDayState(d,os,units,s);
  const maxO=Number(s.maxOrdersPerDay)||0,maxU=Number(s.maxUnitsPerDay)||0;
+ const remainO=maxO>0?Math.max(0,maxO-os.length):null,remainU=maxU>0?Math.max(0,maxU-units):null;
+ const orderPct=maxO>0?Math.min(100,Math.round(os.length/maxO*100)):0;
+ const unitPct=maxU>0?Math.min(100,Math.round(units/maxU*100)):0;
  const details=os.length?os.map(o=>{
    const q=(o.items||[]).reduce((a,x)=>a+(Number(x.qty)||0),0);
-   return `<button class="capacity-order" onclick="showOrder('${escapeHtml(o.id)}')"><span><b>${escapeHtml(o.id||'Encomenda')}</b><small>${escapeHtml(o.client||'Cliente')} · ${q} un.</small></span><span>${escapeHtml(o.status||'Pedido')}</span></button>`;
- }).join(''):'<div class="soft-note">Não existem encomendas online para este dia.</div>';
+   const client=escapeHtml(o.client||'Cliente'),status=escapeHtml(o.status||'Pedido');
+   return `<button class="capacity-order capacity-order-pro" onclick="showOrder('${escapeHtml(o.id)}')">
+     <span class="capacity-order-main"><b>${escapeHtml(o.id||'Encomenda')}</b><small>${client} · ${q} un.</small></span>
+     <span class="capacity-order-status">${status}</span><span class="capacity-order-arrow">›</span>
+   </button>`;
+ }).join(''):'<div class="capacity-empty-day"><span>📭</span><b>Sem encomendas neste dia</b><small>A capacidade está livre para novas encomendas, respeitando os limites configurados.</small></div>';
  const overlay=document.createElement('div');
  overlay.className='capacity-overlay';
- overlay.innerHTML=`<div class="capacity-modal">
-  <div class="capacity-modal-head"><div><small>${d.toLocaleDateString('pt-PT',{weekday:'long'})}</small><h3>${d.toLocaleDateString('pt-PT',{day:'2-digit',month:'long',year:'numeric'})}</h3></div><button class="btn" data-close>Fechar</button></div>
-  <div class="capacity-summary">
-   <div><span>Estado</span><b class="capacity-state ${state.key}">${state.label}</b></div>
-   <div><span>Encomendas</span><b>${os.length}${maxO?' / '+maxO:''}</b></div>
-   <div><span>Unidades</span><b>${units}${maxU?' / '+maxU:''}</b></div>
+ overlay.innerHTML=`<div class="capacity-modal capacity-modal-pro">
+  <div class="capacity-modal-head">
+   <div><span class="capacity-modal-kicker">${d.toLocaleDateString('pt-PT',{weekday:'long'})}</span><h3>${d.toLocaleDateString('pt-PT',{day:'2-digit',month:'long',year:'numeric'})}</h3></div>
+   <button class="btn" data-close>Fechar</button>
   </div>
+  <div class="capacity-summary capacity-summary-pro">
+   <div><span>Estado</span><b class="capacity-state ${state.key}">${state.label}</b></div>
+   <div><span>Encomendas</span><b>${os.length}${maxO?' / '+maxO:''}</b><small>${remainO===null?'Sem limite':remainO+' restantes'}</small></div>
+   <div><span>Unidades</span><b>${units}${maxU?' / '+maxU:''}</b><small>${remainU===null?'Sem limite':remainU+' restantes'}</small></div>
+  </div>
+  <div class="capacity-detail-bars">
+   <div><span><b>Encomendas</b><em>${maxO?orderPct+'%':'Sem limite'}</em></span><div><i class="${state.key}" style="width:${maxO?orderPct:0}%"></i></div></div>
+   <div><span><b>Unidades</b><em>${maxU?unitPct+'%':'Sem limite'}</em></span><div><i class="${state.key}" style="width:${maxU?unitPct:0}%"></i></div></div>
+  </div>
+  <div class="capacity-orders-title"><b>Encomendas do dia</b><span>${os.length}</span></div>
   <div class="capacity-orders">${details}</div>
  </div>`;
  overlay.querySelector('[data-close]').onclick=()=>overlay.remove();
@@ -1411,20 +1459,50 @@ function renderShopCapacityAgenda(){
  const y=view.getFullYear(),mo=view.getMonth(),label=document.getElementById('capacityMonthLabel');
  if(label)label.textContent=view.toLocaleDateString('pt-PT',{month:'long',year:'numeric'});
  const first=(new Date(y,mo,1).getDay()+6)%7,days=new Date(y,mo+1,0).getDate();
- let html='<div class="capacity-legend"><span><i class="free"></i>Disponível</span><span><i class="busy"></i>A encher</span><span><i class="full"></i>Lotado</span><span><i class="closed"></i>Fechado</span></div>';
- html+='<div class="capacity-calendar"><div class="capacity-weekdays">'+['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(x=>`<b>${x}</b>`).join('')+'</div><div class="capacity-days">';
- for(let i=0;i<first;i++)html+='<div class="capacity-day empty"></div>';
+ const maxO=Number(s.maxOrdersPerDay)||0,maxU=Number(s.maxUnitsPerDay)||0;
+
+ let monthOrders=0,monthUnits=0,availableDays=0,fullDays=0,busyDays=0,closedDays=0;
+ const monthRows=[];
  for(let day=1;day<=days;day++){
    const d=new Date(y,mo,day,12),iso=`${y}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
    const os=capacityDayOrders(iso),units=capacityDayUnits(os),state=capacityDayState(d,os,units,s);
-   const today=iso===`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-   html+=`<button class="capacity-day ${state.key}${today?' today':''}" onclick="openCapacityDay('${iso}')">
-    <span class="capacity-date">${day}</span>
-    <span class="capacity-state ${state.key}">${state.label}</span>
-    <span class="capacity-count"><b>${os.length}</b> enc.</span>
-    <span class="capacity-count"><b>${units}</b> un.</span>
-   </button>`;
+   monthOrders+=os.length;monthUnits+=units;
+   if(state.key==='closed')closedDays++; else availableDays++;
+   if(state.key==='full')fullDays++; else if(state.key==='busy')busyDays++;
+   monthRows.push({day,d,iso,os,units,state});
  }
+ const kpis=document.getElementById('capacityMonthKpis');
+ if(kpis){
+   kpis.innerHTML=`
+    <div class="capacity-kpi-card"><span>📦 Encomendas</span><b>${monthOrders}</b><small>neste mês</small></div>
+    <div class="capacity-kpi-card"><span>🍩 Unidades</span><b>${monthUnits}</b><small>reservadas</small></div>
+    <div class="capacity-kpi-card"><span>🟢 Dias disponíveis</span><b>${availableDays}</b><small>${closedDays} fechados</small></div>
+    <div class="capacity-kpi-card ${fullDays?'warn':''}"><span>⚠️ Pressão</span><b>${fullDays+busyDays}</b><small>${fullDays} lotados · ${busyDays} a encher</small></div>`;
+ }
+ let html='<div class="capacity-toolbar"><div class="capacity-legend"><span><i class="free"></i>Disponível</span><span><i class="busy"></i>A encher</span><span><i class="full"></i>Lotado</span><span><i class="closed"></i>Fechado</span></div><div class="capacity-limits">';
+ html+=`<span>Máx. encomendas/dia: <b>${maxO||'∞'}</b></span><span>Máx. unidades/dia: <b>${maxU||'∞'}</b></span></div></div>`;
+ html+='<div class="capacity-calendar capacity-calendar-pro"><div class="capacity-weekdays">'+['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(x=>`<b>${x}</b>`).join('')+'</div><div class="capacity-days">';
+ for(let i=0;i<first;i++)html+='<div class="capacity-day empty"></div>';
+ monthRows.forEach(({day,iso,os,units,state})=>{
+   const today=iso===`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+   const orderPct=maxO>0?Math.min(100,(os.length/maxO)*100):0;
+   const unitPct=maxU>0?Math.min(100,(units/maxU)*100):0;
+   const pct=Math.max(orderPct,unitPct);
+   const remainOrders=maxO>0?Math.max(0,maxO-os.length):null;
+   const remainUnits=maxU>0?Math.max(0,maxU-units):null;
+   const remainText=state.key==='closed'?'Dia não disponível'
+     :state.key==='full'?'Capacidade atingida'
+     :maxO>0?`${remainOrders} enc. restante${remainOrders===1?'':'s'}`
+     :maxU>0?`${remainUnits} un. restantes`
+     :'Sem limite diário';
+   html+=`<button class="capacity-day capacity-day-pro ${state.key}${today?' today':''}" onclick="openCapacityDay('${iso}')">
+    <div class="capacity-day-top"><span class="capacity-date">${day}</span>${today?'<span class="capacity-today">HOJE</span>':''}</div>
+    <span class="capacity-state ${state.key}">${state.label}</span>
+    <div class="capacity-day-metrics"><span><b>${os.length}</b> encom.</span><span><b>${units}</b> un.</span></div>
+    ${state.key!=='closed'&&((maxO>0)||(maxU>0))?`<div class="capacity-mini-progress"><i class="${state.key}" style="width:${pct}%"></i></div>`:''}
+    <span class="capacity-remaining">${remainText}</span>
+   </button>`;
+ });
  html+='</div></div>';
  box.innerHTML=html;
 }
