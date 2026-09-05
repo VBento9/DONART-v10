@@ -415,6 +415,61 @@
 @media(max-width:1050px){.orders-toolbar{align-items:stretch;flex-direction:column}.orders-toolbar-controls{justify-content:flex-start}.orders-cards{grid-template-columns:1fr}.orders-flow{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:650px){.orders-flow{display:flex;overflow-x:auto}.orders-flow-step{min-width:130px}.orders-flow-clear{min-width:70px}.order-card-grid{grid-template-columns:1fr 1fr}.orders-toolbar-controls{display:grid;grid-template-columns:1fr 1fr}.orders-search{min-width:0;grid-column:1/-1}.orders-new{grid-column:1/-1}}
 
+
+/* DONART V10.4.0 — melhoria visual isolada do módulo Produção */
+.prod-head-main{display:flex;justify-content:space-between;gap:16px;align-items:flex-end}
+.prod-head-main>div:first-child{max-width:520px}
+.prod-head-actions{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.prod-head-actions .field{margin:0;min-width:170px}
+.prod-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+.prod-kpi{padding:14px;display:flex;flex-direction:column;gap:4px}
+.prod-kpi>span{font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#8b746c}
+.prod-kpi>strong{font-size:22px;color:#5b3934;line-height:1.05}
+.prod-kpi>small{font-size:8px;color:#94837c}
+.prod-kpi-alert{border-color:#efb7ad;background:#fff7f5}
+.prod-card-title{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
+.prod-card-title small{font-size:8px;color:#95827b}
+.prod-order-card{border:1px solid #eadfdb;border-radius:12px;overflow:hidden;margin-bottom:9px;background:#fff}
+.prod-order-main{width:100%;border:0;background:#fff;display:grid;grid-template-columns:minmax(0,1.4fr) 80px minmax(110px,1fr);gap:10px;text-align:left;align-items:center;padding:11px;cursor:pointer}
+.prod-order-main span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.prod-order-main small{font-size:8px;color:#8d7a72}
+.prod-order-main strong{font-size:9px;color:#4e3934;overflow:hidden;text-overflow:ellipsis}
+.prod-order-id strong{font-size:10px}
+.prod-order-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid #eee6e2;background:#fcfaf9}
+.prod-order-actions{display:flex;gap:6px}
+.prod-order-actions .btn{padding:6px 8px;font-size:8px}
+.prod-line,.prod-recipe-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #f0e8e4}
+.prod-line:last-child{border-bottom:0}
+.prod-line span,.prod-recipe-head span{font-size:9px;color:#604842}
+.prod-line strong,.prod-recipe-head strong{font-size:9px;color:#4c3530}
+.prod-recipe-head{padding-top:2px;font-weight:700}
+.prod-stock-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #f0e8e4}
+.prod-stock-line:last-child{border-bottom:0}
+.prod-stock-line>div:first-child{display:flex;flex-direction:column;gap:2px}
+.prod-stock-line strong{font-size:9px;color:#4e3934}
+.prod-stock-line small{font-size:8px;color:#8d7b73}
+.prod-stock-right{display:flex;align-items:center;gap:8px}
+.prod-stock-missing{background:#fff8f6;margin:0 -8px;padding-left:8px;padding-right:8px}
+.prod-history{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:9px 0;border-bottom:1px solid #f0e8e4}
+.prod-history:last-child{border-bottom:0}
+.prod-history>div{display:flex;flex-direction:column;gap:2px}
+.prod-history>div:last-child{text-align:right}
+.prod-history strong{font-size:9px;color:#4e3934}
+.prod-history small{font-size:8px;color:#8d7b73}
+@media(max-width:800px){
+ .prod-head-main{align-items:stretch;flex-direction:column}
+ .prod-head-actions{display:grid;grid-template-columns:1fr 1fr}
+ .prod-head-actions .field{grid-column:1/-1}
+ .prod-summary{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+ .prod-order-main{grid-template-columns:1fr 70px}
+ .prod-order-main>span:last-child{grid-column:1/-1}
+ .prod-order-foot{align-items:flex-start;flex-direction:column}
+ .prod-order-actions{width:100%}
+ .prod-order-actions .btn{flex:1}
+}
+
 </style>
 </head>
 <body>
@@ -530,10 +585,90 @@
   </section>
 
   <section id="production" class="screen">
-    <div class="card"><div class="form-grid"><div class="field"><label>Data de produção</label><input id="prodDate" type="date" onchange="renderProduction()"></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="renderProduction()">Atualizar</button></div><div class="field"><label>&nbsp;</label><button class="btn" onclick="consumeProduction()">Concluir produção + descontar stock</button></div></div></div>
-    <div class="grid2" style="margin-top:12px"><div class="card"><div class="section-title" style="margin-top:0">Encomendas confirmadas / em produção</div><div id="productionProducts"></div></div><div class="card"><div class="section-title" style="margin-top:0">Massa base</div><div id="productionRecipe"></div></div></div>
-    <div class="grid2" style="margin-top:12px"><div class="card"><div class="section-title" style="margin-top:0">Folha de produção do dia</div><div id="productionOrders"></div></div><div class="card"><div class="section-title" style="margin-top:0">Embalagens necessárias</div><div id="productionPackaging"></div></div></div>
-    <div class="card" style="margin-top:12px"><div class="section-title" style="margin-top:0">Sessões concluídas neste dia</div><div id="productionHistory"></div></div>
+    <div class="card prod-head">
+      <div class="prod-head-main">
+        <div>
+          <div class="section-title" style="margin:0">Produção do dia</div>
+          <small>Planeia, verifica stock e acompanha as encomendas sem alterar o fluxo já existente.</small>
+        </div>
+        <div class="prod-head-actions">
+          <div class="field">
+            <label>Data de produção</label>
+            <input id="prodDate" type="date" onchange="renderProduction()">
+          </div>
+          <button class="btn primary" onclick="renderProduction()">Atualizar</button>
+          <button class="btn" onclick="consumeProduction()">Concluir produção + descontar stock</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="productionSummary" class="prod-summary"></div>
+
+    <div class="grid2 prod-grid" style="margin-top:12px">
+      <div class="card">
+        <div class="prod-card-title">
+          <div>
+            <div class="section-title" style="margin:0">Encomendas a produzir</div>
+            <small>Confirmadas e em produção para a data selecionada.</small>
+          </div>
+        </div>
+        <div id="productionOrders"></div>
+      </div>
+
+      <div class="card">
+        <div class="prod-card-title">
+          <div>
+            <div class="section-title" style="margin:0">Donuts por produto</div>
+            <small>Quantidade total agrupada por sabor/produto.</small>
+          </div>
+        </div>
+        <div id="productionProducts"></div>
+      </div>
+    </div>
+
+    <div class="grid2 prod-grid" style="margin-top:12px">
+      <div class="card">
+        <div class="prod-card-title">
+          <div>
+            <div class="section-title" style="margin:0">Massa base</div>
+            <small>Receitas e ingredientes necessários para o total do dia.</small>
+          </div>
+        </div>
+        <div id="productionRecipe"></div>
+      </div>
+
+      <div class="card">
+        <div class="prod-card-title">
+          <div>
+            <div class="section-title" style="margin:0">Verificação de stock</div>
+            <small>Pré-visualização antes de concluir a produção.</small>
+          </div>
+        </div>
+        <div id="productionStockCheck"></div>
+      </div>
+    </div>
+
+    <div class="grid2 prod-grid" style="margin-top:12px">
+      <div class="card">
+        <div class="prod-card-title">
+          <div>
+            <div class="section-title" style="margin:0">Embalagens necessárias</div>
+            <small>Resumo das embalagens associadas às encomendas.</small>
+          </div>
+        </div>
+        <div id="productionPackaging"></div>
+      </div>
+
+      <div class="card">
+        <div class="prod-card-title">
+          <div>
+            <div class="section-title" style="margin:0">Sessões concluídas</div>
+            <small>Histórico da produção já concluída nesta data.</small>
+          </div>
+        </div>
+        <div id="productionHistory"></div>
+      </div>
+    </div>
   </section>
 
 
@@ -1191,15 +1326,87 @@ async function deleteOrder(id){
 }
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
- const ords=db.orders.filter(o=>o.delivery===d&&['Confirmada','Em produção','Confirmado','Produção'].includes(o.status)&&!done.has(o.id)),counts={};
- ords.forEach(o=>o.items.forEach(i=>counts[i.name]=(counts[i.name]||0)+(Number(i.qty)||0)));
- const total=Object.values(counts).reduce((a,b)=>a+b,0),batches=Math.ceil(total/(db.settings.yield||28));
- productionProducts.innerHTML=Object.keys(counts).length?Object.entries(counts).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><strong>${n}</strong><strong>${q} un.</strong></div>`).join(''):'<div class="empty">Sem produção pendente para esta data</div>';
- productionRecipe.innerHTML=`<div class="mini"><span>Receitas necessárias</span><strong>${batches}</strong></div>`+SEED.recipe.map(x=>`<div class="cart-row" style="grid-template-columns:1fr 110px"><span>${x.name}</span><strong>${(x.qty*batches).toLocaleString('pt-PT')} ${x.unit}</strong></div>`).join('');
- const po=document.getElementById('productionOrders');if(po)po.innerHTML=ords.length?ords.map(o=>`<div class="cart-row" style="grid-template-columns:1fr 95px 95px"><span><strong>${o.id}</strong><br><small>${o.client||'—'}</small></span><strong>${calcOrder(o).qty} un.</strong><span>${o.box||'—'} × ${Number(o.boxes)||1}</span></div>`).join(''):'<div class="empty">Sem encomendas para esta data.</div>';
- const packs={};ords.forEach(o=>{const n=o.box||'Sem embalagem';packs[n]=(packs[n]||0)+(Number(o.boxes)||1)});const pp=document.getElementById('productionPackaging');if(pp)pp.innerHTML=Object.keys(packs).length?Object.entries(packs).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><span>${n}</span><strong>${q} un.</strong></div>`).join(''):'<div class="empty">Sem embalagens previstas.</div>';
+ const ords=db.orders.filter(o=>o.delivery===d&&['Confirmada','Em produção','Confirmado','Produção'].includes(o.status)&&!done.has(o.id));
+ const counts={};
+ ords.forEach(o=>(o.items||[]).forEach(i=>counts[i.name]=(counts[i.name]||0)+(Number(i.qty)||0)));
+ const total=Object.values(counts).reduce((a,b)=>a+b,0);
+ const batches=Math.ceil(total/(db.settings.yield||28));
+ const packs={};
+ ords.forEach(o=>{const n=o.box||'Sem embalagem';packs[n]=(packs[n]||0)+(Number(o.boxes)||1)});
+ const packTotal=Object.values(packs).reduce((a,b)=>a+b,0);
+
+ const needs={};
+ const addNeed=(name,qty)=>needs[name]=(needs[name]||0)+(Number(qty)||0);
+ SEED.recipe.forEach(r=>addNeed(r.name,(Number(r.qty)||0)*batches));
+ ords.forEach(o=>(o.items||[]).forEach(line=>(db.productRecipes[line.code]||[]).forEach(r=>addNeed(r.item,(Number(r.qty)||0)*(Number(line.qty)||0)))));
+ const shortages=Object.entries(needs).filter(([name,need])=>{const x=stockByName(name);return !x||(Number(x.qty)||0)+1e-9<need});
+ const active=ords.filter(o=>['Em produção','Produção'].includes(o.status)).length;
+
+ const sum=document.getElementById('productionSummary');
+ if(sum)sum.innerHTML=[
+   ['Encomendas',ords.length,'Para produzir'],
+   ['Donuts',total,'Total do dia'],
+   ['Receitas',batches,'Massa base'],
+   ['Stock',shortages.length?shortages.length+' falta(s)':'OK',shortages.length?'Rever antes de concluir':'Sem faltas detetadas']
+ ].map(([label,value,note])=>`<div class="card prod-kpi ${label==='Stock'&&shortages.length?'prod-kpi-alert':''}">
+   <span>${label}</span><strong>${value}</strong><small>${note}</small>
+ </div>`).join('');
+
+ const po=document.getElementById('productionOrders');
+ if(po)po.innerHTML=ords.length?ords.map(o=>{
+   const c=calcOrder(o),inProd=['Em produção','Produção'].includes(o.status);
+   const status=escapeHtml(o.status||'—');
+   return `<div class="prod-order-card">
+     <button class="prod-order-main" onclick="showOrder('${escapeHtml(o.id)}')">
+       <span class="prod-order-id"><strong>${escapeHtml(o.id)}</strong><small>${escapeHtml(o.client||'—')}</small></span>
+       <span><small>Donuts</small><strong>${c.qty} un.</strong></span>
+       <span><small>Embalagem</small><strong>${escapeHtml(o.box||'—')} × ${Number(o.boxes)||1}</strong></span>
+     </button>
+     <div class="prod-order-foot">
+       <span class="badge ${inProd?'warn':'ok'}">${status}</span>
+       <div class="prod-order-actions">
+         <button class="btn" onclick="showOrder('${escapeHtml(o.id)}')">Ver detalhe</button>
+         ${inProd?'':`<button class="btn primary" onclick="setStatus('${escapeHtml(o.id)}','Em produção')">Iniciar produção</button>`}
+       </div>
+     </div>
+   </div>`;
+ }).join(''):'<div class="empty">Sem encomendas para esta data.</div>';
+
+ const ppd=document.getElementById('productionProducts');
+ if(ppd)ppd.innerHTML=Object.keys(counts).length?Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([n,q])=>`
+   <div class="prod-line"><span>${escapeHtml(n)}</span><strong>${q} un.</strong></div>
+ `).join(''):'<div class="empty">Sem produção pendente para esta data.</div>';
+
+ const pr=document.getElementById('productionRecipe');
+ if(pr)pr.innerHTML=total?`
+   <div class="prod-recipe-head"><span>Receitas necessárias</span><strong>${batches}</strong></div>
+   ${SEED.recipe.map(x=>`<div class="prod-line"><span>${escapeHtml(x.name)}</span><strong>${((Number(x.qty)||0)*batches).toLocaleString('pt-PT')} ${escapeHtml(x.unit||'')}</strong></div>`).join('')}
+ `:'<div class="empty">Sem preparação necessária.</div>';
+
+ const stockBox=document.getElementById('productionStockCheck');
+ if(stockBox)stockBox.innerHTML=Object.keys(needs).length?Object.entries(needs).map(([name,need])=>{
+   const x=stockByName(name),have=x?Number(x.qty)||0:0,unit=x?x.unit:'';
+   const ok=!!x&&have+1e-9>=need;
+   return `<div class="prod-stock-line ${ok?'':'prod-stock-missing'}">
+     <div><strong>${escapeHtml(name)}</strong><small>Precisa ${need.toLocaleString('pt-PT')} ${escapeHtml(unit||'')}</small></div>
+     <div class="prod-stock-right"><strong>${have.toLocaleString('pt-PT')} ${escapeHtml(unit||'')}</strong><span class="badge ${ok?'ok':'bad'}">${ok?'OK':'FALTA'}</span></div>
+   </div>`;
+ }).join(''):'<div class="empty">Sem necessidades de stock para esta data.</div>';
+
+ const pk=document.getElementById('productionPackaging');
+ if(pk)pk.innerHTML=Object.keys(packs).length?`
+   <div class="prod-recipe-head"><span>Total de embalagens</span><strong>${packTotal}</strong></div>
+   ${Object.entries(packs).map(([n,q])=>`<div class="prod-line"><span>${escapeHtml(n)}</span><strong>${q} un.</strong></div>`).join('')}
+ `:'<div class="empty">Sem embalagens previstas.</div>';
+
  const runs=(db.productionRuns||[]).filter(r=>r.date===d);
- if(document.getElementById('productionHistory'))productionHistory.innerHTML=runs.length?runs.map((r,i)=>`<div class="cart-row" style="grid-template-columns:1fr 110px 130px"><span>Sessão ${i+1} · ${(r.orders||[]).join(', ')}</span><strong>${r.total||0} un.</strong><small>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</small></div>`).join(''):'<div class="empty">Ainda não há sessões concluídas neste dia</div>'
+ const hist=document.getElementById('productionHistory');
+ if(hist)hist.innerHTML=runs.length?runs.map((r,i)=>`
+   <div class="prod-history">
+     <div><strong>Sessão ${i+1}</strong><small>${(r.orders||[]).map(escapeHtml).join(', ')}</small></div>
+     <div><strong>${r.total||0} un.</strong><small>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</small></div>
+   </div>
+ `).join(''):'<div class="empty">Ainda não há sessões concluídas neste dia.</div>';
 }
 function addStock(){
  const n=stockName.value.trim();if(!n)return toast('Indique o produto');
