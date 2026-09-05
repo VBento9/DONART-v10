@@ -1,0 +1,11 @@
+DONART V10.4.0 — Produção Interativa
+
+- Centro de Produção redesenhado.
+- KPIs: encomendas, donuts, receitas e encomendas em produção.
+- Encomendas do dia em cartões operacionais.
+- Botão Iniciar produção por encomenda usa a lógica de estados existente.
+- Resumo automático por sabor, massa base e embalagens.
+- Concluir produção mantém validação de stock, desconto de matérias e passagem para Pronta.
+- Histórico de sessões redesenhado.
+- Mantém Cloud, capacidade, PIN, Dashboard e Encomendas Interativas.
+- Sem SQL novo.

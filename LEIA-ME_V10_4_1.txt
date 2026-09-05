@@ -1,0 +1,11 @@
+DONART V10.4.1 — Design Clean
+
+- Removidos ícones decorativos do menu lateral.
+- Removidos ícones decorativos do Dashboard.
+- Removidos ícones decorativos das Encomendas.
+- Removidos ícones decorativos da Produção.
+- Removidos ícones decorativos da Agenda de Capacidade.
+- Mantidos apenas símbolos funcionais necessários à navegação/controlo.
+- Estados continuam identificados por texto e cor.
+- Mantida toda a interatividade, Cloud, PIN, pagamentos, capacidade e lógica operacional.
+- Sem SQL novo.
