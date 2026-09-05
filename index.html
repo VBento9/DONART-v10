@@ -123,7 +123,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.0 · Loja Etapa 20 · Destaque das Edições · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.0.1 · Loja Etapa 20B · Destaque Único · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -352,7 +352,7 @@
       <div class="form-grid">
         <div class="field span2"><label>Nome da edição</label><input id="specialEditionName" placeholder="Ex.: Natal 2026"></div>
         <div class="field"><label>Identificador</label><input id="specialEditionSlug" placeholder="natal-2026"></div>
-        <div class="field"><label>Estado</label><select id="specialEditionActive"><option value="1">Ativa</option><option value="0">Inativa</option></select></div><div class="field"><label>Destaque na loja</label><select id="specialEditionFeatured"><option value="0">Normal</option><option value="1">Em destaque</option></select></div>
+        <div class="field"><label>Estado</label><select id="specialEditionActive"><option value="1">Ativa</option><option value="0">Inativa</option></select></div><div class="field"><label>Destaque na loja</label><select id="specialEditionFeatured"><option value="0">Normal</option><option value="1">Em destaque</option></select><div class="muted" style="font-size:11px;margin-top:5px">Só pode existir uma edição em destaque de cada vez. Ao destacar esta, a anterior deixa automaticamente de estar em destaque.</div></div>
         <div class="field"><label>Começa em</label><input id="specialEditionStarts" type="datetime-local"></div>
         <div class="field"><label>Termina em</label><input id="specialEditionEnds" type="datetime-local"></div>
         <div class="field"><label>Ordem</label><input id="specialEditionOrder" type="number" step="1" value="0"></div>

@@ -1,0 +1,6 @@
+DONART V10.3.0.1 — Destaque Único
+
+- Mantém a gestão das Edições Especiais.
+- Só pode existir uma edição marcada Em destaque de cada vez.
+- Ao guardar uma nova edição Em destaque, a anterior é automaticamente desmarcada na Cloud.
+- Não altera produtos, encomendas, produção, caixa, checkout, PDF ou email.
