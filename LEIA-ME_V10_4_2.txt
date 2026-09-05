@@ -1,0 +1,10 @@
+DONART V10.4.2 — Correção PIN
+
+- Corrigido o campo PIN para iPhone/iPad/PWA.
+- O PIN continua visualmente oculto.
+- Mantém teclado numérico.
+- Filtra automaticamente qualquer carácter que não seja número.
+- Enter também confirma o PIN.
+- Campo é limpo após tentativa errada ou acesso válido.
+- Mantém todo o restante funcionamento da V10.4.1.
+- Sem SQL novo.
