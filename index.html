@@ -365,6 +365,30 @@
   .screen.active.screen-enter{animation:none!important}
 }
 
+
+/* V10.3.8 — Dashboard Interativo */
+.dashboard-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px;padding:18px;border-radius:22px;background:linear-gradient(135deg,#fff8fb 0%,#fff8e7 58%,#f6fbfa 100%);border:1px solid #eadfdb}
+.dashboard-kicker{font-size:9px;font-weight:900;letter-spacing:.14em;color:#a36c61}
+.dashboard-hero h2{margin:4px 0 3px;font-size:27px;color:#5d3933}.dashboard-hero p{margin:0;color:#816d65;font-size:12px}
+.dashboard-period{display:grid;grid-template-columns:100px 180px auto;align-items:end;gap:8px;min-width:0}
+.dashboard-period .field{margin:0!important}.dashboard-update{min-height:42px}
+.dashboard-kpis{margin-bottom:14px}
+.dashboard-kpi-card{position:relative;text-align:left;display:grid!important;grid-template-columns:38px 1fr 14px;align-items:center;gap:9px;cursor:pointer;transition:.18s ease;min-width:0}
+.dashboard-kpi-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(80,44,34,.08)}
+.dashboard-kpi-icon{width:38px;height:38px;border-radius:12px;background:#f7efeb;display:grid;place-items:center;font-size:17px}
+.dashboard-kpi-card.good .dashboard-kpi-icon{background:#eaf7ef}.dashboard-kpi-card.warn .dashboard-kpi-icon{background:#fff3d8}.dashboard-kpi-card.bad .dashboard-kpi-icon{background:#fde9e8}
+.dashboard-kpi-arrow{font-size:18px;color:#b49d94}.dashboard-kpi-card:hover .dashboard-kpi-arrow{color:var(--rose);transform:translateX(2px)}
+.dashboard-section-head{display:flex;align-items:end;justify-content:space-between;margin:15px 0 9px}.dashboard-section-head span{font-size:9px;font-weight:900;letter-spacing:.13em;color:#9b756b}.dashboard-section-head h3{margin:2px 0 0;color:#5d3933;font-size:17px}
+.dashboard-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:16px}
+.dashboard-action{border:1px solid #eadfdb;background:#fff;border-radius:16px;padding:13px;text-align:left;display:grid;grid-template-columns:38px 1fr;column-gap:9px;row-gap:2px;cursor:pointer;transition:.18s ease;color:#5d3933}
+.dashboard-action>span{grid-row:1/3;width:38px;height:38px;border-radius:12px;background:#fff3e8;display:grid;place-items:center;font-size:18px}
+.dashboard-action b{font-size:12px}.dashboard-action small{font-size:9px;color:#8b766e}
+.dashboard-action:hover{transform:translateY(-3px);border-color:#e8b9c9;box-shadow:0 10px 22px rgba(80,44,34,.06)}
+.dashboard-action.primary{background:linear-gradient(135deg,#f6246d,#e9427a);color:#fff;border-color:transparent}.dashboard-action.primary>span{background:rgba(255,255,255,.17)}.dashboard-action.primary small{color:rgba(255,255,255,.78)}
+#dashboard .section-title{margin-top:16px}
+@media(max-width:950px){.dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-period{grid-template-columns:90px 150px auto}}
+@media(max-width:700px){.dashboard-hero{align-items:stretch;flex-direction:column}.dashboard-period{grid-template-columns:1fr 1fr}.dashboard-update{grid-column:1/-1}.dashboard-actions{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
@@ -380,27 +404,40 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.7 · Loja Etapa 27 · Navegação Interativa · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.8 · Loja Etapa 28 · Dashboard Interativo · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
-    <div class="card" style="margin-bottom:12px"><div class="form-grid">
-      <div class="field"><label>Ano</label><input id="dashYear" type="number"></div>
-      <div class="field"><label>Mês</label><select id="dashMonth"><option value="0">Ano inteiro</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
-      <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="renderDashboard()">Atualizar painel</button></div>
-    </div></div>
-    <div class="grid4" id="kpis"></div>
+    <div class="dashboard-hero">
+      <div>
+        <span class="dashboard-kicker">VISÃO GERAL DO NEGÓCIO</span>
+        <h2>Olá 👋</h2>
+        <p>Resumo rápido da DONART, encomendas, valores e produção.</p>
+      </div>
+      <div class="dashboard-period">
+        <div class="field"><label>Ano</label><input id="dashYear" type="number"></div>
+        <div class="field"><label>Mês</label><select id="dashMonth"><option value="0">Ano inteiro</option><option value="1">Janeiro</option><option value="2">Fevereiro</option><option value="3">Março</option><option value="4">Abril</option><option value="5">Maio</option><option value="6">Junho</option><option value="7">Julho</option><option value="8">Agosto</option><option value="9">Setembro</option><option value="10">Outubro</option><option value="11">Novembro</option><option value="12">Dezembro</option></select></div>
+        <button class="btn primary dashboard-update" onclick="renderDashboard()">Atualizar</button>
+      </div>
+    </div>
+    <div class="grid4 dashboard-kpis" id="kpis"></div>
     <div id="setupNotice" class="card" style="margin-top:12px;border:2px solid #F6246D">
 <strong>Configuração inicial</strong>
 <div style="margin-top:7px;font-size:13px">Antes da primeira venda real: confirme custos das embalagens, introduza o stock físico existente e ajuste PVP/custos dos produtos quando tiver os valores reais.</div>
 <div class="btnrow"><button class="btn" onclick="go('settings')">Configurar embalagens</button><button class="btn" onclick="go('stock')">Introduzir stock</button><button class="btn" onclick="go('products')">Rever produtos</button></div>
 </div>
-<div class="section-title">Acesso rápido</div>
-    <div class="actions">
-      <button class="action primary" onclick="go('sale')">＋ Nova venda</button><button class="action" onclick="go('orders')">Encomendas</button><button class="action" onclick="go('production')">Produção</button><button class="action" onclick="go('stock')">Stock</button>
-      <button class="action" onclick="go('costs')">Custos</button><button class="action" onclick="go('cash')">Caixa</button><button class="action" onclick="go('purchases')">Compras</button><button class="action" onclick="go('clients')">Clientes</button>
+<div class="dashboard-section-head"><div><span>ATALHOS</span><h3>Acesso rápido</h3></div></div>
+    <div class="dashboard-actions">
+      <button class="dashboard-action primary" onclick="go('sale')"><span>➕</span><b>Nova venda</b><small>Criar encomenda</small></button>
+      <button class="dashboard-action" onclick="go('orders')"><span>🧾</span><b>Encomendas</b><small>Ver e gerir</small></button>
+      <button class="dashboard-action" onclick="go('production')"><span>🍩</span><b>Produção</b><small>Preparar pedidos</small></button>
+      <button class="dashboard-action" onclick="go('delivery')"><span>📅</span><b>Capacidade</b><small>Agenda mensal</small></button>
+      <button class="dashboard-action" onclick="go('stock')"><span>📦</span><b>Stock</b><small>Matérias e alertas</small></button>
+      <button class="dashboard-action" onclick="go('cash')"><span>💶</span><b>Caixa</b><small>Entradas e saídas</small></button>
+      <button class="dashboard-action" onclick="go('clients')"><span>👥</span><b>Clientes</b><small>Base de clientes</small></button>
+      <button class="dashboard-action" onclick="go('reports')"><span>📊</span><b>Relatórios</b><small>Análise de gestão</small></button>
     </div>
     <div class="section-title">Encomendas pendentes</div>
     <div class="tablewrap"><table><thead><tr><th>N.º</th><th>Cliente</th><th>Entrega</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead><tbody id="pendingOrders"></tbody></table></div>
@@ -949,10 +986,25 @@ function orderMessage(id){
 function sendWhatsApp(id){const o=db.orders.find(x=>x.id===id);if(!o)return;let phone=normalizePhone(o.contact);if(phone.startsWith('9')&&phone.length===9)phone='351'+phone;if(!phone)return toast('Cliente sem número de telemóvel');window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(orderMessage(id)),'_blank')}
 function sendSMS(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const phone=normalizePhone(o.contact);if(!phone)return toast('Cliente sem número de telemóvel');location.href='sms:'+phone+'?body='+encodeURIComponent(orderMessage(id))}
 function renderTrend(){const el=document.getElementById('trendChart');if(!el)return;const now=new Date(),vals=[];for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1),y=d.getFullYear(),m=d.getMonth();const os=db.orders.filter(o=>completed(o)&&(()=>{const x=new Date((o.delivery||o.created)+'T12:00:00');return x.getFullYear()===y&&x.getMonth()===m})());const sales=os.reduce((a,o)=>a+calcOrder(o).total,0),profit=os.reduce((a,o)=>a+calcOrder(o).profit,0);vals.push({label:d.toLocaleDateString('pt-PT',{month:'short'}),sales,profit})}const max=Math.max(1,...vals.map(x=>x.sales));el.innerHTML=vals.map(x=>`<div class="trend-col"><div class="trend-value">${x.sales?euro(x.sales):''}</div><div style="display:flex;align-items:flex-end;gap:3px;height:150px;width:100%;justify-content:center"><div class="trend-bar" title="Faturação ${euro(x.sales)}" style="height:${Math.max(2,x.sales/max*145)}px"></div><div class="trend-bar profit" title="Lucro ${euro(x.profit)}" style="height:${Math.max(2,x.profit/max*145)}px"></div></div><div class="trend-label">${x.label}</div></div>`).join('')}
+function dashboardKpiGo(label){
+ const map={'Faturação':'reports','Recebido':'cash','Por receber':'orders','Encomendas':'orders','Lucro':'reports','Margem':'reports','Pendentes':'orders','Stock baixo':'stock'};
+ go(map[label]||'dashboard');
+}
 function renderDashboard(){
  const lb=localStorage.getItem(LAST);const notice=document.getElementById('setupNotice');
  if(notice&&lb){notice.querySelectorAll('.backupwarn').forEach(x=>x.remove());const days=(Date.now()-new Date(lb).getTime())/86400000;if(days>7)notice.insertAdjacentHTML('beforeend','<div class="badge bad backupwarn" style="margin-top:8px">Backup com mais de 7 dias</div>')}
- const d=dash();document.getElementById('kpis').innerHTML=[['Faturação',euro(d.total)],['Recebido',euro(d.paid)],['Por receber',euro(d.due)],['Encomendas',d.orders],['Lucro',euro(d.profit)],['Margem',pct(d.margin)],['Pendentes',d.pending],['Stock baixo',d.stockLow]].map(([l,v])=>`<div class="card kpi"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('');
+ const d=dash();
+ const kpiData=[
+  ['💰','Faturação',euro(d.total),'total'],
+  ['✅','Recebido',euro(d.paid),'good'],
+  ['⏳','Por receber',euro(d.due),d.due>0?'warn':'good'],
+  ['🧾','Encomendas',d.orders,'neutral'],
+  ['📈','Lucro',euro(d.profit),d.profit>=0?'good':'bad'],
+  ['％','Margem',pct(d.margin),d.margin>=.5?'good':'neutral'],
+  ['⚠️','Pendentes',d.pending,d.pending>0?'warn':'good'],
+  ['📦','Stock baixo',d.stockLow,d.stockLow>0?'bad':'good']
+ ];
+ document.getElementById('kpis').innerHTML=kpiData.map(([icon,l,v,state])=>`<button class="card kpi dashboard-kpi-card ${state}" type="button" onclick="dashboardKpiGo('${l}')"><div class="dashboard-kpi-icon">${icon}</div><div><div class="label">${l}</div><div class="value">${v}</div></div><span class="dashboard-kpi-arrow">›</span></button>`).join('');
  const rows=filteredOrders().filter(o=>o.status!=='Entregue').slice(-8).reverse();
  document.getElementById('pendingOrders').innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o);return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}</td><td><span class="badge warn">${o.status}</span></td></tr>`}).join(''):`<tr><td colspan="6" class="empty">Sem encomendas pendentes</td></tr>`;renderReceivables();renderQuotePipeline();renderTrend()
 }

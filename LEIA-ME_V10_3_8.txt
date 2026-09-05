@@ -1,0 +1,10 @@
+DONART V10.3.8 — Dashboard Interativo
+
+- Cabeçalho do Dashboard redesenhado.
+- Seleção Ano/Mês mais compacta.
+- KPIs passam a cartões clicáveis.
+- Cada KPI abre o módulo relacionado.
+- Acesso rápido redesenhado com ícones e descrições.
+- Atalho direto para Agenda de Capacidade.
+- Mantém toda a lógica V10.3.7, PIN protegido, Cloud e navegação.
+- Sem SQL novo.
