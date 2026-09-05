@@ -1,0 +1,14 @@
+DONART V10.3.1 — Modo Testes / Produção
+
+NOVO
+- Em Entregas Loja existe o seletor:
+  • Testes — mantém o comportamento atual.
+  • Produção — encomendas online só podem passar a Confirmada após pagamento integral.
+- Em Produção, uma encomenda online sem pagamento integral fica em Pedido.
+- Ao registar o pagamento integral na V10, se ainda estiver em Pedido, passa automaticamente a Confirmada.
+- A proteção também existe na Cloud por trigger SQL, para impedir confirmação indevida no servidor.
+
+IMPORTANTE
+- O valor por defeito é TESTES.
+- Portanto esta versão NÃO interrompe os testes atuais do carrinho.
+- Só usar Produção quando os testes estiverem concluídos.

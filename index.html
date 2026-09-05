@@ -123,7 +123,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.0.1 · Loja Etapa 20B · Destaque Único · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.1 · Loja Etapa 21 · Modo Testes/Produção · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -856,6 +856,24 @@ function renderBusinessSettings(){if(!document.getElementById('businessNameInput
 async function saveSecurity(){const p=newPin.value.trim(),s=sec();if(p){if(p.length<4||p.length>6||!/^\d+$/.test(p))return toast('PIN de 4 a 6 números');s.pinHash=await hashPin(p);newPin.value=''}s.lockMinutes=+lockMinutes.value;if(s.failCount==null)s.failCount=0;if(s.blockedUntil==null)s.blockedUntil=0;localStorage.setItem(SEC,JSON.stringify(s));toast('Segurança atualizada');resetIdle()}
 
 
+function onlineApprovalProductionMode(){
+ const s=shopDeliverySettings();
+ return s.orderApprovalMode==='production';
+}
+function onlineOrderFullyPaid(o){
+ if(!o)return false;
+ const total=Number(calcOrder(o).total)||0;
+ return total>0 && (Number(o.paid)||0)+0.001>=total;
+}
+function onlineOrderPaymentGuard(o,targetStatus){
+ if(!o||o.source!=='online_store'||!onlineApprovalProductionMode())return true;
+ if(['Confirmada','Em produção','Pronta','Entregue'].includes(targetStatus)&&!onlineOrderFullyPaid(o)){
+   toast('Pagamento integral obrigatório antes de confirmar esta encomenda');
+   return false;
+ }
+ return true;
+}
+
 function orderStatusOptions(o){
  const base=['Pedido','Confirmada','Em produção','Pronta','Entregue','Cancelado'];
  return base;
@@ -863,6 +881,7 @@ function orderStatusOptions(o){
 function setOrderStatus(id,status){
  const o=db.orders.find(x=>x.id===id);if(!o)return;
  if(!orderStatusOptions(o).includes(status))return;
+ if(!onlineOrderPaymentGuard(o,status)){showOrder(id);return}
  const prev=o.status||'Pedido';
  if(status===prev){showOrder(id);return}
  o.status=status;
@@ -907,7 +926,15 @@ function receiveOnlinePaymentFull(id){
  const payment={id:uid('PAY'),date:new Date().toISOString(),amount:remaining,method,type:'payment',note:'Pagamento online recebido'};
  o.paid=current+remaining;o.payment=method;o.paymentHistory=o.paymentHistory||[];o.paymentHistory.push(payment);
  addOrderPaymentCash(o,payment);
- save();showOrder(id);toast('Pagamento recebido · '+euro(remaining));
+ if(o.source==='online_store'&&onlineApprovalProductionMode()&&onlineOrderFullyPaid(o)&&o.status==='Pedido'){
+   const prev=o.status;
+   o.status='Confirmada';
+   o.confirmedAt=new Date().toISOString();
+   o.statusHistory=Array.isArray(o.statusHistory)?o.statusHistory:[];
+   o.statusHistory.push({from:prev,to:'Confirmada',date:new Date().toISOString(),source:'payment_auto'});
+ }
+ save();showOrder(id);toast('Pagamento recebido · '+euro(remaining)+(o.status==='Confirmada'?' · Encomenda confirmada':''));
+
 }
 function receiveOnlinePaymentPartial(id){
  const o=db.orders.find(x=>x.id===id);if(!o)return;
@@ -945,7 +972,7 @@ function showOrder(id){
  orderDetail.innerHTML=`<div class="grid2"><div class="mini"><span>N.º</span><strong>${o.id}${isOnline?' <span class="badge ok">ONLINE</span>':''}</strong></div><div class="mini"><span>Estado</span><strong>${o.status}</strong></div></div>
  <div class="section-title">Fluxo da encomenda</div>
  <div class="btnrow">${statusActionButtons(o)}</div>
- <div class="soft-note" style="margin-top:8px">Sequência recomendada: Pedido → Confirmada → Em produção → Pronta → Entregue.</div>
+ <div class="soft-note" style="margin-top:8px">Sequência recomendada: Pedido → Confirmada → Em produção → Pronta → Entregue.${onlineApprovalProductionMode()&&isOnline?' Em modo Produção, a confirmação exige pagamento integral.':''}</div>
  ${deliveredInfo}
  ${onlineInfo}
  ${isOnline&&Array.isArray(o.thematicBoxes)&&o.thematicBoxes.length?`<div class="section-title">Caixas Temáticas</div>
@@ -1102,11 +1129,13 @@ function ensureShopDeliverySettings(){
    postalPrefixes:['6230','6231','6232','6233','6234','6235','6236','6237','6238','6239'],
    maxOrdersPerDay:0,
    maxUnitsPerDay:0,
+   orderApprovalMode:'testing',
    note:''
  };
  const s=db.settings.shopDelivery;
  if(!Array.isArray(s.allowedWeekdays))s.allowedWeekdays=[1,2,3,4,5,6];
  if(!Array.isArray(s.postalPrefixes))s.postalPrefixes=[];
+ if(!['testing','production'].includes(s.orderApprovalMode))s.orderApprovalMode='testing';
 }
 function shopDeliverySettings(){ensureShopDeliverySettings();return db.settings.shopDelivery}
 async function saveShopDeliverySettings(){
@@ -1124,6 +1153,7 @@ async function saveShopDeliverySettings(){
  s.postalPrefixes=String(document.getElementById('setPostalPrefixes')?.value||'').split(',').map(x=>x.trim()).filter(Boolean);
  s.maxOrdersPerDay=Math.max(0,Number(document.getElementById('setMaxOrdersDay')?.value)||0);
  s.maxUnitsPerDay=Math.max(0,Number(document.getElementById('setMaxUnitsDay')?.value)||0);
+ s.orderApprovalMode=document.getElementById('setOrderApprovalMode')?.value==='production'?'production':'testing';
  s.note=document.getElementById('setDeliveryNote')?.value.trim()||'';
  s.allowedWeekdays=[...document.querySelectorAll('[data-weekday]:checked')].map(x=>Number(x.dataset.weekday));
  save();renderShopDeliverySettings();renderShopCapacityAgenda();
@@ -1158,6 +1188,13 @@ function renderShopDeliverySettings(){
   <div class="field"><label>Máx. encomendas/dia</label><input id="setMaxOrdersDay" type="number" min="0" step="1" value="${s.maxOrdersPerDay||0}"><small>0 = sem limite</small></div>
   <div class="field"><label>Máx. donuts/unidades por dia</label><input id="setMaxUnitsDay" type="number" min="0" step="1" value="${s.maxUnitsPerDay||0}"><small>0 = sem limite</small></div>
   <div class="field span2"><label>Dias disponíveis</label><div class="btnrow">${[['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6],['Dom',0]].map(([l,n])=>`<label><input type="checkbox" data-weekday="${n}" ${(s.allowedWeekdays||[]).includes(n)?'checked':''}> ${l}</label>`).join(' ')}</div></div>
+  <div class="field span2"><label>Modo de aprovação das encomendas online</label>
+   <select id="setOrderApprovalMode">
+    <option value="testing" ${s.orderApprovalMode!=='production'?'selected':''}>Testes — permitir confirmação manual</option>
+    <option value="production" ${s.orderApprovalMode==='production'?'selected':''}>Produção — só confirmar depois de pagamento integral</option>
+   </select>
+   <small>Durante os testes mantém o comportamento atual. No lançamento, muda para Produção.</small>
+  </div>
   <div class="field span2"><label>Nota ao cliente</label><textarea id="setDeliveryNote">${s.note||''}</textarea></div>
   <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveShopDeliverySettings()">Guardar entregas</button></div>
  </div>`;
