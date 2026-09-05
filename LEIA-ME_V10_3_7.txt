@@ -1,0 +1,11 @@
+DONART V10.3.7 — Navegação Interativa
+
+- Menu lateral com ícones por módulo.
+- Módulo ativo com cor e indicador visual.
+- Feedback hover/toque mais evidente.
+- Título da página passa a mostrar também o contexto do módulo.
+- Transição suave ao mudar de ecrã.
+- Menu faz scroll automático para manter o módulo ativo visível.
+- Suporte de teclado com setas no menu.
+- Mantém PIN protegido, Cloud, capacidade e toda a lógica V10.3.6.
+- Sem SQL novo.

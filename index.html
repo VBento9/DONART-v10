@@ -290,6 +290,81 @@
   .nav button,.btn,.smallbtn,.pill,button{transition:none!important}
 }
 
+
+/* V10.3.7 — Navegação Interativa */
+.page-heading{display:flex;flex-direction:column;gap:2px}
+.page-heading>span{font-size:9px;font-weight:900;letter-spacing:.13em;color:#9b756a}
+.page-heading h1{transition:color .18s ease}
+.nav{gap:6px!important}
+.nav button{
+  position:relative;
+  display:grid!important;
+  grid-template-columns:30px 1fr 8px;
+  align-items:center;
+  gap:8px;
+  overflow:hidden;
+}
+.nav-icon{
+  width:30px;height:30px;border-radius:9px;
+  display:grid;place-items:center;
+  background:#fff;
+  border:1px solid rgba(105,67,55,.08);
+  font-size:15px;
+  transition:.16s ease;
+}
+.nav-label{min-width:0}
+.nav-active-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:transparent;
+  transition:.16s ease;
+}
+.nav button:hover{
+  background:#fff0f6;
+  border-color:#f1c7d6;
+  transform:translateX(2px);
+}
+.nav button:hover .nav-icon{transform:scale(1.05)}
+.nav button.active{
+  background:linear-gradient(135deg,var(--rose),#e83d7c)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  transform:translateX(3px);
+}
+.nav button.active .nav-icon{
+  background:rgba(255,255,255,.18);
+  border-color:rgba(255,255,255,.22);
+}
+.nav button.active .nav-active-dot{
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(255,255,255,.14);
+}
+.screen.active.screen-enter{
+  animation:donartScreenEnter .24s ease both;
+}
+@keyframes donartScreenEnter{
+  from{opacity:.45;transform:translateY(7px)}
+  to{opacity:1;transform:none}
+}
+.topbar{
+  position:sticky;top:0;z-index:18;
+  background:rgba(255,248,244,.92);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  padding:8px 0 10px;
+}
+@media(max-width:650px){
+  .nav button{
+    grid-template-columns:28px 1fr;
+    min-width:104px!important;
+  }
+  .nav-active-dot{display:none}
+  .nav button.active{transform:translateY(-2px)}
+  .nav-icon{width:28px;height:28px}
+}
+@media(prefers-reduced-motion:reduce){
+  .screen.active.screen-enter{animation:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -305,9 +380,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.6 · Loja Etapa 26 · PIN protegido + feedback de toque · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.7 · Loja Etapa 27 · Navegação Interativa · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -783,8 +858,23 @@ function installTapFeedback(){
 }
 installTapFeedback();
 
+function installNavKeyboard(){
+ document.getElementById('nav')?.addEventListener('keydown',e=>{
+   const buttons=[...document.querySelectorAll('#nav button')];
+   const i=buttons.indexOf(document.activeElement);if(i<0)return;
+   if(e.key==='ArrowDown'){e.preventDefault();buttons[(i+1)%buttons.length]?.focus();}
+   if(e.key==='ArrowUp'){e.preventDefault();buttons[(i-1+buttons.length)%buttons.length]?.focus();}
+ });
+}
+
+setTimeout(installNavKeyboard,0);
+
 const pages=[['dashboard','Início'],['sale','Nova venda'],['orders','Encomendas'],['quotes','Orçamentos'],['production','Produção'],['costs','Custos'],['stock','Stock'],['purchases','Compras'],['cash','Caixa'],['clients','Clientes'],['reports','Relatórios'],['products','Produtos'],['catalogs','Catálogos'],['specialEditions','Edições Especiais'],['delivery','Entregas Loja'],['settings','Configuração'],['cloud','Cloud Sync'],['backup','Backup']];
-document.getElementById('nav').innerHTML=pages.map(([id,l])=>`<button data-page="${id}" onclick="go('${id}')">${l}</button>`).join('');
+const pageIcons={
+ dashboard:'🏠',sale:'➕',orders:'🧾',quotes:'📄',production:'🍩',costs:'🧮',stock:'📦',purchases:'🛒',cash:'💶',
+ clients:'👥',reports:'📊',products:'🍩',catalogs:'🗂️',specialEditions:'🎉',delivery:'🚚',settings:'⚙️',cloud:'☁️',backup:'💾'
+};
+document.getElementById('nav').innerHTML=pages.map(([id,l])=>`<button data-page="${id}" onclick="go('${id}')"><span class="nav-icon">${pageIcons[id]||'•'}</span><span class="nav-label">${l}</span><span class="nav-active-dot"></span></button>`).join('');
 document.getElementById('today').textContent=new Date().toLocaleDateString('pt-PT',{weekday:'short',day:'2-digit',month:'short'});
 function todayISO(){const d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}document.getElementById('saleDate').value=todayISO();document.getElementById('prodDate').value=todayISO();
 setTimeout(()=>{if(document.getElementById('purchaseDate'))document.getElementById('purchaseDate').value=todayISO();if(document.getElementById('cashDate'))document.getElementById('cashDate').value=todayISO()},0);
@@ -803,7 +893,22 @@ function ensureRecordIds(){
 }
 function isOrderProduced(id){return (db.productionRuns||[]).some(r=>(r.orders||[]).includes(id))}
 function orderAlreadyProducedIds(){return new Set((db.productionRuns||[]).flatMap(r=>r.orders||[]))}
-function go(id){document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));const target=document.getElementById(id);if(!target)return toast('Módulo não encontrado');target.classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';renderAll();if(id==='delivery'){renderShopDeliverySettings();renderShopCapacityAgenda();}if(id==='specialEditions'){renderSpecialEditionProductPicker([]);loadSpecialEditionsAdmin(false);}window.scrollTo({top:0,behavior:'smooth'})}
+function go(id){
+ document.querySelectorAll('dialog[open]').forEach(d=>{try{d.close()}catch(e){}});
+ document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active','screen-enter'));
+ const target=document.getElementById(id);if(!target)return toast('Módulo não encontrado');
+ target.classList.add('active');
+ requestAnimationFrame(()=>target.classList.add('screen-enter'));
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+ document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';
+ const contextMap={dashboard:'VISÃO GERAL',sale:'ENCOMENDAS',orders:'ENCOMENDAS',quotes:'ORÇAMENTOS',production:'PRODUÇÃO',costs:'GESTÃO',stock:'GESTÃO',purchases:'GESTÃO',cash:'FINANCEIRO',clients:'CLIENTES',reports:'RELATÓRIOS',products:'LOJA ONLINE',catalogs:'LOJA ONLINE',specialEditions:'LOJA ONLINE',delivery:'LOJA ONLINE',settings:'SISTEMA',cloud:'SISTEMA',backup:'SISTEMA'};
+ const pc=document.getElementById('pageContext');if(pc)pc.textContent=contextMap[id]||'GESTÃO DONART';
+ renderAll();
+ if(id==='delivery'){renderShopDeliverySettings();renderShopCapacityAgenda();}
+ if(id==='specialEditions'){renderSpecialEditionProductPicker([]);loadSpecialEditionsAdmin(false);}
+ const active=document.querySelector(`.nav button[data-page="${id}"]`);active?.scrollIntoView({block:'nearest',behavior:'smooth'});
+ window.scrollTo({top:0,behavior:'smooth'});
+}
 function completed(o){return o.status!=='Cancelado'&&!o.voidedAt}function filteredOrders(){
  const y=+(document.getElementById('dashYear')?.value||new Date().getFullYear());
  const m=+(document.getElementById('dashMonth')?.value||0);
