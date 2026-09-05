@@ -174,6 +174,46 @@
  .delivery-v33-save .btn{width:100%}
 }
 
+
+/* V10.3.4 — Agenda de capacidade em calendário */
+.capacity-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px}
+.capacity-nav{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.capacity-nav strong{min-width:150px;text-align:center;text-transform:capitalize;color:#5d3933}
+.capacity-legend{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 12px;font-size:11px;color:#75635d}
+.capacity-legend span{display:flex;align-items:center;gap:5px}
+.capacity-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.capacity-legend i.free{background:#45a977}.capacity-legend i.busy{background:#e2a63a}.capacity-legend i.full{background:#d45b58}.capacity-legend i.closed{background:#9a9290}
+.capacity-calendar{border:1px solid #eadfdb;border-radius:18px;overflow:hidden;background:#fff}
+.capacity-weekdays{display:grid;grid-template-columns:repeat(7,1fr);background:#f8f1ee;border-bottom:1px solid #eadfdb}
+.capacity-weekdays b{text-align:center;padding:10px 4px;font-size:11px;color:#735a53}
+.capacity-days{display:grid;grid-template-columns:repeat(7,1fr)}
+.capacity-day{min-height:108px;border:0;border-right:1px solid #eee4df;border-bottom:1px solid #eee4df;background:#fff;padding:9px;text-align:left;display:flex;flex-direction:column;gap:5px;cursor:pointer;color:#4f3832}
+.capacity-day:hover{box-shadow:inset 0 0 0 2px #d9aaa0;z-index:1}
+.capacity-day.empty{background:#fbf8f7;cursor:default}
+.capacity-day.closed{background:#f6f4f3}
+.capacity-day.full{background:#fff6f5}.capacity-day.busy{background:#fffaf0}
+.capacity-day.today{box-shadow:inset 0 0 0 2px #5d3933}
+.capacity-date{font-weight:900;font-size:15px}
+.capacity-state{display:inline-flex;width:max-content;max-width:100%;padding:3px 6px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.2px}
+.capacity-state.free{background:#e8f7ee;color:#197341}.capacity-state.busy{background:#fff0cf;color:#8a5a00}.capacity-state.full{background:#fde5e4;color:#9b302e}.capacity-state.closed{background:#ebe8e7;color:#68615f}
+.capacity-count{font-size:10px;color:#806f69}.capacity-count b{font-size:12px;color:#5d3933}
+.capacity-overlay{position:fixed;inset:0;background:#2f1d1970;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.capacity-modal{width:min(620px,100%);max-height:85vh;overflow:auto;background:#fff;border-radius:22px;padding:18px;box-shadow:0 24px 80px #0004}
+.capacity-modal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.capacity-modal-head small{text-transform:capitalize;color:#88746d}.capacity-modal-head h3{margin:3px 0 14px;text-transform:capitalize}
+.capacity-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.capacity-summary>div{border:1px solid #eadfdb;border-radius:14px;padding:11px;background:#fffaf8;display:flex;flex-direction:column;gap:5px}
+.capacity-summary span{font-size:10px;color:#806e68}.capacity-summary b{font-size:15px}
+.capacity-orders{display:flex;flex-direction:column;gap:8px}
+.capacity-order{width:100%;border:1px solid #eadfdb;background:#fff;border-radius:13px;padding:11px;display:flex;justify-content:space-between;gap:10px;text-align:left;cursor:pointer}
+.capacity-order span:first-child{display:flex;flex-direction:column;gap:3px}.capacity-order small{color:#83716a}
+@media(max-width:700px){
+ .capacity-head{align-items:flex-start;flex-direction:column}
+ .capacity-calendar{overflow-x:auto}
+ .capacity-weekdays,.capacity-days{min-width:650px}
+ .capacity-summary{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -189,7 +229,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.3 · Loja Etapa 23 · Entregas estrutura completa · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.4 · Loja Etapa 24 · Agenda de Capacidade · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -538,7 +578,10 @@
       <div id="shopDeliverySettingsBox"></div>
     </div>
     <div class="card" style="margin-top:12px">
-      <h3 style="margin-top:0">Agenda de capacidade · próximos 14 dias</h3>
+      <div class="capacity-head">
+  <div><h3 style="margin:0">Agenda de capacidade</h3><p class="muted" style="margin:5px 0 0">Visão mensal das encomendas online e da capacidade de produção.</p></div>
+  <div class="capacity-nav"><button class="btn" onclick="changeCapacityMonth(-1)">‹</button><strong id="capacityMonthLabel"></strong><button class="btn" onclick="changeCapacityMonth(1)">›</button><button class="btn" onclick="capacityCalendarToday()">Hoje</button></div>
+</div>
       <div id="shopCapacityAgenda"></div>
     </div>
   </section>
@@ -1321,19 +1364,69 @@ function renderShopDeliverySettings(){
 }
 
 
+let capacityCalendarOffset=0;
+
+function capacityDayOrders(iso){
+ return (db.orders||[]).filter(o=>o.source==='online_store'&&o.delivery===iso&&o.status!=='Cancelado');
+}
+function capacityDayUnits(os){
+ return (os||[]).reduce((a,o)=>a+(o.items||[]).reduce((b,x)=>b+(Number(x.qty)||0),0),0);
+}
+function capacityDayState(d,os,units,s){
+ const weekday=d.getDay(),allowed=(s.allowedWeekdays||[]).includes(weekday);
+ const maxO=Number(s.maxOrdersPerDay)||0,maxU=Number(s.maxUnitsPerDay)||0;
+ if(!allowed)return {key:'closed',label:'FECHADO'};
+ const orderRatio=maxO>0?os.length/maxO:0,unitRatio=maxU>0?units/maxU:0,ratio=Math.max(orderRatio,unitRatio);
+ if((maxO>0&&os.length>=maxO)||(maxU>0&&units>=maxU))return {key:'full',label:'LOTADO'};
+ if(ratio>=.7)return {key:'busy',label:'A ENCHER'};
+ return {key:'free',label:'DISPONÍVEL'};
+}
+function changeCapacityMonth(delta){capacityCalendarOffset+=delta;renderShopCapacityAgenda()}
+function capacityCalendarToday(){capacityCalendarOffset=0;renderShopCapacityAgenda()}
+function openCapacityDay(iso){
+ const d=new Date(iso+'T12:00:00'),os=capacityDayOrders(iso),units=capacityDayUnits(os),s=shopDeliverySettings(),state=capacityDayState(d,os,units,s);
+ const maxO=Number(s.maxOrdersPerDay)||0,maxU=Number(s.maxUnitsPerDay)||0;
+ const details=os.length?os.map(o=>{
+   const q=(o.items||[]).reduce((a,x)=>a+(Number(x.qty)||0),0);
+   return `<button class="capacity-order" onclick="showOrder('${escapeHtml(o.id)}')"><span><b>${escapeHtml(o.id||'Encomenda')}</b><small>${escapeHtml(o.client||'Cliente')} · ${q} un.</small></span><span>${escapeHtml(o.status||'Pedido')}</span></button>`;
+ }).join(''):'<div class="soft-note">Não existem encomendas online para este dia.</div>';
+ const overlay=document.createElement('div');
+ overlay.className='capacity-overlay';
+ overlay.innerHTML=`<div class="capacity-modal">
+  <div class="capacity-modal-head"><div><small>${d.toLocaleDateString('pt-PT',{weekday:'long'})}</small><h3>${d.toLocaleDateString('pt-PT',{day:'2-digit',month:'long',year:'numeric'})}</h3></div><button class="btn" data-close>Fechar</button></div>
+  <div class="capacity-summary">
+   <div><span>Estado</span><b class="capacity-state ${state.key}">${state.label}</b></div>
+   <div><span>Encomendas</span><b>${os.length}${maxO?' / '+maxO:''}</b></div>
+   <div><span>Unidades</span><b>${units}${maxU?' / '+maxU:''}</b></div>
+  </div>
+  <div class="capacity-orders">${details}</div>
+ </div>`;
+ overlay.querySelector('[data-close]').onclick=()=>overlay.remove();
+ overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove()});
+ document.body.appendChild(overlay);
+}
 function renderShopCapacityAgenda(){
  const box=document.getElementById('shopCapacityAgenda');if(!box)return;
- const s=shopDeliverySettings(),maxO=Number(s.maxOrdersPerDay)||0,maxU=Number(s.maxUnitsPerDay)||0;
- const rows=[];
- for(let i=0;i<14;i++){
-   const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+i);
-   const iso=d.toISOString().slice(0,10);
-   const os=(db.orders||[]).filter(o=>o.source==='online_store'&&o.delivery===iso&&o.status!=='Cancelado');
-   const units=os.reduce((a,o)=>a+(o.items||[]).reduce((b,x)=>b+(Number(x.qty)||0),0),0);
-   const blocked=(maxO>0&&os.length>=maxO)||(maxU>0&&units>=maxU);
-   rows.push(`<div class="listrow"><div><strong>${d.toLocaleDateString('pt-PT',{weekday:'short',day:'2-digit',month:'2-digit'})}</strong><br><small>${os.length} encomenda(s) · ${units} unidade(s)</small></div><div><span class="badge ${blocked?'warn':'ok'}">${blocked?'LOTADO':'DISPONÍVEL'}</span></div></div>`);
+ const s=shopDeliverySettings(),now=new Date(),view=new Date(now.getFullYear(),now.getMonth()+capacityCalendarOffset,1,12);
+ const y=view.getFullYear(),mo=view.getMonth(),label=document.getElementById('capacityMonthLabel');
+ if(label)label.textContent=view.toLocaleDateString('pt-PT',{month:'long',year:'numeric'});
+ const first=(new Date(y,mo,1).getDay()+6)%7,days=new Date(y,mo+1,0).getDate();
+ let html='<div class="capacity-legend"><span><i class="free"></i>Disponível</span><span><i class="busy"></i>A encher</span><span><i class="full"></i>Lotado</span><span><i class="closed"></i>Fechado</span></div>';
+ html+='<div class="capacity-calendar"><div class="capacity-weekdays">'+['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(x=>`<b>${x}</b>`).join('')+'</div><div class="capacity-days">';
+ for(let i=0;i<first;i++)html+='<div class="capacity-day empty"></div>';
+ for(let day=1;day<=days;day++){
+   const d=new Date(y,mo,day,12),iso=`${y}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+   const os=capacityDayOrders(iso),units=capacityDayUnits(os),state=capacityDayState(d,os,units,s);
+   const today=iso===`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+   html+=`<button class="capacity-day ${state.key}${today?' today':''}" onclick="openCapacityDay('${iso}')">
+    <span class="capacity-date">${day}</span>
+    <span class="capacity-state ${state.key}">${state.label}</span>
+    <span class="capacity-count"><b>${os.length}</b> enc.</span>
+    <span class="capacity-count"><b>${units}</b> un.</span>
+   </button>`;
  }
- box.innerHTML=(maxO||maxU)?rows.join(''):'<div class="soft-note">Sem limites diários definidos. 0 = ilimitado.</div>';
+ html+='</div></div>';
+ box.innerHTML=html;
 }
 
 function ensureCostModel(){

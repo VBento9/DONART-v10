@@ -1,0 +1,11 @@
+DONART V10.3.4 — Agenda de Capacidade em Calendário
+
+- Substitui a lista dos próximos 14 dias por calendário mensal.
+- Navegação entre meses e botão Hoje.
+- Estados visuais: Disponível, A encher, Lotado e Fechado.
+- Cada dia mostra encomendas e unidades reservadas.
+- Tocar num dia abre detalhe e lista das encomendas desse dia.
+- Tocar numa encomenda abre o detalhe existente da V10.
+- Usa os limites, dias disponíveis e encomendas online já existentes.
+- Sem SQL novo.
+- Sem alteração à Loja nesta etapa.
