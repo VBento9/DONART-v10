@@ -471,6 +471,10 @@
   .nav button{grid-template-columns:1fr!important}
 }
 
+
+/* V10.4.1.5 — entrada automática */
+#lockScreen{display:none!important}
+
 </style>
 </head>
 <body>
@@ -486,9 +490,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.4.1.4 · PIN Estável · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.4.1.5 · Entrada Automática · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -933,7 +937,7 @@ const CLOUD_V91_MIGRATION='donart_v91_clean_start', CLOUD_CFG='donart_v9_cloud_c
 const REL_DIRTY='donart_v10_rel_dirty',
       REL_MIGRATED='donart_v10_rel_migrated',
       REL_TABLES={clients:'donart_v10_clients',products:'donart_v10_products',orders:'donart_v10_orders',quotes:'donart_v10_quotes',sales:'donart_v10_sales'};
-let db=load(), cart=[], quoteCart=[], unlocked=false, deferredPrompt=null, idleTimer=null, editingPurchaseId=null, editingCashId=null;
+let db=load(), cart=[], quoteCart=[], unlocked=true, deferredPrompt=null, idleTimer=null, editingPurchaseId=null, editingCashId=null;
 let cloudClient=null, cloudUser=null, cloudChannel=null, cloudPushTimer=null, cloudApplying=false, cloudBusy=false, cloudConflict=null, cloudStartupDone=false, cloudHydrating=false;
 
 function stableStringify(v){
@@ -981,7 +985,7 @@ async function hashPin(pin){
  }catch(e){}
  return hashPinLocal(pin)
 }
-function configureLock(){const s=sec();const txt=document.getElementById('lockText'),btn=document.getElementById('pinButton');if(s.pinHash){txt.textContent='Introduz o teu PIN para entrar.';btn.textContent='Entrar'}else{txt.textContent='Cria o teu PIN pessoal para proteger a aplicação.';btn.textContent='Criar PIN'}document.getElementById('pinInput').value='';document.getElementById('lockScreen').classList.remove('hidden')}
+function configureLock(){const l=document.getElementById('lockScreen');if(l)l.classList.add('hidden');unlocked=true}
 async function submitPin(){
  const el=document.getElementById('pinInput');
  const p=String(el?.value||'').trim();
@@ -1008,7 +1012,7 @@ async function submitPin(){
  else toast('PIN incorreto - tentativa '+s.failCount+'/5');
  try{localStorage.setItem(SEC,JSON.stringify(s))}catch(e){}
 }
-function lockNow(){unlocked=false;configureLock()}
+function lockNow(){unlocked=true}
 function resetIdle(){if(!unlocked)return;clearTimeout(idleTimer);const mins=Number(sec().lockMinutes??15);if(mins>0)idleTimer=setTimeout(lockNow,mins*60000)}
 ['click','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
 
@@ -2471,6 +2475,6 @@ document.addEventListener('input',e=>{if(e.target&&['costPackQty','costPackPrice
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;installBtn.classList.remove('hidden');installBanner.classList.remove('hidden')});
 async function installApp(){if(!deferredPrompt)return toast('No Chrome: menu ⋮ → Adicionar ao ecrã principal / Instalar app');deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;installBtn.classList.add('hidden');installBanner.classList.add('hidden')}
 if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
-ensureCostModel();syncPackagingSelect();go('dashboard');configureLock();setTimeout(cloudStartup,250);
+ensureCostModel();syncPackagingSelect();go('dashboard');const lock=document.getElementById('lockScreen');if(lock)lock.classList.add('hidden');unlocked=true;setTimeout(cloudStartup,250);
 </script>
 </body></html>
