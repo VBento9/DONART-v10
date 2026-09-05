@@ -1,0 +1,7 @@
+DONART V10.3.2 — Entregas Loja redesenhada
+- Melhoria visual da área Entregas Loja.
+- Campos mais separados e legíveis.
+- Modo Testes/Produção mais claro.
+- Botão Guardar alterações mais evidente.
+- Mantém IDs, Cloud, pagamentos e lógica da V10.3.1.
+- Sem novo SQL.
