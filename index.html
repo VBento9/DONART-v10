@@ -416,61 +416,8 @@
 @media(max-width:650px){.orders-flow{display:flex;overflow-x:auto}.orders-flow-step{min-width:130px}.orders-flow-clear{min-width:70px}.order-card-grid{grid-template-columns:1fr 1fr}.orders-toolbar-controls{display:grid;grid-template-columns:1fr 1fr}.orders-search{min-width:0;grid-column:1/-1}.orders-new{grid-column:1/-1}}
 
 
-/* V10.4.0 — Produção Interativa */
-.production-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;background:linear-gradient(135deg,#fff8fb,#fff7e5 60%,#f1faf6)}
-.production-kicker,.production-panel-head span{font-size:8px;font-weight:900;letter-spacing:.13em;color:#9f7064}.production-hero h2{margin:3px 0;font-size:23px;color:#5d3933}.production-hero p{margin:0;font-size:10px;color:#8a756d}
-.production-controls{display:flex;align-items:flex-end;gap:7px}.production-controls .field{margin:0}.production-finish{min-height:42px}
-.production-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:11px 0}
-.production-kpi{background:#fff;border:1px solid #eadfdb;border-radius:16px;padding:11px;display:flex;align-items:center;gap:9px}.production-kpi>span{width:38px;height:38px;border-radius:12px;background:#fff3e8;display:grid;place-items:center;font-size:17px}.production-kpi div{display:grid;grid-template-columns:auto auto;column-gap:7px;align-items:end}.production-kpi small{grid-column:1/-1;font-size:8px;color:#89736b;font-weight:800}.production-kpi b{font-size:20px;color:#5d3933}.production-kpi em{font-size:8px;font-style:normal;color:#99857d;margin-bottom:3px}
-.production-board{display:grid;grid-template-columns:1.35fr 1fr;gap:10px}.production-panel{min-width:0}.production-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.production-panel-head h3{margin:2px 0 0;font-size:14px;color:#5d3933}.production-count{min-width:28px;height:28px;border-radius:10px;background:#f6246d;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:900}
-.production-orders-panel{grid-row:span 2}.production-order{border:1px solid #eadfdb;border-left:4px solid #7fb1d0;border-radius:14px;margin-bottom:8px;overflow:hidden;background:#fff}.production-order.active{border-left-color:#e6a34b;background:#fffcf7}.production-order-main{width:100%;border:0;background:transparent;padding:10px;text-align:left;cursor:pointer}.production-order-id{display:flex;align-items:center;gap:8px}.production-order-id>span{width:31px;height:31px;border-radius:10px;background:#f7f0ed;display:grid;place-items:center}.production-order-id div{display:flex;flex-direction:column}.production-order-id b{font-size:10px;color:#5d3933}.production-order-id small{font-size:8px;color:#917c74}.production-order-meta{display:flex;gap:8px;margin-top:8px}.production-order-meta span{background:#faf6f4;border-radius:8px;padding:5px 7px;font-size:8px;color:#806c64}
-.production-order-foot{border-top:1px solid #f0e7e3;padding:7px 9px;display:flex;align-items:center;justify-content:space-between;gap:7px}.production-status{font-size:8px;font-weight:900;border-radius:999px;padding:5px 7px}.production-status.confirmed{background:#e9f5ff;color:#497e9f}.production-status.production{background:#fff0d8;color:#95651e}.production-working{font-size:8px;font-weight:800;color:#a46c20}.production-start{font-size:8px!important;padding:6px 8px!important}
-.production-line{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 3px;border-bottom:1px solid #f2e9e5}.production-line:last-child{border-bottom:0}.production-line span{display:flex;align-items:center;gap:7px}.production-line i{font-style:normal}.production-line b{font-size:9px;color:#655049}.production-line strong{font-size:10px;color:#5d3933}
-.recipe-highlight{border-radius:13px;background:#fff5dd;padding:11px;margin-bottom:7px;display:grid;grid-template-columns:1fr auto;align-items:center}.recipe-highlight span{font-size:9px;font-weight:800;color:#795f55}.recipe-highlight b{font-size:22px;color:#5d3933}.recipe-highlight small{grid-column:1/-1;font-size:8px;color:#9a8278}
-.production-empty{padding:20px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;color:#8c7971}.production-empty>span{font-size:24px}.production-empty b{font-size:10px;color:#665049}.production-empty small{font-size:8px}.production-empty.compact{padding:10px}
-.production-history-card{margin-top:10px}.production-run{display:grid;grid-template-columns:30px 1fr auto auto;align-items:center;gap:9px;padding:9px;border-bottom:1px solid #f0e7e3}.production-run-check{width:27px;height:27px;border-radius:9px;background:#e6f6ec;color:#3f8057;display:grid;place-items:center;font-weight:900}.production-run div{display:flex;flex-direction:column}.production-run b{font-size:9px}.production-run small,.production-run em{font-size:8px;color:#907b73;font-style:normal}.production-run strong{font-size:10px}
-@media(max-width:950px){.production-hero{align-items:stretch;flex-direction:column}.production-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.production-board{grid-template-columns:1fr 1fr}.production-orders-panel{grid-column:1/-1;grid-row:auto}}
-@media(max-width:650px){.production-controls{display:grid;grid-template-columns:1fr auto}.production-finish{grid-column:1/-1}.production-board{grid-template-columns:1fr}.production-orders-panel{grid-column:auto}.production-kpis{grid-template-columns:1fr 1fr}}
-
-
-/* V10.4.1 — linguagem visual clean, sem ícones decorativos */
-.nav button{
-  grid-template-columns:1fr 8px!important;
-  gap:10px!important;
-  padding-left:14px!important;
-}
-.nav-icon{display:none!important}
-.dashboard-kpi-card{
-  grid-template-columns:1fr 14px!important;
-  padding:14px!important;
-}
-.dashboard-kpi-icon{display:none!important}
-.dashboard-action{
-  grid-template-columns:1fr!important;
-  row-gap:3px!important;
-}
-.dashboard-action>span{display:none!important}
-.production-kpi{
-  display:block!important;
-  padding:13px!important;
-}
-.production-kpi>span{display:none!important}
-.production-kpi div{
-  display:grid!important;
-  grid-template-columns:auto auto!important;
-}
-.production-order-id>span{
-  width:auto!important;height:auto!important;
-  background:transparent!important;
-  font-size:8px!important;font-weight:900!important;
-  color:#6f857d!important;
-}
-.production-empty>span{display:none!important}
-.capacity-empty-day>span{display:none!important}
-@media(max-width:650px){
-  .nav button{grid-template-columns:1fr!important}
-}
-
+/* Produção isolada — base V10.3.9 */
+.prod-toolbar{display:flex;align-items:end;gap:8px}.prod-toolbar .field{margin:0;min-width:190px;margin-right:auto}.prod-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.prod-kpi{display:flex;flex-direction:column;gap:4px;padding:13px}.prod-kpi span{font-size:9px;color:#826f68;font-weight:700}.prod-kpi strong{font-size:22px;color:#5d3933}.prod-order{border:1px solid #eadfdb;border-radius:12px;overflow:hidden;margin-bottom:8px}.prod-order>button{width:100%;display:grid;grid-template-columns:1fr 70px 120px;gap:8px;align-items:center;text-align:left;border:0;background:#fff;padding:10px;cursor:pointer}.prod-order>button>span:first-child{display:flex;flex-direction:column}.prod-order>button strong{font-size:9px}.prod-order>button small,.prod-order>button span{font-size:8px;color:#89756d}.prod-order>div{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #eee4df;padding:7px 9px;background:#fcfaf9}.prod-order>div .btn{font-size:8px;padding:6px 8px}@media(max-width:700px){.prod-toolbar{align-items:stretch;flex-direction:column}.prod-toolbar .field{margin-right:0}.prod-summary{grid-template-columns:1fr 1fr}.prod-order>button{grid-template-columns:1fr 60px}.prod-order>button>span:last-child{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -486,7 +433,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.4.1.4 · PIN Estável · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.9 · Loja Etapa 29 · Encomendas Interativas · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -495,7 +442,7 @@
     <div class="dashboard-hero">
       <div>
         <span class="dashboard-kicker">VISÃO GERAL DO NEGÓCIO</span>
-        <h2>Resumo DONART</h2>
+        <h2>Olá 👋</h2>
         <p>Resumo rápido da DONART, encomendas, valores e produção.</p>
       </div>
       <div class="dashboard-period">
@@ -512,14 +459,14 @@
 </div>
 <div class="dashboard-section-head"><div><span>ATALHOS</span><h3>Acesso rápido</h3></div></div>
     <div class="dashboard-actions">
-      <button class="dashboard-action primary" onclick="go('sale')"><b>Nova venda</b><small>Criar encomenda</small></button>
-      <button class="dashboard-action" onclick="go('orders')"><b>Encomendas</b><small>Ver e gerir</small></button>
-      <button class="dashboard-action" onclick="go('production')"><b>Produção</b><small>Preparar pedidos</small></button>
-      <button class="dashboard-action" onclick="go('delivery')"><b>Capacidade</b><small>Agenda mensal</small></button>
-      <button class="dashboard-action" onclick="go('stock')"><b>Stock</b><small>Matérias e alertas</small></button>
-      <button class="dashboard-action" onclick="go('cash')"><b>Caixa</b><small>Entradas e saídas</small></button>
-      <button class="dashboard-action" onclick="go('clients')"><b>Clientes</b><small>Base de clientes</small></button>
-      <button class="dashboard-action" onclick="go('reports')"><b>Relatórios</b><small>Análise de gestão</small></button>
+      <button class="dashboard-action primary" onclick="go('sale')"><span>➕</span><b>Nova venda</b><small>Criar encomenda</small></button>
+      <button class="dashboard-action" onclick="go('orders')"><span>🧾</span><b>Encomendas</b><small>Ver e gerir</small></button>
+      <button class="dashboard-action" onclick="go('production')"><span>🍩</span><b>Produção</b><small>Preparar pedidos</small></button>
+      <button class="dashboard-action" onclick="go('delivery')"><span>📅</span><b>Capacidade</b><small>Agenda mensal</small></button>
+      <button class="dashboard-action" onclick="go('stock')"><span>📦</span><b>Stock</b><small>Matérias e alertas</small></button>
+      <button class="dashboard-action" onclick="go('cash')"><span>💶</span><b>Caixa</b><small>Entradas e saídas</small></button>
+      <button class="dashboard-action" onclick="go('clients')"><span>👥</span><b>Clientes</b><small>Base de clientes</small></button>
+      <button class="dashboard-action" onclick="go('reports')"><span>📊</span><b>Relatórios</b><small>Análise de gestão</small></button>
     </div>
     <div class="section-title">Encomendas pendentes</div>
     <div class="tablewrap"><table><thead><tr><th>N.º</th><th>Cliente</th><th>Entrega</th><th>Total</th><th>Pago</th><th>Estado</th></tr></thead><tbody id="pendingOrders"></tbody></table></div>
@@ -546,8 +493,8 @@
       <div class="orders-toolbar-controls">
         <div class="field orders-search"><label>Pesquisar</label><input id="orderSearch" placeholder="N.º ou cliente" oninput="renderOrders()"></div>
         <div class="field"><label>Estado</label><select id="orderFilter" onchange="renderOrders()"><option value="">Todos</option><option>Pedido</option><option>Confirmada</option><option>Em produção</option><option>Pronta</option><option>Entregue</option><option>Cancelado</option></select></div>
-        <div class="field"><label>Vista</label><div class="orders-view-switch"><button id="ordersCardsBtn" class="active" onclick="setOrdersView('cards')">Cartões</button><button id="ordersTableBtn" onclick="setOrdersView('table')">Tabela</button></div></div>
-        <button class="btn primary orders-new" onclick="go('sale')">Nova encomenda</button>
+        <div class="field"><label>Vista</label><div class="orders-view-switch"><button id="ordersCardsBtn" class="active" onclick="setOrdersView('cards')">▦ Cartões</button><button id="ordersTableBtn" onclick="setOrdersView('table')">☷ Tabela</button></div></div>
+        <button class="btn primary orders-new" onclick="go('sale')">＋ Nova encomenda</button>
       </div>
     </div>
     <div id="ordersFlow" class="orders-flow"></div>
@@ -586,22 +533,23 @@
   </section>
 
   <section id="production" class="screen">
-    <div class="production-hero card">
-      <div><span class="production-kicker">CENTRO DE PRODUÇÃO</span><h2>Produção do dia</h2><p>Prepara, acompanha e conclui as encomendas numa única vista.</p></div>
-      <div class="production-controls">
+    <div class="card">
+      <div class="prod-toolbar">
         <div class="field"><label>Data de produção</label><input id="prodDate" type="date" onchange="renderProduction()"></div>
-        <button class="btn" onclick="productionToday()">Hoje</button>
-        <button class="btn primary production-finish" onclick="consumeProduction()">Concluir produção</button>
+        <button class="btn primary" onclick="renderProduction()">Atualizar</button>
+        <button class="btn" onclick="consumeProduction()">Concluir produção + descontar stock</button>
       </div>
     </div>
-    <div id="productionKpis" class="production-kpis"></div>
-    <div class="production-board">
-      <div class="card production-panel production-orders-panel"><div class="production-panel-head"><div><span>ENCOMENDAS</span><h3>Para produzir</h3></div><span id="productionOrdersCount" class="production-count">0</span></div><div id="productionOrders"></div></div>
-      <div class="card production-panel"><div class="production-panel-head"><div><span>SABORES</span><h3>Resumo de donuts</h3></div></div><div id="productionProducts"></div></div>
-      <div class="card production-panel"><div class="production-panel-head"><div><span>PREPARAÇÃO</span><h3>Massa base</h3></div></div><div id="productionRecipe"></div></div>
-      <div class="card production-panel"><div class="production-panel-head"><div><span>EMBALAMENTO</span><h3>Embalagens necessárias</h3></div></div><div id="productionPackaging"></div></div>
+    <div id="productionSummary" class="prod-summary"></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card"><div class="section-title" style="margin-top:0">Encomendas a produzir</div><div id="productionOrders"></div></div>
+      <div class="card"><div class="section-title" style="margin-top:0">Produzir</div><div id="productionProducts"></div></div>
     </div>
-    <div class="card production-history-card"><div class="production-panel-head"><div><span>HISTÓRICO</span><h3>Sessões concluídas neste dia</h3></div></div><div id="productionHistory"></div></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card"><div class="section-title" style="margin-top:0">Massa base</div><div id="productionRecipe"></div></div>
+      <div class="card"><div class="section-title" style="margin-top:0">Embalagens necessárias</div><div id="productionPackaging"></div></div>
+    </div>
+    <div class="card" style="margin-top:12px"><div class="section-title" style="margin-top:0">Sessões concluídas neste dia</div><div id="productionHistory"></div></div>
   </section>
 
 
@@ -967,47 +915,19 @@ function saveConfirmedShadow(row){
  try{localStorage.setItem(CLOUD_SHADOW,JSON.stringify({data:row.data,revision:Number(row.revision||0),updated_at:row.updated_at||null,fingerprint:dataFingerprint(row.data)}))}catch(e){}
 }
 function sec(){try{const s=JSON.parse(localStorage.getItem(SEC))||{};if(s.failCount==null&&s.failedAttempts!=null)s.failCount=s.failedAttempts;if(s.blockedUntil==null&&s.lockUntil!=null)s.blockedUntil=s.lockUntil;delete s.failedAttempts;delete s.lockUntil;return s}catch(e){return{}}}
-function hashPinLocal(pin){
- let h=2166136261;
- for(let i=0;i<pin.length;i++){h^=pin.charCodeAt(i);h=Math.imul(h,16777619)}
- return 'local-'+(h>>>0).toString(16)
-}
 async function hashPin(pin){
- try{
-  if(window.crypto&&crypto.subtle&&window.TextEncoder){
-   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));
-   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')
-  }
- }catch(e){}
- return hashPinLocal(pin)
-}
+      try{
+        if(window.crypto && crypto.subtle){
+          const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));
+          return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')
+        }
+      }catch(e){}
+      let h=2166136261;
+      for(let i=0;i<pin.length;i++){h^=pin.charCodeAt(i);h=Math.imul(h,16777619)}
+      return 'local-'+(h>>>0).toString(16)
+    }
 function configureLock(){const s=sec();const txt=document.getElementById('lockText'),btn=document.getElementById('pinButton');if(s.pinHash){txt.textContent='Introduz o teu PIN para entrar.';btn.textContent='Entrar'}else{txt.textContent='Cria o teu PIN pessoal para proteger a aplicação.';btn.textContent='Criar PIN'}document.getElementById('pinInput').value='';document.getElementById('lockScreen').classList.remove('hidden')}
-async function submitPin(){
- const el=document.getElementById('pinInput');
- const p=String(el?.value||'').trim();
- if(p.length<4||p.length>6||!/^[0-9]+$/.test(p))return toast('Usa um PIN de 4 a 6 números');
- const s=sec(),now=Date.now(),localHash=hashPinLocal(p);
- if(s.blockedUntil&&now<s.blockedUntil){const mins=Math.ceil((s.blockedUntil-now)/60000);return toast('Acesso bloqueado. Tente novamente em '+mins+' min.')}
- if(!s.pinHash){
-  try{
-   localStorage.setItem(SEC,JSON.stringify({pinHash:localHash,lockMinutes:15,failCount:0,blockedUntil:0}));
-   unlocked=true;document.getElementById('lockScreen').classList.add('hidden');toast('PIN criado');resetIdle();return;
-  }catch(e){return toast('Não foi possível guardar o PIN neste dispositivo')}
- }
- let ok=s.pinHash===localHash;
- if(!ok){
-  try{ok=s.pinHash===await hashPin(p)}catch(e){}
- }
- if(ok){
-  s.failCount=0;s.blockedUntil=0;
-  try{localStorage.setItem(SEC,JSON.stringify(s))}catch(e){}
-  unlocked=true;document.getElementById('lockScreen').classList.add('hidden');resetIdle();return;
- }
- s.failCount=(s.failCount||0)+1;
- if(s.failCount>=5){s.failCount=0;s.blockedUntil=now+5*60000;toast('5 tentativas erradas - bloqueado 5 minutos')}
- else toast('PIN incorreto - tentativa '+s.failCount+'/5');
- try{localStorage.setItem(SEC,JSON.stringify(s))}catch(e){}
-}
+async function submitPin(){const p=document.getElementById('pinInput').value.trim();if(p.length<4||p.length>6||!/^\d+$/.test(p))return toast('Usa um PIN de 4 a 6 números');const h=await hashPin(p),s=sec(),now=Date.now();if(s.blockedUntil&&now<s.blockedUntil){const mins=Math.ceil((s.blockedUntil-now)/60000);return toast('Acesso bloqueado. Tente novamente em '+mins+' min.')}if(!s.pinHash){localStorage.setItem(SEC,JSON.stringify({pinHash:h,lockMinutes:15,failCount:0,blockedUntil:0}));unlocked=true;document.getElementById('lockScreen').classList.add('hidden');toast('PIN criado');resetIdle();return}if(h===s.pinHash){s.failCount=0;s.blockedUntil=0;localStorage.setItem(SEC,JSON.stringify(s));unlocked=true;document.getElementById('lockScreen').classList.add('hidden');resetIdle();return}s.failCount=(s.failCount||0)+1;if(s.failCount>=5){s.failCount=0;s.blockedUntil=now+5*60000;toast('5 tentativas erradas - bloqueado 5 minutos')}else toast('PIN incorreto - tentativa '+s.failCount+'/5');localStorage.setItem(SEC,JSON.stringify(s))}
 function lockNow(){unlocked=false;configureLock()}
 function resetIdle(){if(!unlocked)return;clearTimeout(idleTimer);const mins=Number(sec().lockMinutes??15);if(mins>0)idleTimer=setTimeout(lockNow,mins*60000)}
 ['click','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
@@ -1039,7 +959,11 @@ function installNavKeyboard(){
 setTimeout(installNavKeyboard,0);
 
 const pages=[['dashboard','Início'],['sale','Nova venda'],['orders','Encomendas'],['quotes','Orçamentos'],['production','Produção'],['costs','Custos'],['stock','Stock'],['purchases','Compras'],['cash','Caixa'],['clients','Clientes'],['reports','Relatórios'],['products','Produtos'],['catalogs','Catálogos'],['specialEditions','Edições Especiais'],['delivery','Entregas Loja'],['settings','Configuração'],['cloud','Cloud Sync'],['backup','Backup']];
-document.getElementById('nav').innerHTML=pages.map(([id,l])=>`<button data-page="${id}" onclick="go('${id}')"><span class="nav-label">${l}</span><span class="nav-active-dot"></span></button>`).join('');
+const pageIcons={
+ dashboard:'🏠',sale:'➕',orders:'🧾',quotes:'📄',production:'🍩',costs:'🧮',stock:'📦',purchases:'🛒',cash:'💶',
+ clients:'👥',reports:'📊',products:'🍩',catalogs:'🗂️',specialEditions:'🎉',delivery:'🚚',settings:'⚙️',cloud:'☁️',backup:'💾'
+};
+document.getElementById('nav').innerHTML=pages.map(([id,l])=>`<button data-page="${id}" onclick="go('${id}')"><span class="nav-icon">${pageIcons[id]||'•'}</span><span class="nav-label">${l}</span><span class="nav-active-dot"></span></button>`).join('');
 document.getElementById('today').textContent=new Date().toLocaleDateString('pt-PT',{weekday:'short',day:'2-digit',month:'short'});
 function todayISO(){const d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}document.getElementById('saleDate').value=todayISO();document.getElementById('prodDate').value=todayISO();
 setTimeout(()=>{if(document.getElementById('purchaseDate'))document.getElementById('purchaseDate').value=todayISO();if(document.getElementById('cashDate'))document.getElementById('cashDate').value=todayISO()},0);
@@ -1109,7 +1033,7 @@ function orderMessage(id){
  const o=db.orders.find(x=>x.id===id);if(!o)return'';const c=calcOrder(o),remaining=Math.max(c.total-(+o.paid||0),0),s=db.settings||{};let pay='';
  if(remaining>0){pay=`\nValor a pagar: ${euro(remaining)}.`;if(o.payment==='MB Way'&&s.businessPhone)pay+=`\nMB Way: ${s.businessPhone}`;if(o.payment==='Transferência'&&s.iban)pay+=`\nIBAN: ${s.iban}`;if(s.paymentNote)pay+=`\n${s.paymentNote}`}
  const items=o.items.map(i=>`${i.qty}x ${i.name}`).join(', ');
- return `Olá ${o.client||''}!\nA sua encomenda ${o.id} da ${s.businessName||'DONART'} está registada.\nEntrega: ${o.delivery||'a combinar'}\nEncomenda: ${items}\nTotal: ${euro(c.total)}.${pay}\nObrigada!`;
+ return `Olá ${o.client||''}! 👋\nA sua encomenda ${o.id} da ${s.businessName||'DONART'} está registada.\nEntrega: ${o.delivery||'a combinar'}\nEncomenda: ${items}\nTotal: ${euro(c.total)}.${pay}\nObrigada!`;
 }
 function sendWhatsApp(id){const o=db.orders.find(x=>x.id===id);if(!o)return;let phone=normalizePhone(o.contact);if(phone.startsWith('9')&&phone.length===9)phone='351'+phone;if(!phone)return toast('Cliente sem número de telemóvel');window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(orderMessage(id)),'_blank')}
 function sendSMS(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const phone=normalizePhone(o.contact);if(!phone)return toast('Cliente sem número de telemóvel');location.href='sms:'+phone+'?body='+encodeURIComponent(orderMessage(id))}
@@ -1123,16 +1047,16 @@ function renderDashboard(){
  if(notice&&lb){notice.querySelectorAll('.backupwarn').forEach(x=>x.remove());const days=(Date.now()-new Date(lb).getTime())/86400000;if(days>7)notice.insertAdjacentHTML('beforeend','<div class="badge bad backupwarn" style="margin-top:8px">Backup com mais de 7 dias</div>')}
  const d=dash();
  const kpiData=[
-  ['Faturação',euro(d.total),'total'],
-  ['Recebido',euro(d.paid),'good'],
-  ['Por receber',euro(d.due),d.due>0?'warn':'good'],
-  ['Encomendas',d.orders,'neutral'],
-  ['Lucro',euro(d.profit),d.profit>=0?'good':'bad'],
-  ['Margem',pct(d.margin),d.margin>=.5?'good':'neutral'],
-  ['Pendentes',d.pending,d.pending>0?'warn':'good'],
-  ['Stock baixo',d.stockLow,d.stockLow>0?'bad':'good']
+  ['💰','Faturação',euro(d.total),'total'],
+  ['✅','Recebido',euro(d.paid),'good'],
+  ['⏳','Por receber',euro(d.due),d.due>0?'warn':'good'],
+  ['🧾','Encomendas',d.orders,'neutral'],
+  ['📈','Lucro',euro(d.profit),d.profit>=0?'good':'bad'],
+  ['％','Margem',pct(d.margin),d.margin>=.5?'good':'neutral'],
+  ['⚠️','Pendentes',d.pending,d.pending>0?'warn':'good'],
+  ['📦','Stock baixo',d.stockLow,d.stockLow>0?'bad':'good']
  ];
- document.getElementById('kpis').innerHTML=kpiData.map(([l,v,state])=>`<button class="card kpi dashboard-kpi-card ${state}" type="button" onclick="dashboardKpiGo('${l}')"><div><div class="label">${l}</div><div class="value">${v}</div></div><span class="dashboard-kpi-arrow">›</span></button>`).join('');
+ document.getElementById('kpis').innerHTML=kpiData.map(([icon,l,v,state])=>`<button class="card kpi dashboard-kpi-card ${state}" type="button" onclick="dashboardKpiGo('${l}')"><div class="dashboard-kpi-icon">${icon}</div><div><div class="label">${l}</div><div class="value">${v}</div></div><span class="dashboard-kpi-arrow">›</span></button>`).join('');
  const rows=filteredOrders().filter(o=>o.status!=='Entregue').slice(-8).reverse();
  document.getElementById('pendingOrders').innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o);return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}</td><td><span class="badge warn">${o.status}</span></td></tr>`}).join(''):`<tr><td colspan="6" class="empty">Sem encomendas pendentes</td></tr>`;renderReceivables();renderQuotePipeline();renderTrend()
 }
@@ -1234,12 +1158,12 @@ function renderOrders(){
         <span class="order-status-pill ${orderStatusClass(o.status)}">${escapeHtml(o.status||'Pedido')}</span>
        </div>
        <button class="order-card-main" onclick="showOrder('${escapeHtml(o.id)}')">
-        <div class="order-client"><span></span><div><b>${escapeHtml(o.client||'Cliente')}</b><small>${escapeHtml(o.contact||'Sem contacto')}</small></div></div>
+        <div class="order-client"><span>👤</span><div><b>${escapeHtml(o.client||'Cliente')}</b><small>${escapeHtml(o.contact||'Sem contacto')}</small></div></div>
         <div class="order-card-grid">
-         <div><span>Entrega</span><b>${escapeHtml(o.delivery||'—')}${o.deliveryTime?' · '+escapeHtml(o.deliveryTime):''}</b></div>
-         <div><span>Donuts</span><b>${c.qty}</b></div>
-         <div><span>Total</span><b>${euro(c.total)}</b></div>
-         <div><span>Pagamento</span><b class="${paid?'paid':'due'}">${paid?'Pago':euro(remaining)+' em falta'}</b></div>
+         <div><span>📅 Entrega</span><b>${escapeHtml(o.delivery||'—')}${o.deliveryTime?' · '+escapeHtml(o.deliveryTime):''}</b></div>
+         <div><span>🍩 Donuts</span><b>${c.qty}</b></div>
+         <div><span>💶 Total</span><b>${euro(c.total)}</b></div>
+         <div><span>${paid?'✅':'⏳'} Pagamento</span><b class="${paid?'paid':'due'}">${paid?'Pago':euro(remaining)+' em falta'}</b></div>
         </div>
         ${o.source==='online_store'?`<div class="order-online-note">${method}</div>`:''}
        </button>
@@ -1249,7 +1173,7 @@ function renderOrders(){
         <button class="btn" onclick="sendWhatsApp('${escapeHtml(o.id)}')">WhatsApp</button>
        </div>
      </article>`;
-   }).join(''):`<div class="orders-empty"><b>Sem encomendas</b><small>Não existem encomendas para os filtros selecionados.</small><button class="btn primary" onclick="go('sale')">Nova encomenda</button></div>`;
+   }).join(''):`<div class="orders-empty"><span>🧾</span><b>Sem encomendas</b><small>Não existem encomendas para os filtros selecionados.</small><button class="btn primary" onclick="go('sale')">＋ Nova encomenda</button></div>`;
  }
  ordersBody.innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o),del=canDeleteOrder(o)?` <button class="btn danger" style="padding:8px 10px" onclick="deleteOrder('${o.id}')">Eliminar</button>`:'';return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${c.qty}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}${o.source==='online_store'?`<br><span class="badge ${(+o.paid||0)>=c.total&&c.total>0?'ok':'warn'}">${(+o.paid||0)>=c.total&&c.total>0?'PAGO':'PENDENTE'}</span>`:''}</td><td><span class="badge ${o.status==='Entregue'?'ok':o.status==='Cancelado'?'bad':'warn'}">${o.status}</span></td><td><select onchange="setStatus('${o.id}',this.value)">${['Pedido','Confirmada','Em produção','Pronta','Entregue','Cancelado'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select><button class="btn" style="margin-left:6px;padding:8px 10px" onclick="showOrder('${o.id}')">Ver</button> <button class="btn" style="padding:8px 10px" onclick="sendWhatsApp('${o.id}')">WhatsApp</button>${del}</td></tr>`}).join(''):`<tr><td colspan="8" class="empty">Sem encomendas</td></tr>`;
  setOrdersView(ordersView);
@@ -1281,38 +1205,19 @@ async function deleteOrder(id){
  renderOrders();renderClients();renderCloudUI();
  toast('Encomenda eliminada definitivamente')
 }
-function productionToday(){prodDate.value=todayISO();renderProduction()}
-function productionStatusPill(status){return status==='Em produção'||status==='Produção'?'production':'confirmed'}
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Confirmada','Em produção','Confirmado','Produção'].includes(o.status)&&!done.has(o.id)),counts={};
- ords.forEach(o=>(o.items||[]).forEach(i=>counts[i.name]=(counts[i.name]||0)+(Number(i.qty)||0)));
- const total=Object.values(counts).reduce((a,b)=>a+b,0),batches=Math.ceil(total/(db.settings.yield||28));
- const active=ords.filter(o=>['Em produção','Produção'].includes(o.status)).length;
- const confirmed=ords.length-active;
- const k=document.getElementById('productionKpis');
- if(k)k.innerHTML=[
-  ['Encomendas',ords.length,'para hoje'],
-  ['Donuts',total,'a produzir'],
-  ['Receitas',batches,'massa base'],
-  ['Em produção',active,confirmed+' confirmadas']
- ].map(([l,v,s])=>`<div class="production-kpi"><div><small>${l}</small><b>${v}</b><em>${s}</em></div></div>`).join('');
- const oc=document.getElementById('productionOrdersCount');if(oc)oc.textContent=ords.length;
- productionProducts.innerHTML=Object.keys(counts).length?Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([n,q])=>`<div class="production-line"><span><b>${escapeHtml(n)}</b></span><strong>${q} un.</strong></div>`).join(''):'<div class="production-empty"><b>Sem donuts pendentes</b><small>Não há produção para esta data.</small></div>';
- productionRecipe.innerHTML=total?`<div class="recipe-highlight"><span>Receitas necessárias</span><b>${batches}</b><small>Rendimento configurado: ${db.settings.yield||28} donuts/receita</small></div>`+SEED.recipe.map(x=>`<div class="production-line"><span><b>${escapeHtml(x.name)}</b></span><strong>${(x.qty*batches).toLocaleString('pt-PT')} ${x.unit}</strong></div>`).join(''):'<div class="production-empty"><b>Sem preparação</b><small>A receita aparecerá quando existirem encomendas.</small></div>';
- const po=document.getElementById('productionOrders');
- if(po)po.innerHTML=ords.length?ords.map(o=>{const c=calcOrder(o),inProd=['Em produção','Produção'].includes(o.status);return`<article class="production-order ${inProd?'active':''}">
-   <button class="production-order-main" onclick="showOrder('${escapeHtml(o.id)}')">
-    <div class="production-order-id"><span>${o.source==='online_store'?'ONLINE':''}</span><div><b>${escapeHtml(o.id)}</b><small>${escapeHtml(o.client||'Cliente')}</small></div></div>
-    <div class="production-order-meta"><span>Donuts <b>${c.qty}</b> un.</span><span>Embalagem <b>${escapeHtml(o.box||'—')}</b> × ${Number(o.boxes)||1}</span></div>
-   </button>
-   <div class="production-order-foot"><span class="production-status ${productionStatusPill(o.status)}">${escapeHtml(o.status)}</span>${inProd?'<span class="production-working">A preparar</span>':`<button class="btn production-start" onclick="setStatus('${escapeHtml(o.id)}','Em produção')">Iniciar produção</button>`}</div>
-  </article>`}).join(''):'<div class="production-empty"><b>Produção livre</b><small>Sem encomendas confirmadas ou em produção para esta data.</small></div>';
- const packs={};ords.forEach(o=>{const n=o.box||'Sem embalagem';packs[n]=(packs[n]||0)+(Number(o.boxes)||1)});
- const pp=document.getElementById('productionPackaging');if(pp)pp.innerHTML=Object.keys(packs).length?Object.entries(packs).map(([n,q])=>`<div class="production-line"><span><b>${escapeHtml(n)}</b></span><strong>${q} un.</strong></div>`).join(''):'<div class="production-empty"><b>Sem embalagens previstas</b><small>As necessidades aparecem automaticamente.</small></div>';
- const runs=(db.productionRuns||[]).filter(r=>r.date===d);
- if(document.getElementById('productionHistory'))productionHistory.innerHTML=runs.length?runs.map((r,i)=>`<div class="production-run"><span class="production-run-check">✓</span><div><b>Sessão ${i+1}</b><small>${(r.orders||[]).join(', ')||'—'}</small></div><strong>${r.total||0} un.</strong><em>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</em></div>`).join(''):'<div class="production-empty compact"><b>Ainda sem sessões concluídas</b></div>';
+ ords.forEach(o=>o.items.forEach(i=>counts[i.name]=(counts[i.name]||0)+(Number(i.qty)||0)));
+ const total=Object.values(counts).reduce((a,b)=>a+b,0),batches=Math.ceil(total/(db.settings.yield||28)),active=ords.filter(o=>['Em produção','Produção'].includes(o.status)).length;
+ const sum=document.getElementById('productionSummary');if(sum)sum.innerHTML=[['Encomendas',ords.length],['Donuts',total],['Receitas',batches],['Em produção',active]].map(([l,v])=>`<div class="card prod-kpi"><span>${l}</span><strong>${v}</strong></div>`).join('');
+ productionProducts.innerHTML=Object.keys(counts).length?Object.entries(counts).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><strong>${n}</strong><strong>${q} un.</strong></div>`).join(''):'<div class="empty">Sem produção pendente para esta data</div>';
+ productionRecipe.innerHTML=`<div class="mini"><span>Receitas necessárias</span><strong>${batches}</strong></div>`+SEED.recipe.map(x=>`<div class="cart-row" style="grid-template-columns:1fr 110px"><span>${x.name}</span><strong>${(x.qty*batches).toLocaleString('pt-PT')} ${x.unit}</strong></div>`).join('');
+ const po=document.getElementById('productionOrders');if(po)po.innerHTML=ords.length?ords.map(o=>`<div class="prod-order"><button onclick="showOrder('${o.id}')"><span><strong>${o.id}</strong><small>${o.client||'—'}</small></span><strong>${calcOrder(o).qty} un.</strong><span>${o.box||'—'} × ${Number(o.boxes)||1}</span></button><div><span class="badge">${o.status}</span>${['Em produção','Produção'].includes(o.status)?'<small>A preparar</small>':`<button class="btn" onclick="setStatus('${o.id}','Em produção')">Iniciar produção</button>`}</div></div>`).join(''):'<div class="empty">Sem encomendas para esta data.</div>';
+ const packs={};ords.forEach(o=>{const n=o.box||'Sem embalagem';packs[n]=(packs[n]||0)+(Number(o.boxes)||1)});const pp=document.getElementById('productionPackaging');if(pp)pp.innerHTML=Object.keys(packs).length?Object.entries(packs).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><span>${n}</span><strong>${q} un.</strong></div>`).join(''):'<div class="empty">Sem embalagens previstas.</div>';
+ const runs=(db.productionRuns||[]).filter(r=>r.date===d);if(document.getElementById('productionHistory'))productionHistory.innerHTML=runs.length?runs.map((r,i)=>`<div class="cart-row" style="grid-template-columns:1fr 110px 130px"><span>Sessão ${i+1} · ${(r.orders||[]).join(', ')}</span><strong>${r.total||0} un.</strong><small>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</small></div>`).join(''):'<div class="empty">Ainda não há sessões concluídas neste dia</div>'
 }
+
 function consumeProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Em produção','Produção'].includes(o.status)&&!done.has(o.id));if(!ords.length)return toast('Sem encomendas em produção para concluir');
@@ -1570,7 +1475,7 @@ function renderSpecialEditionProductPicker(selected=[]){
    const safeId=escapeHtml(p._rid);
    return `<div class="special-product-option">
      <input data-role="include" type="checkbox" value="${safeId}" ${checked} onchange="syncSpecialExclusiveState('${safeId}')">
-     ${img?`<img src="${escapeHtml(img)}" alt="">`:`<div style="width:42px;height:42px;display:grid;place-items:center;background:#f5efeb;border-radius:9px">DONART</div>`}
+     ${img?`<img src="${escapeHtml(img)}" alt="">`:`<div style="width:42px;height:42px;display:grid;place-items:center;background:#f5efeb;border-radius:9px">🍩</div>`}
      <span><b>${escapeHtml(p.name)}</b><small>${escapeHtml(p.category||'DONART')} · ${euro(p.price)}</small></span>
      <label class="special-product-exclusive"><input data-role="exclusive" data-product-id="${safeId}" type="checkbox" ${exclusive} ${checked?'':'disabled'}> Exclusivo desta edição — não mostrar em “Sabores”</label>
    </div>`;
@@ -1726,10 +1631,10 @@ async function downloadPdfBlob(builder,name){try{const blob=await builder(),a=do
 async function sharePdfBlob(builder,name,title,text){try{const blob=await builder(),file=new File([blob],name,{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title,text,files:[file]});toast('PDF pronto para enviar')}else{await downloadPdfBlob(builder,name);toast('O dispositivo não permite anexar diretamente. O PDF foi guardado.')}}catch(e){if(e.name!=='AbortError')toast(e.message||'Não foi possível partilhar o PDF')}}
 function previewMenuPDF(){return openPdfBlob(buildMenuPdfBlob)}
 function downloadMenuPDF(){return downloadPdfBlob(buildMenuPdfBlob,'DONART_Cardapio.pdf')}
-function shareMenuPDF(){return sharePdfBlob(buildMenuPdfBlob,'DONART_Cardapio.pdf','Cardápio DONART','Olá! Segue o cardápio DONART Mini Donuts em PDF.')}
+function shareMenuPDF(){return sharePdfBlob(buildMenuPdfBlob,'DONART_Cardapio.pdf','Cardápio DONART','Olá! Segue o cardápio DONART Mini Donuts em PDF. 🍩')}
 function previewThemedBoxesPDF(){return openPdfBlob(buildThemedBoxesPdfBlob)}
 function downloadThemedBoxesPDF(){return downloadPdfBlob(buildThemedBoxesPdfBlob,'DONART_Caixas_Tematicas.pdf')}
-function shareThemedBoxesPDF(){return sharePdfBlob(buildThemedBoxesPdfBlob,'DONART_Caixas_Tematicas.pdf','Caixas temáticas DONART','Olá! Segue o catálogo de caixas temáticas DONART em PDF.')}
+function shareThemedBoxesPDF(){return sharePdfBlob(buildThemedBoxesPdfBlob,'DONART_Caixas_Tematicas.pdf','Caixas temáticas DONART','Olá! Segue o catálogo de caixas temáticas DONART em PDF. 🍩')}
 
 function renderSettings(){
  syncThemedPackagingSelect();renderSettingsThemedBoxesSummary();
