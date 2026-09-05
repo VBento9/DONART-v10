@@ -1,0 +1,6 @@
+DONART V10.4.1.1 — Clean Rebuild
+
+Esta versão foi reconstruída diretamente sobre a V10.4.0, a última versão em que o PIN funcionava.
+O bloco HTML do PIN e toda a lógica de segurança foram preservados byte-for-byte.
+A única intervenção é visual: remoção de ícones decorativos.
+Sem SQL novo.
