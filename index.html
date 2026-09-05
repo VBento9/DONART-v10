@@ -121,6 +121,59 @@
  #view-shopDelivery .card>.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
+
+/* V10.3.3 — Entregas Loja, estrutura completa */
+.delivery-v33{display:flex;flex-direction:column;gap:14px}
+.delivery-v33-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:4px 2px}
+.delivery-v33-head .section-title{margin:0}
+.delivery-v33-head p{margin:7px 0 0;color:#7f6e67;font-size:13px}
+.delivery-v33-status{display:inline-flex;align-items:center;border-radius:999px;padding:8px 12px;font-size:11px;font-weight:900;letter-spacing:.35px;white-space:nowrap}
+.delivery-v33-status.testing{background:#fff3d6;color:#8a5a00;border:1px solid #f0d59c}
+.delivery-v33-status.production{background:#e8f7ee;color:#197341;border:1px solid #bfe4cc}
+.delivery-v33-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.delivery-v33-card{background:#fff;border:1px solid #eadfdb;border-radius:18px;padding:16px;box-shadow:0 4px 15px rgba(70,43,35,.04)}
+.delivery-v33-cardhead{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}
+.delivery-v33-cardhead strong{display:block;color:#5d3933;font-size:16px}
+.delivery-v33-cardhead small{display:block;margin-top:4px;color:#8b7972;line-height:1.25}
+.delivery-v33-fields{display:grid;gap:11px}
+.delivery-v33-fields.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.delivery-v33-fields.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.delivery-v33-fields .full{grid-column:1/-1}
+.delivery-v33 .field{margin:0;padding:0!important;border:0!important;background:transparent!important}
+.delivery-v33 .field label{font-size:11px;font-weight:800;color:#6b514a;margin:0 0 6px;display:block}
+.delivery-v33 input,.delivery-v33 select,.delivery-v33 textarea{background:#fff!important;border:1px solid #e7d9d3!important;border-radius:11px!important;min-height:42px}
+.delivery-v33 textarea{min-height:76px}
+.delivery-v33 input:focus,.delivery-v33 select:focus,.delivery-v33 textarea:focus{outline:none;border-color:#c88f82!important;box-shadow:0 0 0 3px rgba(200,143,130,.12)}
+.delivery-switch{position:relative;width:48px;height:28px;flex:0 0 auto}
+.delivery-switch input{position:absolute;opacity:0;pointer-events:none}
+.delivery-switch span{position:absolute;inset:0;background:#d8d0cd;border-radius:999px;cursor:pointer;transition:.2s}
+.delivery-switch span:before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:#fff;box-shadow:0 2px 6px #0002;transition:.2s}
+.delivery-switch input:checked+span{background:#35a775}
+.delivery-switch input:checked+span:before{transform:translateX(20px)}
+.delivery-input-suffix{display:flex;align-items:center;background:#fff;border:1px solid #e7d9d3;border-radius:11px;overflow:hidden}
+.delivery-input-suffix input{border:0!important;border-radius:0!important;box-shadow:none!important}
+.delivery-input-suffix span{padding:0 11px;color:#8a7770;font-size:12px}
+.delivery-weekdays{display:flex;gap:8px;flex-wrap:wrap}
+.delivery-day input{display:none}
+.delivery-day span{display:flex;align-items:center;justify-content:center;min-width:52px;height:40px;border:1px solid #e5d8d2;background:#fff;border-radius:11px;font-size:12px;font-weight:900;color:#765e57;cursor:pointer}
+.delivery-day input:checked+span{background:#5d3933;color:#fff;border-color:#5d3933}
+.delivery-v33-mode.testing{background:#fffaf0;border-color:#f0d7a3}
+.delivery-v33-mode.production{background:#f1faf4;border-color:#bfe2ca}
+.delivery-mode-note{margin-top:9px;font-size:12px;line-height:1.35;color:#715e57}
+.delivery-v33-save{position:sticky;bottom:8px;z-index:4;display:flex;align-items:center;gap:14px;padding:12px 14px;background:rgba(255,255,255,.95);backdrop-filter:blur(9px);border:1px solid #eadfdb;border-radius:16px;box-shadow:0 10px 28px rgba(70,43,35,.12)}
+.delivery-v33-save .btn{min-width:190px;min-height:46px}
+.delivery-v33-save small{color:#88766f}
+@media(max-width:850px){
+ .delivery-v33-two{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+ .delivery-v33-head{flex-direction:column}
+ .delivery-v33-fields.three,.delivery-v33-fields.two{grid-template-columns:1fr}
+ .delivery-v33-fields .full{grid-column:1}
+ .delivery-v33-save{flex-direction:column;align-items:stretch}
+ .delivery-v33-save .btn{width:100%}
+}
+
 </style>
 </head>
 <body>
@@ -136,7 +189,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.2 · Loja Etapa 22 · Entregas redesenhadas · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.3 · Loja Etapa 23 · Entregas estrutura completa · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><h1 id="pageTitle">Dashboard</h1><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -1185,31 +1238,85 @@ async function saveShopDeliverySettings(){
 function renderShopDeliverySettings(){
  const s=shopDeliverySettings();
  const box=document.getElementById('shopDeliverySettingsBox'); if(!box)return;
- box.innerHTML=`<div class="section-title">Loja Online · Entregas e disponibilidade</div>
- <div class="form-grid">
-  <div class="field"><label><input id="setPickupEnabled" type="checkbox" ${s.pickupEnabled?'checked':''}> Levantamento ativo</label></div>
-  <div class="field"><label><input id="setLocalEnabled" type="checkbox" ${s.localDeliveryEnabled?'checked':''}> Entrega local ativa</label></div>
-  <div class="field"><label>Taxa levantamento (€)</label><input id="setPickupFee" type="number" min="0" step="0.01" value="${s.pickupFee||0}"></div>
-  <div class="field"><label>Taxa entrega local (€)</label><input id="setLocalFee" type="number" min="0" step="0.01" value="${s.localDeliveryFee||0}"></div>
-  <div class="field"><label>Mínimo entrega local (€)</label><input id="setLocalMin" type="number" min="0" step="0.01" value="${s.minOrderLocalDelivery||0}"></div>
-  <div class="field"><label>Antecedência mínima (dias)</label><input id="setLeadDays" type="number" min="0" max="30" value="${s.leadDays||0}"></div>
-  <div class="field"><label>Levantamento desde</label><input id="setPickupStart" type="time" value="${s.pickupStart||'10:00'}"></div>
-  <div class="field"><label>Levantamento até</label><input id="setPickupEnd" type="time" value="${s.pickupEnd||'19:00'}"></div>
-  <div class="field"><label>Entrega local desde</label><input id="setLocalStart" type="time" value="${s.localStart||'11:00'}"></div>
-  <div class="field"><label>Entrega local até</label><input id="setLocalEnd" type="time" value="${s.localEnd||'19:00'}"></div>
-  <div class="field span2"><label>Prefixos de código postal permitidos</label><input id="setPostalPrefixes" value="${(s.postalPrefixes||[]).join(', ')}" placeholder="Ex.: 6230, 6231"></div>
-  <div class="field"><label>Máx. encomendas/dia</label><input id="setMaxOrdersDay" type="number" min="0" step="1" value="${s.maxOrdersPerDay||0}"><small>0 = sem limite</small></div>
-  <div class="field"><label>Máx. donuts/unidades por dia</label><input id="setMaxUnitsDay" type="number" min="0" step="1" value="${s.maxUnitsPerDay||0}"><small>0 = sem limite</small></div>
-  <div class="field span2"><label>Dias disponíveis</label><div class="btnrow">${[['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6],['Dom',0]].map(([l,n])=>`<label><input type="checkbox" data-weekday="${n}" ${(s.allowedWeekdays||[]).includes(n)?'checked':''}> ${l}</label>`).join(' ')}</div></div>
-  <div class="field span2"><label>Modo de aprovação das encomendas online</label>
-   <select id="setOrderApprovalMode">
-    <option value="testing" ${s.orderApprovalMode!=='production'?'selected':''}>Testes — permitir confirmação manual</option>
-    <option value="production" ${s.orderApprovalMode==='production'?'selected':''}>Produção — só confirmar depois de pagamento integral</option>
-   </select>
-   <small>🧪 Testes: confirmação manual.  ·  🟢 Produção: só confirmar após pagamento integral.</small>
+ const days=[['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6],['Dom',0]];
+ box.innerHTML=`
+ <div class="delivery-v33">
+
+  <div class="delivery-v33-head">
+   <div>
+    <div class="section-title">Loja Online · Entregas e disponibilidade</div>
+    <p>Configura como o cliente recebe a encomenda, quando pode levantar/receber e a capacidade diária.</p>
+   </div>
+   <span class="delivery-v33-status ${s.orderApprovalMode==='production'?'production':'testing'}">
+    ${s.orderApprovalMode==='production'?'🟢 PRODUÇÃO':'🧪 TESTES'}
+   </span>
   </div>
-  <div class="field span2"><label>Nota ao cliente</label><textarea id="setDeliveryNote">${s.note||''}</textarea></div>
-  <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveShopDeliverySettings()">Guardar alterações</button></div>
+
+  <div class="delivery-v33-two">
+   <section class="delivery-v33-card">
+    <div class="delivery-v33-cardhead">
+     <div><strong>🏪 Levantamento</strong><small>O cliente recolhe a encomenda contigo.</small></div>
+     <label class="delivery-switch"><input id="setPickupEnabled" type="checkbox" ${s.pickupEnabled?'checked':''}><span></span></label>
+    </div>
+    <div class="delivery-v33-fields three">
+     <div class="field"><label>Taxa (€)</label><input id="setPickupFee" type="number" min="0" step="0.01" value="${s.pickupFee||0}"></div>
+     <div class="field"><label>Desde</label><input id="setPickupStart" type="time" value="${s.pickupStart||'10:00'}"></div>
+     <div class="field"><label>Até</label><input id="setPickupEnd" type="time" value="${s.pickupEnd||'19:00'}"></div>
+    </div>
+   </section>
+
+   <section class="delivery-v33-card">
+    <div class="delivery-v33-cardhead">
+     <div><strong>🚗 Entrega local</strong><small>Entrega apenas nas zonas autorizadas.</small></div>
+     <label class="delivery-switch"><input id="setLocalEnabled" type="checkbox" ${s.localDeliveryEnabled?'checked':''}><span></span></label>
+    </div>
+    <div class="delivery-v33-fields two">
+     <div class="field"><label>Taxa (€)</label><input id="setLocalFee" type="number" min="0" step="0.01" value="${s.localDeliveryFee||0}"></div>
+     <div class="field"><label>Mínimo (€)</label><input id="setLocalMin" type="number" min="0" step="0.01" value="${s.minOrderLocalDelivery||0}"></div>
+     <div class="field"><label>Desde</label><input id="setLocalStart" type="time" value="${s.localStart||'11:00'}"></div>
+     <div class="field"><label>Até</label><input id="setLocalEnd" type="time" value="${s.localEnd||'19:00'}"></div>
+     <div class="field full"><label>Prefixos de código postal permitidos</label><input id="setPostalPrefixes" value="${(s.postalPrefixes||[]).join(', ')}" placeholder="Ex.: 6230, 6231"></div>
+    </div>
+   </section>
+  </div>
+
+  <section class="delivery-v33-card delivery-v33-wide">
+   <div class="delivery-v33-cardhead">
+    <div><strong>📅 Disponibilidade e capacidade</strong><small>Controla antecedência, dias de trabalho e limites diários.</small></div>
+   </div>
+   <div class="delivery-v33-fields three">
+    <div class="field"><label>Antecedência mínima</label><div class="delivery-input-suffix"><input id="setLeadDays" type="number" min="0" max="30" value="${s.leadDays||0}"><span>dias</span></div></div>
+    <div class="field"><label>Máx. encomendas/dia</label><input id="setMaxOrdersDay" type="number" min="0" step="1" value="${s.maxOrdersPerDay||0}"><small>0 = sem limite</small></div>
+    <div class="field"><label>Máx. donuts/unidades/dia</label><input id="setMaxUnitsDay" type="number" min="0" step="1" value="${s.maxUnitsPerDay||0}"><small>0 = sem limite</small></div>
+    <div class="field full"><label>Dias disponíveis</label>
+     <div class="delivery-weekdays">${days.map(([l,n])=>`<label class="delivery-day"><input type="checkbox" data-weekday="${n}" ${(s.allowedWeekdays||[]).includes(n)?'checked':''}><span>${l}</span></label>`).join('')}</div>
+    </div>
+   </div>
+  </section>
+
+  <section class="delivery-v33-card delivery-v33-mode ${s.orderApprovalMode==='production'?'production':'testing'}">
+   <div class="delivery-v33-cardhead">
+    <div><strong>${s.orderApprovalMode==='production'?'🟢':'🧪'} Modo da loja</strong><small>Define quando uma encomenda online pode ser confirmada.</small></div>
+   </div>
+   <div class="field">
+    <select id="setOrderApprovalMode">
+     <option value="testing" ${s.orderApprovalMode!=='production'?'selected':''}>🧪 Testes — permitir confirmação manual</option>
+     <option value="production" ${s.orderApprovalMode==='production'?'selected':''}>🟢 Produção — só confirmar depois de pagamento integral</option>
+    </select>
+    <div class="delivery-mode-note">${s.orderApprovalMode==='production'
+      ?'<b>Produção:</b> encomendas online só passam a Confirmada depois do pagamento integral.'
+      :'<b>Testes:</b> mantém a confirmação manual enquanto continuamos a validar a loja.'}</div>
+   </div>
+  </section>
+
+  <section class="delivery-v33-card delivery-v33-wide">
+   <div class="field"><label>📝 Nota ao cliente</label><textarea id="setDeliveryNote" placeholder="Ex.: instruções de levantamento ou informação de entrega">${s.note||''}</textarea></div>
+  </section>
+
+  <div class="delivery-v33-save">
+   <button class="btn primary" onclick="saveShopDeliverySettings()">Guardar alterações</button>
+   <small>As alterações ficam guardadas na Cloud e são usadas pela loja online.</small>
+  </div>
  </div>`;
 }
 

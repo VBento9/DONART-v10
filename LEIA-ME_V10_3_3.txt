@@ -1,0 +1,21 @@
+DONART V10.3.3 — Entregas Loja · Estrutura completa
+
+Redesenho estrutural real:
+- Cartão próprio para Levantamento com switch.
+- Cartão próprio para Entrega local com switch.
+- Bloco Disponibilidade e capacidade.
+- Dias disponíveis em botões compactos.
+- Bloco Modo da loja destacado.
+- Nota ao cliente isolada.
+- Barra Guardar alterações persistente.
+
+Lógica preservada:
+- mesmos IDs dos campos;
+- mesmas definições Cloud;
+- modo Testes/Produção;
+- pagamentos;
+- capacidade;
+- horários;
+- códigos postais.
+
+Sem SQL novo.
