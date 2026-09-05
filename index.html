@@ -486,7 +486,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.4.1.3 · PIN Corrigido · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.4.1.4 · PIN Estável · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><button class="smallbtn" onclick="lockNow()">Bloquear</button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -966,58 +966,47 @@ function saveConfirmedShadow(row){
  if(!row||!row.data)return;
  try{localStorage.setItem(CLOUD_SHADOW,JSON.stringify({data:row.data,revision:Number(row.revision||0),updated_at:row.updated_at||null,fingerprint:dataFingerprint(row.data)}))}catch(e){}
 }
-const SECURITY_KEYS=[SEC,'donart_v10_security','donart_security'];
-function sec(){
- for(const key of SECURITY_KEYS){
-  try{
-   const raw=localStorage.getItem(key);if(!raw)continue;
-   const s=JSON.parse(raw)||{};
-   if(s.pinHash){
-    if(s.failCount==null&&s.failedAttempts!=null)s.failCount=s.failedAttempts;
-    if(s.blockedUntil==null&&s.lockUntil!=null)s.blockedUntil=s.lockUntil;
-    delete s.failedAttempts;delete s.lockUntil;
-    if(key!==SEC)try{localStorage.setItem(SEC,JSON.stringify(s))}catch(e){}
-    return s;
-   }
-  }catch(e){}
- }
- return {};
+function sec(){try{const s=JSON.parse(localStorage.getItem(SEC))||{};if(s.failCount==null&&s.failedAttempts!=null)s.failCount=s.failedAttempts;if(s.blockedUntil==null&&s.lockUntil!=null)s.blockedUntil=s.lockUntil;delete s.failedAttempts;delete s.lockUntil;return s}catch(e){return{}}}
+function hashPinLocal(pin){
+ let h=2166136261;
+ for(let i=0;i<pin.length;i++){h^=pin.charCodeAt(i);h=Math.imul(h,16777619)}
+ return 'local-'+(h>>>0).toString(16)
 }
-function saveSecurity(s){try{localStorage.setItem(SEC,JSON.stringify(s));return !!localStorage.getItem(SEC)}catch(e){return false}}
 async function hashPin(pin){
-      try{
-        if(window.crypto && crypto.subtle){
-          const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));
-          return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')
-        }
-      }catch(e){}
-      let h=2166136261;
-      for(let i=0;i<pin.length;i++){h^=pin.charCodeAt(i);h=Math.imul(h,16777619)}
-      return 'local-'+(h>>>0).toString(16)
-    }
+ try{
+  if(window.crypto&&crypto.subtle&&window.TextEncoder){
+   const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pin));
+   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')
+  }
+ }catch(e){}
+ return hashPinLocal(pin)
+}
 function configureLock(){const s=sec();const txt=document.getElementById('lockText'),btn=document.getElementById('pinButton');if(s.pinHash){txt.textContent='Introduz o teu PIN para entrar.';btn.textContent='Entrar'}else{txt.textContent='Cria o teu PIN pessoal para proteger a aplicação.';btn.textContent='Criar PIN'}document.getElementById('pinInput').value='';document.getElementById('lockScreen').classList.remove('hidden')}
 async function submitPin(){
- const el=document.getElementById('pinInput'),btn=document.getElementById('pinButton');
+ const el=document.getElementById('pinInput');
  const p=String(el?.value||'').trim();
  if(p.length<4||p.length>6||!/^[0-9]+$/.test(p))return toast('Usa um PIN de 4 a 6 números');
- if(btn){btn.disabled=true;btn.textContent='A validar...'}
- try{
-  const h=await hashPin(p),s=sec(),now=Date.now();
-  if(s.blockedUntil&&now<s.blockedUntil){toast('Acesso temporariamente bloqueado');return}
-  if(!s.pinHash){
-   if(!saveSecurity({pinHash:h,lockMinutes:15,failCount:0,blockedUntil:0})){toast('Não foi possível guardar o PIN');return}
+ const s=sec(),now=Date.now(),localHash=hashPinLocal(p);
+ if(s.blockedUntil&&now<s.blockedUntil){const mins=Math.ceil((s.blockedUntil-now)/60000);return toast('Acesso bloqueado. Tente novamente em '+mins+' min.')}
+ if(!s.pinHash){
+  try{
+   localStorage.setItem(SEC,JSON.stringify({pinHash:localHash,lockMinutes:15,failCount:0,blockedUntil:0}));
    unlocked=true;document.getElementById('lockScreen').classList.add('hidden');toast('PIN criado');resetIdle();return;
-  }
-  if(h===s.pinHash){
-   s.failCount=0;s.blockedUntil=0;saveSecurity(s);
-   unlocked=true;document.getElementById('lockScreen').classList.add('hidden');resetIdle();return;
-  }
-  s.failCount=(s.failCount||0)+1;
-  if(s.failCount>=5){s.failCount=0;s.blockedUntil=now+5*60000;toast('5 tentativas erradas - bloqueado 5 minutos')}
-  else toast('PIN incorreto - tentativa '+s.failCount+'/5');
-  saveSecurity(s);
- }catch(e){console.error(e);toast('Erro ao validar o PIN')}
- finally{if(btn){btn.disabled=false;btn.textContent=sec().pinHash?'Entrar':'Criar PIN'}}
+  }catch(e){return toast('Não foi possível guardar o PIN neste dispositivo')}
+ }
+ let ok=s.pinHash===localHash;
+ if(!ok){
+  try{ok=s.pinHash===await hashPin(p)}catch(e){}
+ }
+ if(ok){
+  s.failCount=0;s.blockedUntil=0;
+  try{localStorage.setItem(SEC,JSON.stringify(s))}catch(e){}
+  unlocked=true;document.getElementById('lockScreen').classList.add('hidden');resetIdle();return;
+ }
+ s.failCount=(s.failCount||0)+1;
+ if(s.failCount>=5){s.failCount=0;s.blockedUntil=now+5*60000;toast('5 tentativas erradas - bloqueado 5 minutos')}
+ else toast('PIN incorreto - tentativa '+s.failCount+'/5');
+ try{localStorage.setItem(SEC,JSON.stringify(s))}catch(e){}
 }
 function lockNow(){unlocked=false;configureLock()}
 function resetIdle(){if(!unlocked)return;clearTimeout(idleTimer);const mins=Number(sec().lockMinutes??15);if(mins>0)idleTimer=setTimeout(lockNow,mins*60000)}
