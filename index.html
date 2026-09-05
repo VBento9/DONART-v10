@@ -416,8 +416,31 @@
 @media(max-width:650px){.orders-flow{display:flex;overflow-x:auto}.orders-flow-step{min-width:130px}.orders-flow-clear{min-width:70px}.order-card-grid{grid-template-columns:1fr 1fr}.orders-toolbar-controls{display:grid;grid-template-columns:1fr 1fr}.orders-search{min-width:0;grid-column:1/-1}.orders-new{grid-column:1/-1}}
 
 
-/* Produção isolada — base V10.3.9 */
-.prod-toolbar{display:flex;align-items:end;gap:8px}.prod-toolbar .field{margin:0;min-width:190px;margin-right:auto}.prod-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.prod-kpi{display:flex;flex-direction:column;gap:4px;padding:13px}.prod-kpi span{font-size:9px;color:#826f68;font-weight:700}.prod-kpi strong{font-size:22px;color:#5d3933}.prod-order{border:1px solid #eadfdb;border-radius:12px;overflow:hidden;margin-bottom:8px}.prod-order>button{width:100%;display:grid;grid-template-columns:1fr 70px 120px;gap:8px;align-items:center;text-align:left;border:0;background:#fff;padding:10px;cursor:pointer}.prod-order>button>span:first-child{display:flex;flex-direction:column}.prod-order>button strong{font-size:9px}.prod-order>button small,.prod-order>button span{font-size:8px;color:#89756d}.prod-order>div{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #eee4df;padding:7px 9px;background:#fcfaf9}.prod-order>div .btn{font-size:8px;padding:6px 8px}@media(max-width:700px){.prod-toolbar{align-items:stretch;flex-direction:column}.prod-toolbar .field{margin-right:0}.prod-summary{grid-template-columns:1fr 1fr}.prod-order>button{grid-template-columns:1fr 60px}.prod-order>button>span:last-child{grid-column:1/-1}}
+/* V10.4.0 — alterações isoladas no módulo Produção */
+.prod-toolbar{display:flex;justify-content:space-between;align-items:end;gap:14px}
+.prod-toolbar-controls{display:flex;align-items:end;gap:8px}
+.prod-toolbar-controls .field{margin:0;min-width:180px}
+.prod-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+.prod-kpi{display:flex;flex-direction:column;gap:4px;padding:13px}
+.prod-kpi span{font-size:9px;color:#826f68;font-weight:700}
+.prod-kpi strong{font-size:22px;color:#5d3933}
+.prod-order{border:1px solid #eadfdb;border-radius:12px;overflow:hidden;margin-bottom:8px}
+.prod-order-main{width:100%;display:grid;grid-template-columns:1fr 70px 120px;gap:8px;align-items:center;text-align:left;border:0;background:#fff;padding:10px;cursor:pointer}
+.prod-order-main>span:first-child{display:flex;flex-direction:column;gap:2px}
+.prod-order-main strong{font-size:9px}
+.prod-order-main small,.prod-order-main span{font-size:8px;color:#89756d}
+.prod-order-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #eee4df;padding:7px 9px;background:#fcfaf9}
+.prod-order-actions small{font-size:8px;color:#8b756c}
+.prod-order-actions .btn{font-size:8px;padding:6px 8px}
+@media(max-width:700px){
+ .prod-toolbar{align-items:stretch;flex-direction:column}
+ .prod-toolbar-controls{display:grid;grid-template-columns:1fr 1fr}
+ .prod-toolbar-controls .field{grid-column:1/-1}
+ .prod-summary{grid-template-columns:1fr 1fr}
+ .prod-order-main{grid-template-columns:1fr 60px}
+ .prod-order-main>span:last-child{grid-column:1/-1}
+}
+
 </style>
 </head>
 <body>
@@ -535,21 +558,51 @@
   <section id="production" class="screen">
     <div class="card">
       <div class="prod-toolbar">
-        <div class="field"><label>Data de produção</label><input id="prodDate" type="date" onchange="renderProduction()"></div>
-        <button class="btn primary" onclick="renderProduction()">Atualizar</button>
-        <button class="btn" onclick="consumeProduction()">Concluir produção + descontar stock</button>
+        <div>
+          <div class="section-title" style="margin:0">Produção</div>
+          <small>Planeamento diário das encomendas confirmadas e em produção.</small>
+        </div>
+        <div class="prod-toolbar-controls">
+          <div class="field">
+            <label>Data</label>
+            <input id="prodDate" type="date" onchange="renderProduction()">
+          </div>
+          <button class="btn primary" onclick="renderProduction()">Atualizar</button>
+          <button class="btn" onclick="consumeProduction()">Concluir produção</button>
+        </div>
       </div>
     </div>
+
     <div id="productionSummary" class="prod-summary"></div>
+
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><div class="section-title" style="margin-top:0">Encomendas a produzir</div><div id="productionOrders"></div></div>
-      <div class="card"><div class="section-title" style="margin-top:0">Produzir</div><div id="productionProducts"></div></div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0">Encomendas a produzir</div>
+        <div id="productionOrders"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0">Donuts por produto</div>
+        <div id="productionProducts"></div>
+      </div>
     </div>
+
     <div class="grid2" style="margin-top:12px">
-      <div class="card"><div class="section-title" style="margin-top:0">Massa base</div><div id="productionRecipe"></div></div>
-      <div class="card"><div class="section-title" style="margin-top:0">Embalagens necessárias</div><div id="productionPackaging"></div></div>
+      <div class="card">
+        <div class="section-title" style="margin-top:0">Massa base</div>
+        <div id="productionRecipe"></div>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0">Embalagens necessárias</div>
+        <div id="productionPackaging"></div>
+      </div>
     </div>
-    <div class="card" style="margin-top:12px"><div class="section-title" style="margin-top:0">Sessões concluídas neste dia</div><div id="productionHistory"></div></div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="section-title" style="margin-top:0">Produções concluídas neste dia</div>
+      <div id="productionHistory"></div>
+    </div>
   </section>
 
 
@@ -1208,14 +1261,52 @@ async function deleteOrder(id){
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Confirmada','Em produção','Confirmado','Produção'].includes(o.status)&&!done.has(o.id)),counts={};
- ords.forEach(o=>o.items.forEach(i=>counts[i.name]=(counts[i.name]||0)+(Number(i.qty)||0)));
+ ords.forEach(o=>(o.items||[]).forEach(i=>counts[i.name]=(counts[i.name]||0)+(Number(i.qty)||0)));
  const total=Object.values(counts).reduce((a,b)=>a+b,0),batches=Math.ceil(total/(db.settings.yield||28)),active=ords.filter(o=>['Em produção','Produção'].includes(o.status)).length;
- const sum=document.getElementById('productionSummary');if(sum)sum.innerHTML=[['Encomendas',ords.length],['Donuts',total],['Receitas',batches],['Em produção',active]].map(([l,v])=>`<div class="card prod-kpi"><span>${l}</span><strong>${v}</strong></div>`).join('');
- productionProducts.innerHTML=Object.keys(counts).length?Object.entries(counts).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><strong>${n}</strong><strong>${q} un.</strong></div>`).join(''):'<div class="empty">Sem produção pendente para esta data</div>';
- productionRecipe.innerHTML=`<div class="mini"><span>Receitas necessárias</span><strong>${batches}</strong></div>`+SEED.recipe.map(x=>`<div class="cart-row" style="grid-template-columns:1fr 110px"><span>${x.name}</span><strong>${(x.qty*batches).toLocaleString('pt-PT')} ${x.unit}</strong></div>`).join('');
- const po=document.getElementById('productionOrders');if(po)po.innerHTML=ords.length?ords.map(o=>`<div class="prod-order"><button onclick="showOrder('${o.id}')"><span><strong>${o.id}</strong><small>${o.client||'—'}</small></span><strong>${calcOrder(o).qty} un.</strong><span>${o.box||'—'} × ${Number(o.boxes)||1}</span></button><div><span class="badge">${o.status}</span>${['Em produção','Produção'].includes(o.status)?'<small>A preparar</small>':`<button class="btn" onclick="setStatus('${o.id}','Em produção')">Iniciar produção</button>`}</div></div>`).join(''):'<div class="empty">Sem encomendas para esta data.</div>';
- const packs={};ords.forEach(o=>{const n=o.box||'Sem embalagem';packs[n]=(packs[n]||0)+(Number(o.boxes)||1)});const pp=document.getElementById('productionPackaging');if(pp)pp.innerHTML=Object.keys(packs).length?Object.entries(packs).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><span>${n}</span><strong>${q} un.</strong></div>`).join(''):'<div class="empty">Sem embalagens previstas.</div>';
- const runs=(db.productionRuns||[]).filter(r=>r.date===d);if(document.getElementById('productionHistory'))productionHistory.innerHTML=runs.length?runs.map((r,i)=>`<div class="cart-row" style="grid-template-columns:1fr 110px 130px"><span>Sessão ${i+1} · ${(r.orders||[]).join(', ')}</span><strong>${r.total||0} un.</strong><small>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</small></div>`).join(''):'<div class="empty">Ainda não há sessões concluídas neste dia</div>'
+ const sum=document.getElementById('productionSummary');
+ if(sum)sum.innerHTML=[
+   ['Encomendas',ords.length],
+   ['Donuts',total],
+   ['Receitas',batches],
+   ['Em produção',active]
+ ].map(([label,value])=>`<div class="card prod-kpi"><span>${label}</span><strong>${value}</strong></div>`).join('');
+
+ productionProducts.innerHTML=Object.keys(counts).length
+ ?Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><strong>${escapeHtml(n)}</strong><strong>${q} un.</strong></div>`).join('')
+ :'<div class="empty">Sem produção pendente para esta data</div>';
+
+ productionRecipe.innerHTML=total
+ ?`<div class="mini"><span>Receitas necessárias</span><strong>${batches}</strong></div>`+
+   SEED.recipe.map(x=>`<div class="cart-row" style="grid-template-columns:1fr 110px"><span>${escapeHtml(x.name)}</span><strong>${(x.qty*batches).toLocaleString('pt-PT')} ${x.unit}</strong></div>`).join('')
+ :'<div class="empty">Sem preparação necessária.</div>';
+
+ const po=document.getElementById('productionOrders');
+ if(po)po.innerHTML=ords.length?ords.map(o=>{
+   const inProd=['Em produção','Produção'].includes(o.status);
+   return `<div class="prod-order">
+     <button class="prod-order-main" onclick="showOrder('${escapeHtml(o.id)}')">
+       <span><strong>${escapeHtml(o.id)}</strong><small>${escapeHtml(o.client||'—')}</small></span>
+       <strong>${calcOrder(o).qty} un.</strong>
+       <span>${escapeHtml(o.box||'—')} × ${Number(o.boxes)||1}</span>
+     </button>
+     <div class="prod-order-actions">
+       <span class="badge">${escapeHtml(o.status)}</span>
+       ${inProd?'<small>A preparar</small>':`<button class="btn" onclick="setStatus('${escapeHtml(o.id)}','Em produção')">Iniciar produção</button>`}
+     </div>
+   </div>`;
+ }).join(''):'<div class="empty">Sem encomendas para esta data.</div>';
+
+ const packs={};
+ ords.forEach(o=>{const n=o.box||'Sem embalagem';packs[n]=(packs[n]||0)+(Number(o.boxes)||1)});
+ const pp=document.getElementById('productionPackaging');
+ if(pp)pp.innerHTML=Object.keys(packs).length
+ ?Object.entries(packs).map(([n,q])=>`<div class="cart-row" style="grid-template-columns:1fr 90px"><span>${escapeHtml(n)}</span><strong>${q} un.</strong></div>`).join('')
+ :'<div class="empty">Sem embalagens previstas.</div>';
+
+ const runs=(db.productionRuns||[]).filter(r=>r.date===d);
+ if(document.getElementById('productionHistory'))productionHistory.innerHTML=runs.length
+ ?runs.map((r,i)=>`<div class="cart-row" style="grid-template-columns:1fr 110px 130px"><span>Sessão ${i+1} · ${(r.orders||[]).map(escapeHtml).join(', ')}</span><strong>${r.total||0} un.</strong><small>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</small></div>`).join('')
+ :'<div class="empty">Ainda não há produções concluídas neste dia</div>';
 }
 
 function consumeProduction(){
