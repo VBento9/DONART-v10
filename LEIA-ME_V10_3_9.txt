@@ -1,0 +1,11 @@
+DONART V10.3.9 — Encomendas Interativas
+
+- Nova vista principal em cartões.
+- Fluxo visual Pedido → Confirmada → Em produção → Pronta → Entregue.
+- Cada etapa mostra o número de encomendas e funciona como filtro.
+- Cartão mostra cliente, entrega, donuts, total, pagamento e origem online.
+- Alteração de estado continua a usar a lógica existente, incluindo guardas de pagamento.
+- Botões Ver detalhe e WhatsApp mantidos.
+- Vista Tabela continua disponível.
+- Mantém V10.3.8, Cloud, PIN, Dashboard e capacidade.
+- Sem SQL novo.
