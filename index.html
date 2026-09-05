@@ -1365,8 +1365,8 @@ function renderProduction(){
    ['Encomendas',ords.length,'Para produzir'],
    ['Donuts',total,'Total do dia'],
    ['Receitas',batches,'Massa base'],
-   ['Stock',shortages.length?shortages.length+' falta(s)':'OK',shortages.length?'Rever antes de concluir':'Sem faltas detetadas']
- ].map(([label,value,note])=>`<div class="card prod-kpi ${label==='Stock'&&shortages.length?'prod-kpi-alert':''}">
+   ['Stock',!ords.length?'—':(shortages.length?shortages.length+' falta(s)':'OK'),!ords.length?'Sem produção para verificar':(shortages.length?'Rever antes de concluir':'Sem faltas detetadas')]
+ ].map(([label,value,note])=>`<div class="card prod-kpi ${label==='Stock'&&ords.length&&shortages.length?'prod-kpi-alert':''}">
    <span>${label}</span><strong>${value}</strong><small>${note}</small>
  </div>`).join('');
 
