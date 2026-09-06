@@ -1,0 +1,13 @@
+DONART V11.9.2 — BARRA INFERIOR IPHONE
+
+Base: V11.9.1.
+
+Correção:
+- Identificada a estrutura real da app: .sidebar / .brand / .nav.
+- No iPhone, oculta apenas .sidebar .brand (logótipo + texto).
+- A sidebar fixa passa a ter aproximadamente 72 px em vez de ocupar várias centenas de px.
+- Mantém a navegação inferior.
+- Ajustado o espaço inferior do conteúdo para permitir scroll até ao fim.
+
+JavaScript: inalterado e node --check OK.
+Lógica operacional: inalterada.

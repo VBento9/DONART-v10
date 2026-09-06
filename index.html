@@ -1116,6 +1116,49 @@
     font-size:18px!important;
   }
 }
+
+/* V11.9.2 — correção real da barra inferior no iPhone */
+@media(max-width:650px){
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
+
+  .sidebar{
+    height:auto!important;
+    min-height:0!important;
+    max-height:calc(72px + env(safe-area-inset-bottom))!important;
+    padding:6px 7px calc(6px + env(safe-area-inset-bottom))!important;
+    overflow:hidden!important;
+  }
+
+  .sidebar .brand{
+    display:none!important;
+    margin:0!important;
+    padding:0!important;
+    height:0!important;
+  }
+
+  .sidebar .nav{
+    display:flex!important;
+    align-items:center!important;
+    gap:6px!important;
+    margin:0!important;
+    padding:0!important;
+    min-height:0!important;
+    height:54px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+  }
+
+  .sidebar .nav button{
+    min-height:50px!important;
+    height:50px!important;
+    padding:7px 10px!important;
+    margin:0!important;
+  }
+
+  .main{
+    padding-bottom:22px!important;
+  }
+}
 </style>
 </head>
 <body>
