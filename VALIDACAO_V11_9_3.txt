@@ -1,0 +1,21 @@
+DONART V11.9.3 — FLUXO DIÁRIO RÁPIDO
+
+BASE
+- DONART V11.9.2 validada no iPhone.
+
+ALTERAÇÃO
+- No Dashboard, cada encomenda próxima passa a ter ação direta.
+- "Produção" abre diretamente o módulo Produção já na data da encomenda.
+- "Abrir" abre diretamente o detalhe.
+- Encomendas Prontas mostram "Finalizar" para facilitar entrega/pagamento.
+- No iPhone, os botões reorganizam-se numa linha própria.
+
+IMPORTANTE
+- Nenhum atalho muda estados automaticamente.
+- Não altera pagamentos.
+- Não altera consumo de stock.
+- Não altera Cloud/Supabase.
+
+VALIDAÇÃO
+- JavaScript node --check OK.
+- Funções críticas preservadas byte-a-byte.

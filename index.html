@@ -1159,6 +1159,22 @@
     padding-bottom:22px!important;
   }
 }
+
+/* V11.9.3 — atalhos do fluxo diário no Dashboard */
+.dashboard-today-actions{display:flex;justify-content:flex-end;gap:6px}
+.dashboard-mini-btn{border:1px solid #eadfdb;background:#fff;border-radius:10px;padding:7px 9px;font-size:8px;font-weight:900;color:#6b453d;cursor:pointer;white-space:nowrap}
+.dashboard-mini-btn.primary{background:#f7256d;color:#fff;border-color:#f7256d}
+.dashboard-mini-btn.production{background:#fff2d8;border-color:#f0d49b}
+.dashboard-mini-btn:hover{transform:translateY(-1px)}
+@media(max-width:900px){
+  .dashboard-today-row{grid-template-columns:95px minmax(120px,1fr) 82px auto auto!important}
+  .dashboard-today-actions{grid-column:auto}
+}
+@media(max-width:650px){
+  .dashboard-today-row{grid-template-columns:minmax(0,1fr) auto!important}
+  .dashboard-today-actions{grid-column:1/-1;justify-content:flex-start;margin-top:3px}
+  .dashboard-mini-btn{min-height:34px;padding:7px 10px;font-size:9px}
+}
 </style>
 </head>
 <body>
@@ -2400,6 +2416,19 @@ function dashboardDailyOpen(id){
  go('orders');
  setTimeout(()=>showOrder(id),120);
 }
+function dashboardGoProduction(id){
+ const o=db.orders.find(x=>String(x.id)===String(id));
+ if(!o)return toast('Encomenda não encontrada');
+ go('production');
+ setTimeout(()=>{
+   try{
+     if(typeof prodDate!=='undefined'){
+       prodDate.value=o.delivery||todayISO();
+       renderProduction();
+     }
+   }catch(e){}
+ },120);
+}
 function renderDashboardDaily(){
  const cards=document.getElementById('dashboardDaily'),list=document.getElementById('dashboardTodayList'),label=document.getElementById('dashboardTodayLabel');
  if(!cards||!list)return;
@@ -2427,12 +2456,21 @@ function renderDashboardDaily(){
    const c=calcOrder(o);
    const isToday=o.delivery===today;
    const due=Math.max(0,(Number(c.total)||0)-(Number(o.paid)||0));
-   return `<div class="dashboard-today-row" onclick="dashboardDailyOpen('${String(o.id).replaceAll("'","\\'")}')">
+   const safeId=String(o.id).replaceAll("'","\\'");
+   const productionAction=['Confirmada','Em produção','Produção','Confirmado'].includes(o.status)
+     ? `<button type="button" class="dashboard-mini-btn production" onclick="event.stopPropagation();dashboardGoProduction('${safeId}')">Produção</button>`
+     : '';
+   const openLabel=o.status==='Pronta'?'Finalizar':'Abrir';
+   return `<div class="dashboard-today-row" onclick="dashboardDailyOpen('${safeId}')">
      <div class="dashboard-today-id">${o.id}${o.source==='online_store'?' · ONLINE':''}</div>
      <div class="dashboard-today-client"><b>${o.client||'Cliente'}</b><small>${due>.001?'Falta '+euro(due):'Pagamento OK'}</small></div>
      <div class="dashboard-today-date">${isToday?'HOJE':o.delivery}</div>
      <div class="dashboard-today-total">${euro(c.total)}</div>
      <span class="badge ${o.status==='Pronta'?'ok':o.status==='Em produção'?'warn':''} dashboard-today-status">${o.status}</span>
+     <div class="dashboard-today-actions">
+       ${productionAction}
+       <button type="button" class="dashboard-mini-btn primary" onclick="event.stopPropagation();dashboardDailyOpen('${safeId}')">${openLabel}</button>
+     </div>
    </div>`
  }).join(''):`<div class="dashboard-today-empty">Sem entregas pendentes a partir de hoje.</div>`;
 }
