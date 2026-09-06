@@ -873,6 +873,10 @@
  .special-pro-cover{width:105px}
 }
 
+
+/* DONART V11.3 — Entregas interativas */
+.delivery-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px}.delivery-hero .section-title{font-size:18px}.delivery-hero p{font-size:9px}.delivery-overview-mode{display:inline-flex;padding:7px 12px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.06em}.delivery-overview-mode.testing{background:#fff0c9;color:#86600c}.delivery-overview-mode.production{background:#dff5e6;color:#267441}.delivery-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}.delivery-kpi{padding:10px 12px;display:flex;flex-direction:column;gap:2px}.delivery-kpi span{font-size:8px;font-weight:800;text-transform:uppercase;color:#8b746c}.delivery-kpi strong{font-size:16px;color:#503833}.delivery-kpi small{font-size:7.5px;color:#94837c}.delivery-settings-pro,.delivery-calendar-pro{padding:11px 12px}.delivery-block-head{margin-bottom:8px}.delivery-block-head small{font-size:8px;color:#8c7971}#delivery .delivery-v33{margin-top:0}#delivery .delivery-v33-card strong{font-size:10px}#delivery .delivery-v33-card small,#delivery .delivery-v33-card p{font-size:8px}#delivery .delivery-v33-card label{font-size:9px}#delivery .delivery-v33-card input,#delivery .delivery-v33-card select,#delivery .delivery-v33-card textarea{font-size:10px}#delivery .btn{font-size:9px}.delivery-calendar-pro .capacity-head h3{font-size:14px}.delivery-calendar-pro .capacity-head p{font-size:8px}@media(max-width:760px){.delivery-hero{align-items:stretch;flex-direction:column}.delivery-summary{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
@@ -1689,19 +1693,10 @@
   </section>
 
   <section id="delivery" class="screen">
-    <div class="card">
-      <h2 style="margin-top:0">Entregas Loja</h2>
-      <p class="soft-note">Configura levantamento, entrega local, taxas, antecedência, horários, zonas e capacidade diária da loja online.</p>
-      <div id="shopDeliverySettingsBox"></div>
-    </div>
-    <div class="card" style="margin-top:12px">
-      <div class="capacity-head capacity-head-pro">
-  <div><span class="capacity-kicker">PLANEAMENTO DE PRODUÇÃO</span><h3 style="margin:2px 0 0">Agenda de capacidade</h3><p class="muted" style="margin:5px 0 0">Calendário mensal das encomendas online, unidades reservadas e capacidade restante.</p></div>
-  <div class="capacity-nav"><button class="btn capacity-nav-arrow" onclick="changeCapacityMonth(-1)">‹</button><strong id="capacityMonthLabel"></strong><button class="btn capacity-nav-arrow" onclick="changeCapacityMonth(1)">›</button><button class="btn" onclick="capacityCalendarToday()">Hoje</button></div>
-</div>
-<div id="capacityMonthKpis" class="capacity-month-kpis"></div>
-<div id="shopCapacityAgenda"></div>
-    </div>
+    <div class="delivery-hero card"><div><div class="section-title" style="margin:0">Entregas & Capacidade</div><p class="muted" style="margin:4px 0 0">Controla levantamento, entrega local, horários, zonas e disponibilidade da loja online.</p></div><div id="deliveryModeHero"></div></div>
+    <div id="deliverySummary" class="delivery-summary"></div>
+    <div class="card delivery-settings-pro" style="margin-top:10px"><div class="delivery-block-head"><div><div class="section-title" style="margin:0">Configuração da loja</div><small>Definições usadas pela loja para aceitar datas e métodos de entrega.</small></div></div><div id="shopDeliverySettingsBox"></div></div>
+    <div class="card delivery-calendar-pro" style="margin-top:10px"><div class="capacity-head capacity-head-pro"><div><span class="capacity-kicker">PLANEAMENTO DE PRODUÇÃO</span><h3 style="margin:2px 0 0">Agenda de capacidade</h3><p class="muted" style="margin:5px 0 0">Calendário mensal das encomendas online, unidades reservadas e capacidade restante.</p></div><div class="capacity-nav"><button class="btn capacity-nav-arrow" onclick="changeCapacityMonth(-1)">‹</button><strong id="capacityMonthLabel"></strong><button class="btn capacity-nav-arrow" onclick="changeCapacityMonth(1)">›</button><button class="btn" onclick="capacityCalendarToday()">Hoje</button></div></div><div id="capacityMonthKpis" class="capacity-month-kpis"></div><div id="shopCapacityAgenda"></div></div>
   </section>
 
   <section id="cloud" class="screen">
@@ -2845,6 +2840,17 @@ function ensureShopDeliverySettings(){
  if(!['testing','production'].includes(s.orderApprovalMode))s.orderApprovalMode='testing';
 }
 function shopDeliverySettings(){ensureShopDeliverySettings();return db.settings.shopDelivery}
+
+function renderDeliveryOverview(){
+ const s=shopDeliverySettings(),summary=document.getElementById('deliverySummary'),mode=document.getElementById('deliveryModeHero'),days=(s.allowedWeekdays||[]).length;
+ if(mode)mode.innerHTML=`<span class="delivery-overview-mode ${s.orderApprovalMode==='production'?'production':'testing'}">${s.orderApprovalMode==='production'?'PRODUÇÃO':'TESTES'}</span>`;
+ if(summary)summary.innerHTML=[
+  ['Levantamento',s.pickupEnabled?'Ativo':'Inativo',s.pickupEnabled?`${s.pickupStart||'10:00'}–${s.pickupEnd||'19:00'}`:'Não disponível'],
+  ['Entrega local',s.localDeliveryEnabled?'Ativa':'Inativa',s.localDeliveryEnabled?`${euro(Number(s.localDeliveryFee)||0)} de taxa`:'Não disponível'],
+  ['Antecedência',`${Number(s.leadDays)||0} dia${Number(s.leadDays)===1?'':'s'}`,'Mínimo para encomendar'],
+  ['Capacidade',Number(s.maxOrdersPerDay)>0?`${s.maxOrdersPerDay}/dia`:'Sem limite',`${days} dias disponíveis/semana`]
+ ].map(([a,b,c])=>`<div class="card delivery-kpi"><span>${a}</span><strong>${b}</strong><small>${c}</small></div>`).join('');
+}
 async function saveShopDeliverySettings(){
  const s=shopDeliverySettings();
  s.pickupEnabled=!!document.getElementById('setPickupEnabled')?.checked;
@@ -2877,6 +2883,7 @@ async function saveShopDeliverySettings(){
  }
 }
 function renderShopDeliverySettings(){
+ renderDeliveryOverview();
  const s=shopDeliverySettings();
  const box=document.getElementById('shopDeliverySettingsBox'); if(!box)return;
  const days=[['Seg',1],['Ter',2],['Qua',3],['Qui',4],['Sex',5],['Sáb',6],['Dom',0]];
