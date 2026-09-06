@@ -1,0 +1,27 @@
+DONART V12.0.2 — LIMPEZA WEB COM PRODUÇÃO PARTILHADA
+
+BASE
+- DONART V12.0.1.
+
+CORREÇÃO
+- Encomendas WEB- de teste deixam de ficar bloqueadas quando pertencem a uma produção partilhada.
+- Produção exclusiva do teste: repõe stock e remove o registo de produção.
+- Produção partilhada: remove apenas o ID da encomenda de teste do run, sem alterar o stock consumido pelas restantes encomendas.
+- Caixa associado ao teste continua a ser removido.
+- Limpeza Cloud/RPC mantém-se igual.
+
+OBJETIVO
+- Permitir eliminar testes WEB- em Pronta/Entregue mesmo quando participaram numa produção partilhada, sem corromper stock.
+
+NÃO ALTERADO
+- Produção normal.
+- Consumo normal de stock.
+- Estados.
+- Caixa normal.
+- Cloud pull.
+- Dashboard.
+- Eliminação normal de AS-.
+
+VALIDAÇÃO
+- JavaScript node --check OK.
+- Funções críticas não relacionadas preservadas byte-a-byte.

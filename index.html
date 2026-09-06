@@ -2621,12 +2621,14 @@ async function deleteTestOrder(id){
  if(!o)return;
  if(!canDeleteTestOrder(o))return toast('A limpeza de testes só está disponível para encomendas WEB- em modo Testes');
  const runs=testOrderProductionRuns(id);
- if(runs.some(r=>(r.orders||[]).length!==1))return toast('Limpeza bloqueada: esta encomenda partilha uma produção com outras encomendas');
+ const exclusiveRuns=runs.filter(r=>(r.orders||[]).length===1);
+ const sharedRuns=runs.filter(r=>(r.orders||[]).length>1);
  const cashCount=(db.cash||[]).filter(x=>x.orderId===id).length;
  const produced=runs.length>0;
  let msg='Eliminar esta encomenda de TESTE definitivamente?';
  if((+o.paid||0)>0||cashCount)msg+=' Os movimentos de Caixa ligados à encomenda serão removidos.';
- if(produced)msg+=' O stock consumido será reposto e o registo de produção de teste será removido.';
+ if(exclusiveRuns.length)msg+=' O stock consumido em produções exclusivas deste teste será reposto.';
+ if(sharedRuns.length)msg+=' A encomenda será retirada das produções partilhadas sem alterar o stock dessas produções.';
  msg+=' A encomenda será também marcada como eliminada na origem da Loja para não reaparecer.';
  if(!confirm(msg))return;
 
@@ -2658,7 +2660,8 @@ async function deleteTestOrder(id){
    }
  }
 
- for(const run of runs){
+ // Produções exclusivas: repor stock e remover o run.
+ for(const run of exclusiveRuns){
    const needs=testOrderProductionNeeds(o,run);
    Object.entries(needs).forEach(([name,qty])=>{
      const x=stockByName(name);
@@ -2666,7 +2669,16 @@ async function deleteTestOrder(id){
      removeTestProductionMove(run,name,qty);
    });
  }
- if(runs.length)db.productionRuns=(db.productionRuns||[]).filter(r=>!runs.includes(r));
+
+ // Produções partilhadas: não mexer no stock consumido.
+ // Apenas retirar a encomenda de teste da lista de encomendas desse run.
+ for(const run of sharedRuns){
+   run.orders=(run.orders||[]).filter(orderId=>orderId!==id);
+ }
+
+ if(exclusiveRuns.length){
+   db.productionRuns=(db.productionRuns||[]).filter(r=>!exclusiveRuns.includes(r));
+ }
  db.cash=(db.cash||[]).filter(x=>x.orderId!==id);
  db.orders=db.orders.filter(x=>x.id!==id);
 
@@ -2679,7 +2691,7 @@ async function deleteTestOrder(id){
 
  try{orderDialog?.close()}catch(_){}
  cloudLogMsg('Teste eliminado persistentemente da Loja/Cloud: '+id);
- toast('Teste eliminado definitivamente'+(produced?' · stock reposto':'')+' · não reaparece ao atualizar');
+ toast('Teste eliminado definitivamente'+(exclusiveRuns.length?' · stock reposto':'')+(sharedRuns.length?' · produção partilhada preservada':'')+' · não reaparece ao atualizar');
 }
 let ordersView='cards';
 function setOrdersView(view){
