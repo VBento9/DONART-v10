@@ -1,0 +1,11 @@
+DONART V11.8.1 — LIMPEZA SEGURA DE TESTES
+Base: V11.8 Revisão Global Validada.
+- Limpeza só para WEB- em modo TESTES.
+- Remove Caixa associado por orderId.
+- Repõe stock e remove produção apenas quando a produção é exclusiva da encomenda.
+- Bloqueia limpeza se a produção for partilhada.
+- Remove order_items + order da Cloud antes da limpeza local.
+- Em modo PRODUÇÃO a opção desaparece.
+- consumeProduction(), pagamentos, Cloud, Entregas e restantes módulos preservados.
+- node --check: OK.
+- onclick: sem handlers em falta.
