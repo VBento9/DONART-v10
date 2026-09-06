@@ -1,0 +1,12 @@
+DONART V12.3.2 — DIAGNÓSTICO DE ELIMINAÇÃO CLOUD
+
+Alteração única:
+- deleteOrder passa a mostrar a resposta real do Supabase.
+- Mostra message, code, details e hint quando disponíveis.
+- Distingue falha na pesquisa, order_items, order delete e verificação final.
+- Mantém regra Cloud-first: se Supabase falhar, nada é apagado localmente.
+- Produção, stock, estados, caixa, dashboard, criação de encomendas e numeração Cloud ficaram intactos.
+
+Validação:
+- JavaScript node --check OK.
+- Funções críticas preservadas byte-a-byte.

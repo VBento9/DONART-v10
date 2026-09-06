@@ -1204,9 +1204,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.3.1 · Cache Reset + IDs Cloud Únicos · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.3.2 · Diagnóstico Eliminação Cloud · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.3.1</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.3.2</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -2811,83 +2811,94 @@ function renderOrders(){
 }
 function setStatus(id,s){const o=db.orders.find(x=>x.id===id);if(!o)return;if(s==='Cancelado'&&o.status!=='Cancelado')return voidOrder(id);if(typeof setOrderStatus==='function')return setOrderStatus(id,s);o.status=s;save();toast('Estado atualizado')}
 function voidOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const produced=isOrderProduced(id),paid=+o.paid||0;let msg='Anular esta encomenda? Ela deixa de contar na faturação, lucro e valores por receber.';if(paid>0)msg+=' O valor pago fica guardado no histórico de anulação, mas deixa de contar como receita.';if(produced)msg+=' A produção já foi concluída, por isso o stock consumido NÃO será reposto.';if(!confirm(msg)){renderOrders();return}o.voidedAt=new Date().toISOString();o.voidedFrom=o.status;o.voidedPaid=paid;o.status='Cancelado';save();toast('Encomenda anulada')}
+function supabaseDetailedError(e){
+ if(!e)return 'Erro desconhecido';
+ const parts=[];
+ if(e.message)parts.push(String(e.message));
+ if(e.code)parts.push('code='+String(e.code));
+ if(e.details)parts.push('details='+String(e.details));
+ if(e.hint)parts.push('hint='+String(e.hint));
+ return parts.join(' | ')||String(e)
+}
+
 async function deleteOrder(id){
- const o=db.orders.find(x=>x.id===id);
- if(!o)return;
- if(!canDeleteOrder(o))return toast('Só pode eliminar encomendas sem pagamento e sem produção, em Pedido ou Cancelado');
- if(!confirm('Eliminar esta encomenda definitivamente?'))return;
+ const o=db.orders.find(x=>x.id===id);if(!o)return;
+ if(!canDeleteOrder(o))return toast('Esta encomenda não pode ser eliminada neste estado');
+ if(!confirm('Eliminar definitivamente a encomenda '+id+'?'))return;
 
  const u=cloudUser||await ensureCloudSession();
  if(!u||!cloudClient){
-   toast('Liga à Cloud para eliminar definitivamente. Nada foi apagado.');
-   return;
+   return toast('Sem sessão Cloud. Nada foi apagado.')
  }
 
  try{
-   // Descobrir a linha Cloud pelo UUID relacional OU pelo número visível da encomenda.
-   // Isto resolve encomendas antigas que existem na Cloud mas perderam o _rid local.
-   const {data:remoteRows,error:fetchError}=await cloudClient
+   // Procurar TODAS as linhas Cloud que correspondem a esta encomenda
+   // por UUID ou pelo public_id.
+   const {data:rows,error:findErr}=await cloudClient
      .from(REL_TABLES.orders)
-     .select('id,data')
+     .select('id,user_id,data,status')
      .eq('user_id',u.id);
-   if(fetchError)throw fetchError;
 
-   const matches=(Array.isArray(remoteRows)?remoteRows:[]).filter(r=>{
-     const appId=r?.data&&typeof r.data==='object'?r.data.id:null;
-     return (o._rid&&String(r.id)===String(o._rid)) || String(appId||'')===String(o.id||'');
+   if(findErr)throw new Error('Pesquisa Cloud falhou | '+supabaseDetailedError(findErr));
+
+   const matches=(Array.isArray(rows)?rows:[]).filter(r=>{
+     const pub=r?.data?.id;
+     return (o._rid&&String(r.id)===String(o._rid)) ||
+            (pub&&String(pub)===String(o.id))
    });
 
-   // Se existir na Cloud, apagar primeiro itens e depois a encomenda.
-   for(const r of matches){
-     const {error:itemsError}=await cloudClient
-       .from('donart_v10_order_items')
-       .delete()
-       .eq('user_id',u.id)
-       .eq('order_id',r.id);
-     if(itemsError)throw itemsError;
+   if(matches.length){
+     for(const r of matches){
+       const {error:itemErr}=await cloudClient
+         .from(REL_TABLES.order_items)
+         .delete()
+         .eq('order_id',r.id);
+       if(itemErr)throw new Error('Falha ao apagar itens | '+supabaseDetailedError(itemErr));
 
-     const {error:orderError}=await cloudClient
+       const {error:orderErr}=await cloudClient
+         .from(REL_TABLES.orders)
+         .delete()
+         .eq('id',r.id)
+         .eq('user_id',u.id);
+       if(orderErr)throw new Error('Falha ao apagar encomenda | '+supabaseDetailedError(orderErr));
+     }
+
+     // Verificação obrigatória: não pode restar qualquer linha com o mesmo public_id.
+     const {data:verify,error:verifyErr}=await cloudClient
        .from(REL_TABLES.orders)
-       .delete()
-       .eq('user_id',u.id)
-       .eq('id',r.id);
-     if(orderError)throw orderError;
+       .select('id,data')
+       .eq('user_id',u.id);
+     if(verifyErr)throw new Error('Verificação Cloud falhou | '+supabaseDetailedError(verifyErr));
+
+     const stillThere=(Array.isArray(verify)?verify:[]).some(r=>{
+       const pub=r?.data?.id;
+       return (o._rid&&String(r.id)===String(o._rid)) ||
+              (pub&&String(pub)===String(o.id))
+     });
+     if(stillThere)throw new Error('A encomenda continua presente no Supabase após DELETE')
    }
 
-   // Confirmar que já não ficou nenhuma cópia Cloud com o mesmo ID visível.
-   const {data:verifyRows,error:verifyError}=await cloudClient
-     .from(REL_TABLES.orders)
-     .select('id,data')
-     .eq('user_id',u.id);
-   if(verifyError)throw verifyError;
-   const stillThere=(Array.isArray(verifyRows)?verifyRows:[]).some(r=>{
-     const appId=r?.data&&typeof r.data==='object'?r.data.id:null;
-     return String(appId||'')===String(o.id||'');
-   });
-   if(stillThere)throw new Error('A encomenda continua presente na Cloud após a tentativa de eliminação');
+   db.orders=db.orders.filter(x=>x.id!==id);
+   relClearOrderPending(o);
+   relShadowForgetOrder(o);
 
+   cloudApplying=true;
+   try{
+     localStorage.setItem(KEY,JSON.stringify(db));
+     renderAll()
+   }finally{
+     cloudApplying=false
+   }
+
+   if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
+   setCloudMeta({dirty:relOrderPendingSet().size>0,verified:true,conflict:false,lastSync:new Date().toISOString()});
+   cloudLogMsg('Encomenda eliminada persistentemente: '+id);
+   toast('Encomenda eliminada da Cloud e do dispositivo')
  }catch(e){
-   cloudLogMsg('Falha ao eliminar encomenda persistentemente: '+cloudErrText(e));
-   toast('Não foi possível eliminar da Cloud. Nada foi apagado localmente.');
-   return;
+   const detail=supabaseDetailedError(e);
+   cloudLogMsg('Falha ao eliminar '+id+': '+detail);
+   alert('Não foi possível eliminar da Cloud.\n\n'+detail+'\n\nNada foi apagado localmente.');
  }
-
- // Só depois de confirmada a eliminação Cloud, apagar a cópia local.
- db.orders=db.orders.filter(x=>x.id!==id);
- relClearOrderPending(o);
- relShadowForgetOrder(o);
- cloudApplying=true;
- try{
-   localStorage.setItem(KEY,JSON.stringify(db));
-   renderAll();
- }finally{
-   cloudApplying=false;
- }
- if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
- setCloudMeta({dirty:relOrderPendingSet().size>0,verified:true,conflict:false,lastSync:new Date().toISOString()});
- cloudLogMsg('Encomenda eliminada persistentemente: '+id);
- try{orderDialog?.close()}catch(_){}
- toast('Encomenda eliminada definitivamente · não reaparece ao atualizar');
 }
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
