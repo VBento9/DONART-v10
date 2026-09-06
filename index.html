@@ -1024,6 +1024,19 @@
 .cloud-safety-note{font-size:7.5px;color:#927f77;margin-top:8px}.cloud-activity-card .cloud-log{max-height:150px;overflow:auto;font-size:7.5px}
 @media(max-width:760px){.cloud-pro-hero{align-items:stretch;flex-direction:column}.cloud-pro-summary{grid-template-columns:1fr 1fr}.cloud-info-grid{grid-template-columns:1fr}}
 
+
+/* DONART V11.7 — Backup interativo */
+.backup-pro-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px}.backup-pro-hero .section-title{font-size:18px}.backup-pro-hero p{font-size:9px}
+.backup-status{padding:7px 11px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.05em}.backup-status.ok{background:#dff5e6;color:#267441}.backup-status.warn{background:#fff0c9;color:#86600c}
+.backup-pro-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}.backup-kpi{padding:10px 12px;display:flex;flex-direction:column;gap:2px}.backup-kpi span{font-size:8px;font-weight:800;text-transform:uppercase;color:#8b746c}.backup-kpi strong{font-size:15px;color:#503833}.backup-kpi small{font-size:7px;color:#94837c}
+.backup-pro-grid{gap:9px!important}.backup-pro-card,.backup-history-card{padding:11px 12px}.backup-card-head{margin-bottom:9px}.backup-card-head small{font-size:8px;color:#8c7971}#backup .section-title{font-size:14px}#backup .btn{font-size:9px}
+.backup-main-action{display:flex;align-items:center;gap:9px;padding:10px;border:1px solid #eee5e1;border-radius:10px;background:#fcfaf9}.backup-action-icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:#f7e3ea;color:#a52f5b;font-size:18px;font-weight:900}.backup-main-action>div:last-child{display:flex;flex-direction:column;gap:2px}.backup-main-action strong{font-size:9px;color:#4e3934}.backup-main-action small{font-size:7px;color:#8d7a72;line-height:1.35}
+.backup-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.backup-info-line{font-size:8px;margin-top:9px;color:#5d4943}.backup-warning{color:#9a6508}
+.backup-file-picker{display:flex;align-items:center;justify-content:center;min-height:54px;padding:10px;border:1px dashed #d8c8c1;border-radius:10px;background:#fcfaf9;cursor:pointer;font-size:8.5px;font-weight:800;color:#6d554d}.backup-file-picker input{display:none}
+.backup-preview{margin-top:8px;padding:9px;border:1px solid #eee5e1;border-radius:9px;background:#fff;font-size:8px;line-height:1.4;color:#69544d}.backup-safety-note{font-size:7px;color:#927f77;margin-top:8px}
+.backup-history-pro{display:grid;gap:5px}.backup-history-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:7px 8px;border:1px solid #eee5e1;border-radius:9px;background:#fcfaf9}.backup-history-row>div{display:flex;flex-direction:column;gap:1px}.backup-history-row strong{font-size:8.5px;color:#4e3934}.backup-history-row small,.backup-history-row span{font-size:7px;color:#8d7a72}
+@media(max-width:760px){.backup-pro-hero{align-items:stretch;flex-direction:column}.backup-pro-summary{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
@@ -2013,11 +2026,56 @@
   </section>
 
   <section id="backup" class="screen">
-    <div class="grid2">
-      <div class="card"><h3>Backup completo</h3><p>Guarda encomendas, orçamentos, clientes, stock, compras, produção, caixa, custos e configurações num único ficheiro.</p><div class="btnrow"><button class="btn primary" onclick="exportBackup()">Criar backup</button><button class="btn" onclick="shareBackup()">Partilhar / guardar na cloud</button></div><p id="backupInfo"></p><p id="storageInfo" class="security-note"></p><div id="backupHistory" class="soft-note"></div></div>
-      <div class="card"><h3>Restaurar backup com segurança</h3><input type="file" id="backupFile" accept=".json,application/json" onchange="inspectBackupFile()"><div id="backupPreview" class="soft-note" style="margin-top:10px">Escolha um backup para o verificar antes da reposição.</div><div class="btnrow"><button class="btn primary" onclick="importBackup()">Restaurar backup verificado</button><button class="btn" onclick="restorePreRestoreSnapshot()">Recuperar cópia pré-restauro</button></div><p class="security-note">Antes de restaurar, a app guarda uma cópia interna de emergência e tenta também descarregar uma cópia dos dados atuais.</p></div>
+    <div class="backup-pro-hero card">
+      <div>
+        <div class="section-title" style="margin:0">Backup & Recuperação</div>
+        <p class="muted" style="margin:4px 0 0">Protege os dados da DONART e recupera uma cópia quando necessário.</p>
+      </div>
+      <div id="backupHeroStatus" class="backup-status">A verificar…</div>
     </div>
-    <div class="card" style="margin-top:12px"><h3>Segurança</h3><div class="soft-note">Após 5 PINs errados, o acesso fica bloqueado durante 5 minutos neste dispositivo.</div><div class="form-grid"><div class="field"><label>Novo PIN</label><input id="newPin" inputmode="numeric" maxlength="6"></div><div class="field"><label>Bloqueio automático</label><select id="lockMinutes"><option value="5">5 min</option><option value="15" selected>15 min</option><option value="30">30 min</option><option value="60">60 min</option><option value="0">Nunca</option></select></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveSecurity()">Guardar segurança</button></div></div></div>
+
+    <div id="backupProSummary" class="backup-pro-summary"></div>
+
+    <div class="grid2 backup-pro-grid" style="margin-top:10px">
+      <div class="card backup-pro-card">
+        <div class="backup-card-head">
+          <div><div class="section-title" style="margin:0">Criar backup</div><small>Cópia completa dos dados deste dispositivo.</small></div>
+        </div>
+        <div class="backup-main-action">
+          <div class="backup-action-icon">↥</div>
+          <div><strong>Backup completo DONART</strong><small>Encomendas, clientes, stock, compras, produção, caixa e configurações.</small></div>
+        </div>
+        <div class="backup-actions">
+          <button class="btn primary" onclick="exportBackup()">Criar backup agora</button>
+          <button class="btn" onclick="shareBackup()">Partilhar / guardar</button>
+        </div>
+        <div id="backupInfo" class="backup-info-line"></div>
+        <div id="storageInfo" class="security-note"></div>
+      </div>
+
+      <div class="card backup-pro-card">
+        <div class="backup-card-head">
+          <div><div class="section-title" style="margin:0">Restaurar backup</div><small>O ficheiro é verificado antes de substituir os dados.</small></div>
+        </div>
+        <label class="backup-file-picker">
+          <span>Escolher ficheiro de backup</span>
+          <input type="file" id="backupFile" accept=".json,application/json" onchange="inspectBackupFile()">
+        </label>
+        <div id="backupPreview" class="backup-preview">Escolhe um backup para o verificar antes da reposição.</div>
+        <div class="backup-actions">
+          <button class="btn primary" onclick="importBackup()">Restaurar backup verificado</button>
+          <button class="btn" onclick="restorePreRestoreSnapshot()">Recuperar cópia pré-restauro</button>
+        </div>
+        <div class="backup-safety-note">Antes do restauro, a DONART cria uma cópia de emergência dos dados atuais.</div>
+      </div>
+    </div>
+
+    <div class="card backup-history-card" style="margin-top:10px">
+      <div class="backup-card-head">
+        <div><div class="section-title" style="margin:0">Histórico recente</div><small>Últimas cópias registadas neste dispositivo.</small></div>
+      </div>
+      <div id="backupHistory" class="backup-history-pro"></div>
+    </div>
   </section>
 </main></div>
 <dialog id="orderDialog" style="border:0;border-radius:20px;padding:0;max-width:760px;width:92%;box-shadow:0 25px 80px rgba(0,0,0,.35)">
@@ -2763,7 +2821,39 @@ function safetyBackupBeforeRestore(){const payload=backupPayload();localStorage.
 function normalizeImportedDb(d){d=d&&typeof d==='object'?d:{};d.settings=d.settings&&typeof d.settings==='object'&&!Array.isArray(d.settings)?d.settings:{};if(d.settings.yield==null)d.settings.yield=28;if(d.settings.minMargin==null)d.settings.minMargin=.65;if(d.settings.laborRate==null)d.settings.laborRate=8;if(d.settings.wasteRate==null)d.settings.wasteRate=.10;d.settings.businessName=d.settings.businessName||SEED.businessName;d.settings.businessPhone=d.settings.businessPhone||'';d.settings.iban=d.settings.iban||'';d.settings.paymentNote=d.settings.paymentNote||'';for(const k of ['orders','clients','quotes','purchases','cash','stockMoves','productionRuns','themedBoxes'])if(!Array.isArray(d[k]))d[k]=[];if(!Array.isArray(d.products)||!d.products.length)d.products=JSON.parse(JSON.stringify(SEED.products));if(!Array.isArray(d.stock))d.stock=[];if(!Array.isArray(d.packaging)||!d.packaging.length)d.packaging=[{name:'Caixa 6',capacity:6,cost:0},{name:'Caixa 12',capacity:12,cost:0},{name:'Caixa 24',capacity:24,cost:0},{name:'Caixa Evento 50',capacity:50,cost:0}];d.orders.forEach(o=>{o.items=Array.isArray(o.items)?o.items:[];o.paymentHistory=Array.isArray(o.paymentHistory)?o.paymentHistory:[]});d.quotes.forEach(q=>{q.items=Array.isArray(q.items)?q.items:[];q.paymentHistory=Array.isArray(q.paymentHistory)?q.paymentHistory:[];if(!q.box)q.box='Caixa 6';if(!q.boxes)q.boxes=1});return d}
 function restorePreRestoreSnapshot(){const raw=localStorage.getItem(RESTORE_SAFETY);if(!raw)return toast('Não existe cópia pré-restauro neste dispositivo');try{const x=JSON.parse(raw),v=validateBackupPayload(x);if(!v.ok)return toast('Cópia interna inválida');if(!confirm('Recuperar a cópia interna criada antes do último restauro?'))return;db=normalizeImportedDb(v.data);ensureQuotePaymentModel();ensureCostModel();ensureRecordIds();ensureClientsFromOrders();save();toast('Cópia pré-restauro recuperada')}catch(e){toast('Não foi possível recuperar a cópia')}}
 function importBackup(){const f=backupFile.files[0];if(!f)return toast('Escolha um ficheiro');const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result),v=validateBackupPayload(x);if(!v.ok)return toast('Backup inválido: '+v.msg);const msg=`Restaurar este backup?\n\n${v.summary.orders} encomendas · ${v.summary.quotes} orçamentos · ${v.summary.clients} clientes.\n\nSerá criada primeiro uma cópia dos dados atuais.`;if(!confirm(msg))return;safetyBackupBeforeRestore();db=normalizeImportedDb(v.data);ensureQuotePaymentModel();ensureCostModel();ensureRecordIds();ensureClientsFromOrders();save();backupFile.value='';backupFile.dataset.valid='';document.getElementById('backupPreview').textContent='Backup restaurado com sucesso.';toast('Backup restaurado')}catch(e){toast('Ficheiro inválido')}};r.readAsText(f)}
-function renderBackupInfo(){const v=localStorage.getItem(LAST);backupInfo.textContent=v?'Último backup: '+new Date(v).toLocaleString('pt-PT'):'Ainda não foi feito nenhum backup.';if(v){const days=(Date.now()-new Date(v).getTime())/86400000;if(days>7)backupInfo.innerHTML+=' <strong style="color:#990000">— Faça novo backup.</strong>'}else backupInfo.innerHTML+='<strong style="color:#990000"> Recomenda-se fazer o primeiro backup.</strong>';const bytes=new Blob([JSON.stringify(db)]).size;if(document.getElementById('storageInfo'))storageInfo.textContent='Dados locais aproximados: '+(bytes/1024).toFixed(1).replace('.',',')+' KB · '+db.orders.length+' encomendas · '+(db.quotes||[]).length+' orçamentos · '+(db.clients||[]).length+' clientes.';const hist=JSON.parse(localStorage.getItem(BACKUP_META)||'[]');const h=document.getElementById('backupHistory');if(h)h.innerHTML=hist.length?'<strong>Histórico recente:</strong><br>'+hist.slice(0,5).map(x=>`${new Date(x.at).toLocaleString('pt-PT')} · ${x.kind} · ${x.orders} enc. · ${x.quotes} orç.`).join('<br>'):'<strong>Histórico:</strong> ainda sem backups registados.'}
+function renderBackupInfo(){
+ const v=localStorage.getItem(LAST);
+ const info=document.getElementById('backupInfo');
+ if(info){
+   info.textContent=v?'Último backup: '+new Date(v).toLocaleString('pt-PT'):'Ainda não foi feito nenhum backup.';
+   if(v){
+     const days=(Date.now()-new Date(v).getTime())/86400000;
+     if(days>7)info.innerHTML+=' <strong class="backup-warning">— Recomenda-se criar um novo.</strong>'
+   }else info.innerHTML+='<strong class="backup-warning"> Recomenda-se fazer o primeiro backup.</strong>';
+ }
+ const bytes=new Blob([JSON.stringify(db)]).size;
+ if(document.getElementById('storageInfo'))storageInfo.textContent='Dados locais: '+(bytes/1024).toFixed(1).replace('.',',')+' KB · '+db.orders.length+' encomendas · '+(db.quotes||[]).length+' orçamentos · '+(db.clients||[]).length+' clientes.';
+ const hist=JSON.parse(localStorage.getItem(BACKUP_META)||'[]');
+ const h=document.getElementById('backupHistory');
+ if(h)h.innerHTML=hist.length?hist.slice(0,5).map(x=>`<div class="backup-history-row"><div><strong>${new Date(x.at).toLocaleDateString('pt-PT')}</strong><small>${new Date(x.at).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'})} · ${escapeHtml(x.kind)}</small></div><span>${x.orders} enc.</span><span>${x.quotes} orç.</span></div>`).join(''):'<div class="empty">Ainda sem backups registados.</div>';
+ const hero=document.getElementById('backupHeroStatus');
+ if(hero){
+   let state='SEM BACKUP',cls='warn';
+   if(v){
+     const days=(Date.now()-new Date(v).getTime())/86400000;
+     state=days>7?'ATUALIZAR BACKUP':'PROTEGIDO';cls=days>7?'warn':'ok';
+   }
+   hero.textContent=state;hero.className='backup-status '+cls;
+ }
+ const sum=document.getElementById('backupProSummary');
+ if(sum)sum.innerHTML=[
+   ['Encomendas',db.orders.length,'Registos locais'],
+   ['Clientes',(db.clients||[]).length,'Base de clientes'],
+   ['Stock',(db.stock||[]).length,'Artigos'],
+   ['Último backup',v?new Date(v).toLocaleDateString('pt-PT'):'—',v?'Cópia registada':'Ainda sem cópia']
+ ].map(([a,b,c])=>`<div class="card backup-kpi"><span>${a}</span><strong>${b}</strong><small>${c}</small></div>`).join('');
+}
+
 function copyOrderMessage(id){const txt=orderMessage(id);if(navigator.clipboard){navigator.clipboard.writeText(txt).then(()=>toast('Mensagem copiada'))}else toast('Copiar não suportado neste dispositivo')}
 async function shareOrderMessage(id){const txt=orderMessage(id);try{if(navigator.share)await navigator.share({title:'DONART - Encomenda',text:txt});else copyOrderMessage(id)}catch(e){if(e.name!=='AbortError')copyOrderMessage(id)}}
 function saveBusinessSettings(){db.settings.businessName=businessNameInput.value.trim()||SEED.businessName;db.settings.businessPhone=businessPhone.value.trim();db.settings.iban=businessIban.value.trim().toUpperCase();db.settings.paymentNote=paymentNote.value.trim();save();toast('Dados do negócio guardados')}
