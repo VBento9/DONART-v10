@@ -1,0 +1,39 @@
+DONART V12.1.0 — SINCRONIZAÇÃO RECONCILIADA
+
+PROBLEMAS IDENTIFICADOS NAS V12.0.x
+1. relationalSyncCore fazia UPSERT de TODAS as encomendas locais.
+   Consequência: uma encomenda antiga apagada na Cloud podia ser ressuscitada por outro dispositivo.
+
+2. As V12.0.3/V12.0.4 tornaram a Cloud demasiado autoritativa usando apenas REL_DIRTY global.
+   Consequência: uma encomenda nova ainda não sincronizada podia desaparecer ao atualizar.
+
+3. V12.0.5 tornou pullOnlineOrders autoritativo para WEB, mas não distinguia alterações online locais pendentes.
+   Consequência: uma alteração ainda não sincronizada podia ser substituída pela cópia Cloud.
+
+CORREÇÃO V12.1.0
+- Pending por encomenda, não apenas um dirty global.
+- Shadow do último estado confirmado da Cloud.
+- Cloud é fonte de verdade para encomendas confirmadas.
+- Só encomendas explicitamente pendentes sobrevivem localmente quando ainda não estão na Cloud.
+- relationalSyncCore envia apenas encomendas pendentes.
+- Uma encomenda antiga não-pending nunca volta a ser enviada e portanto não ressuscita.
+- pullOnlineOrders não remove nem sobrescreve uma encomenda online que esteja pendente localmente.
+- Nova encomenda é marcada pending antes de qualquer tentativa Cloud.
+- Após sucesso Cloud, pending é limpo e o shadow atualizado.
+- Após startup, pendentes são reenviadas automaticamente.
+- Delete normal e Limpar teste limpam também pending/shadow.
+
+PRESERVADO
+- Dashboard V12.
+- Estados.
+- Produção e consumo de stock.
+- Stock.
+- Caixa/pagamentos.
+- Criador/Produtos/Catálogos/Relatórios.
+- Lógica de capacidade.
+- Segurança de pagamento existente.
+
+VALIDAÇÃO
+- JavaScript: node --check OK.
+- Funções operacionais críticas preservadas byte-a-byte.
+- Testados cenários lógicos: remoção de stale, preservação de nova pendente e não-ressurreição.

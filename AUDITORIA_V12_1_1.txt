@@ -1,0 +1,26 @@
+DONART V12.1.1 — SINCRONIZAÇÃO RECONCILIADA FINAL
+
+Base: V12.1.0 auditada.
+
+Ajuste final:
+- Durante o hydrate, o estado confirmado da Cloud é carregado primeiro.
+- Encomendas locais explicitamente pendentes são aplicadas por cima.
+- Assim, uma encomenda nova/alterada offline não é substituída por uma versão Cloud antiga antes de sincronizar.
+
+Garantias desta arquitetura:
+1. Nova encomenda:
+   local -> pending -> Cloud -> shadow -> pending limpo.
+2. Refresh antes de sincronizar:
+   Cloud + pending local; a encomenda nova continua visível.
+3. Encomenda apagada:
+   apagada Cloud-first; pending/shadow limpos; não reaparece.
+4. Dispositivo com cópia antiga:
+   cópia não-pending é descartada porque Cloud é autoridade.
+5. Sync:
+   só envia encomendas pending; não ressuscita registos antigos.
+6. WEB online:
+   pull não sobrescreve alterações pendentes e remove apenas WEB antigas não-pending.
+
+Validação:
+- node --check OK.
+- Estruturas-chave confirmadas.

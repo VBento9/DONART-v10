@@ -2257,6 +2257,8 @@ const KEY='donart_v9_app_state', SEC='donart_v9_security', LAST='donart_v9_last_
 const CLOUD_V91_MIGRATION='donart_v91_clean_start', CLOUD_CFG='donart_v9_cloud_config', CLOUD_META='donart_v9_cloud_meta', CLOUD_TABLE='donart_v9_state', CLOUD_SHADOW='donart_v9_cloud_shadow', CLOUD_LOG='donart_v9_cloud_log', DEVICE_KEY='donart_v9_device_id';
 const REL_DIRTY='donart_v10_rel_dirty',
       REL_MIGRATED='donart_v10_rel_migrated',
+      REL_ORDER_PENDING='donart_v12_order_pending',
+      REL_ORDER_SHADOW='donart_v12_order_shadow',
       REL_TABLES={clients:'donart_v10_clients',products:'donart_v10_products',orders:'donart_v10_orders',quotes:'donart_v10_quotes',sales:'donart_v10_sales'};
 let db=load(), cart=[], quoteCart=[], unlocked=true, deferredPrompt=null, idleTimer=null, editingPurchaseId=null, editingCashId=null;
 let cloudClient=null, cloudUser=null, cloudChannel=null, cloudPushTimer=null, cloudApplying=false, cloudBusy=false, cloudConflict=null, cloudStartupDone=false, cloudHydrating=false;
@@ -2268,6 +2270,78 @@ function stableStringify(v){
 }
 function dataFingerprint(v){const str=stableStringify(v);let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16)}
 function parseLocal(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+
+function relOrderKey(o){
+ if(!o)return '';
+ return o._rid?'rid:'+String(o._rid):(o.id?'id:'+String(o.id):'');
+}
+function relOrderPendingSet(){
+ const a=parseLocal(REL_ORDER_PENDING);
+ return new Set(Array.isArray(a)?a.map(String):[]);
+}
+function relSaveOrderPending(set){
+ try{localStorage.setItem(REL_ORDER_PENDING,JSON.stringify([...set]))}catch(e){}
+}
+function relOrderShadowMap(){
+ const x=parseLocal(REL_ORDER_SHADOW);
+ return x&&typeof x==='object'&&!Array.isArray(x)?x:{};
+}
+function relOrderFingerprint(o){
+ if(!o)return '';
+ const c=relClone(o);
+ delete c._pendingSync;
+ return dataFingerprint(c);
+}
+function relMarkOrderPending(o){
+ const k=relOrderKey(o);if(!k)return;
+ const s=relOrderPendingSet();s.add(k);relSaveOrderPending(s)
+}
+function relClearOrderPending(o){
+ const keys=new Set();
+ if(o?._rid)keys.add('rid:'+String(o._rid));
+ if(o?.id)keys.add('id:'+String(o.id));
+ const s=relOrderPendingSet();
+ keys.forEach(k=>s.delete(k));
+ relSaveOrderPending(s)
+}
+function relIsOrderPending(o,set=null){
+ const s=set||relOrderPendingSet();
+ return !!(o&&((o._rid&&s.has('rid:'+String(o._rid)))||(o.id&&s.has('id:'+String(o.id)))));
+}
+function relShadowRememberOrders(rows){
+ const sh={};
+ (rows||[]).forEach(o=>{
+   if(!o)return;
+   const fp=relOrderFingerprint(o);
+   if(o._rid)sh['rid:'+String(o._rid)]=fp;
+   if(o.id)sh['id:'+String(o.id)]=fp;
+ });
+ try{localStorage.setItem(REL_ORDER_SHADOW,JSON.stringify(sh))}catch(e){}
+}
+function relShadowRememberOrder(o){
+ if(!o)return;
+ const sh=relOrderShadowMap(),fp=relOrderFingerprint(o);
+ if(o._rid)sh['rid:'+String(o._rid)]=fp;
+ if(o.id)sh['id:'+String(o.id)]=fp;
+ try{localStorage.setItem(REL_ORDER_SHADOW,JSON.stringify(sh))}catch(e){}
+}
+function relShadowForgetOrder(o){
+ const sh=relOrderShadowMap();
+ if(o?._rid)delete sh['rid:'+String(o._rid)];
+ if(o?.id)delete sh['id:'+String(o.id)];
+ try{localStorage.setItem(REL_ORDER_SHADOW,JSON.stringify(sh))}catch(e){}
+}
+function relDetectChangedOrders(){
+ if(cloudApplying)return;
+ const sh=relOrderShadowMap();
+ const pending=relOrderPendingSet();
+ (db.orders||[]).forEach(o=>{
+   const k=relOrderKey(o);if(!k)return;
+   const known=(o._rid&&sh['rid:'+String(o._rid)])||(o.id&&sh['id:'+String(o.id)])||'';
+   if(!known||known!==relOrderFingerprint(o))pending.add(k);
+ });
+ relSaveOrderPending(pending)
+}
 function meaningfulState(s){return !!(s&&((s.orders||[]).length||(s.quotes||[]).length||(s.clients||[]).length||(s.purchases||[]).length||(s.cash||[]).length||(s.productionRuns||[]).length||(s.themedBoxes||[]).length||(s.stock||[]).some(x=>Number(x.qty)>0)))}
 function load(){
  try{
@@ -2277,6 +2351,7 @@ function load(){
  return normalizeImportedDb({settings:{yield:28,minMargin:.65,laborRate:8,wasteRate:.10,businessName:SEED.businessName,businessPhone:'',iban:'',paymentNote:''},products:SEED.products,orders:[],clients:[],quotes:[],stock:[{"name":"Farinha T55","qty":0,"unit":"g","min":1000,"unitCost":0.00059},{"name":"Açúcar","qty":0,"unit":"g","min":500,"unitCost":0.001},{"name":"Fermento Royal","qty":0,"unit":"g","min":50,"unitCost":0},{"name":"Sal","qty":0,"unit":"g","min":100,"unitCost":0},{"name":"Ovo M","qty":0,"unit":"un","min":6,"unitCost":0.25},{"name":"Leite meio-gordo","qty":0,"unit":"ml","min":1000,"unitCost":0.0009},{"name":"Manteiga sem sal","qty":0,"unit":"g","min":250,"unitCost":0.0084},{"name":"Essência de baunilha","qty":0,"unit":"ml","min":50,"unitCost":0},{"name":"Canela em pó","qty":0,"unit":"g","min":50,"unitCost":0},{"name":"Chocolate culinária","qty":0,"unit":"g","min":400,"unitCost":0.01295},{"name":"Chocolate branco","qty":0,"unit":"g","min":400,"unitCost":0.02295},{"name":"Pepitas chocolate","qty":0,"unit":"g","min":200,"unitCost":0.02195},{"name":"Granulado chocolate","qty":0,"unit":"g","min":100,"unitCost":0.0169},{"name":"Sprinkles coloridos","qty":0,"unit":"g","min":150,"unitCost":0.0146},{"name":"Mini pintarolas","qty":0,"unit":"g","min":150,"unitCost":0},{"name":"Kinder Bueno","qty":0,"unit":"un","min":8,"unitCost":0},{"name":"Oreo","qty":0,"unit":"g","min":160,"unitCost":0.0156},{"name":"Bolacha Lotus","qty":0,"unit":"g","min":250,"unitCost":0.00756},{"name":"Creme Lotus","qty":0,"unit":"g","min":400,"unitCost":0.01123},{"name":"Creme avelã","qty":0,"unit":"g","min":350,"unitCost":0},{"name":"Creme pistácio","qty":0,"unit":"g","min":200,"unitCost":0},{"name":"Pistácio sem sal","qty":0,"unit":"g","min":100,"unitCost":0}],cash:[],purchases:[],stockMoves:[],productionRuns:[],themedBoxes:[],packaging:[{name:'Caixa 6',capacity:6,cost:0},{name:'Caixa 12',capacity:12,cost:0},{name:'Caixa 24',capacity:24,cost:0},{name:'Caixa Evento 50',capacity:50,cost:0}]})
 }
 function save(){
+ if(!cloudApplying)relDetectChangedOrders();
  localStorage.setItem(KEY,JSON.stringify(db));
  if(!cloudApplying){
    localStorage.setItem(REL_DIRTY,'1');
@@ -2551,6 +2626,7 @@ async function saveOrder(){
    paid,status:'Pedido',items:cart.map(x=>({...x})),paymentHistory
  };
  relUuid(order);
+ relMarkOrderPending(order);
  db.orders.push(order);
  localStorage.setItem(KEY,JSON.stringify(db));
  renderOrders();
@@ -2576,9 +2652,11 @@ async function saveOrder(){
    const {error}=await cloudClient.from(REL_TABLES.orders).upsert(row,{onConflict:'id'});
    if(error)throw error;
 
-   localStorage.removeItem(REL_DIRTY);
-   setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
-   cloudLogMsg('Encomenda V10 guardada em linha própria: '+id+' · total local '+db.orders.length);
+   relShadowRememberOrder(order);
+   relClearOrderPending(order);
+   if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
+   setCloudMeta({dirty:relOrderPendingSet().size>0,verified:true,conflict:false,lastSync:new Date().toISOString()});
+   cloudLogMsg('Encomenda guardada em linha própria: '+id+' · total local '+db.orders.length);
    renderCloudUI();
    toast('Encomenda '+id+' guardada')
  }catch(e){
@@ -2811,6 +2889,8 @@ async function deleteOrder(id){
 
  // Só depois de confirmada a eliminação Cloud, apagar a cópia local.
  db.orders=db.orders.filter(x=>x.id!==id);
+ relClearOrderPending(o);
+ relShadowForgetOrder(o);
  cloudApplying=true;
  try{
    localStorage.setItem(KEY,JSON.stringify(db));
@@ -5292,7 +5372,8 @@ async function cloudStartup(){
  try{
    await cloudApiDiagnostic(false);
    await relationalHydrateCore(true);
-   await pullOnlineOrders(false)
+   await pullOnlineOrders(false);
+   if(relOrderPendingSet().size)await relationalSyncCore(false)
  }finally{
    cloudHydrating=false;cloudStartupDone=true;renderCloudUI()
  }
@@ -5325,9 +5406,8 @@ async function pullOnlineOrders(showToast=false){
    const {data,error}=await cloudClient.rpc('donart_get_online_orders_v1');
    if(error)throw error;
    const rows=Array.isArray(data)?data:[];
+   const pending=relOrderPendingSet();
 
-   // V12.0.5 — a RPC é a fonte de verdade das encomendas online.
-   // Primeiro eliminamos do local quaisquer WEB/online que já não existam na resposta Cloud.
    const remoteRids=new Set(rows.map(r=>String(r.id)));
    const remotePublicIds=new Set(rows.map(r=>{
      const d=(r.data&&typeof r.data==='object')?r.data:{};
@@ -5337,13 +5417,14 @@ async function pullOnlineOrders(showToast=false){
    const before=(db.orders||[]).length;
    db.orders=(db.orders||[]).filter(o=>{
      if(o?.source!=='online_store')return true;
+     if(relIsOrderPending(o,pending))return true;
      const byRid=o?._rid&&remoteRids.has(String(o._rid));
      const byPublic=o?.id&&remotePublicIds.has(String(o.id));
      return !!(byRid||byPublic);
    });
    const removed=Math.max(0,before-db.orders.length);
 
-   let added=0,updated=0;
+   let added=0,updated=0,skippedPending=0;
    rows.forEach(r=>{
      const d=(r.data&&typeof r.data==='object')?relClone(r.data):{};
      const base={
@@ -5364,11 +5445,15 @@ async function pullOnlineOrders(showToast=false){
      };
      let target=(db.orders||[]).find(x=>x?._rid===r.id);
      if(!target&&base.id)target=(db.orders||[]).find(x=>String(x?.id)===String(base.id));
+
+     if(target&&relIsOrderPending(target,pending)){
+       skippedPending++;
+       return;
+     }
      if(target){Object.assign(target,base);updated++}
      else{db.orders.push(base);added++}
    });
 
-   // Guardar SEMPRE, mesmo quando rows=0, porque pode haver WEB antigas a remover.
    ensureClientsFromOrders();
    cloudApplying=true;
    try{
@@ -5378,10 +5463,10 @@ async function pullOnlineOrders(showToast=false){
      cloudApplying=false;
    }
 
-   cloudLogMsg(`Loja online verificada · ${rows.length} recebida(s) · ${added} nova(s) · ${updated} atualizada(s) · ${removed} removida(s) localmente`);
+   cloudLogMsg(`Loja online · ${rows.length} Cloud · ${added} nova(s) · ${updated} atualizada(s) · ${removed} removida(s) · ${skippedPending} pendente(s) preservada(s)`);
    if(showToast){
      if(removed)toast(`${removed} encomenda(s) online antiga(s) removida(s)`);
-     else toast(rows.length?`${rows.length} encomenda(s) online recebida(s)`:'Sem encomendas online');
+     else toast(rows.length?`${rows.length} encomenda(s) online verificadas`:'Sem encomendas online');
    }
    return true
  }catch(e){
@@ -5434,7 +5519,9 @@ async function relationalSyncCore(showToast=false){
      if(error)throw error
    }
 
-   const orderRows=db.orders.map(o=>{
+   const pendingOrders=relOrderPendingSet();
+   const ordersToSync=db.orders.filter(o=>relIsOrderPending(o,pendingOrders));
+   const orderRows=ordersToSync.map(o=>{
      const cc=calcOrder(o);
      return {
        id:relUuid(o),user_id:u.id,client_id:relClientRid(o.clientId,o.client),
@@ -5445,7 +5532,8 @@ async function relationalSyncCore(showToast=false){
    });
    if(orderRows.length){
      const {error}=await cloudClient.from(REL_TABLES.orders).upsert(orderRows,{onConflict:'id'});
-     if(error)throw error
+     if(error)throw error;
+     ordersToSync.forEach(o=>{relShadowRememberOrder(o);relClearOrderPending(o)})
    }
 
    const quoteRows=(db.quotes||[]).map(q=>{
@@ -5467,8 +5555,8 @@ async function relationalSyncCore(showToast=false){
 
 
    localStorage.setItem(REL_MIGRATED,'1');
-   localStorage.removeItem(REL_DIRTY);
-   setCloudMeta({dirty:false,conflict:false,verified:true,lastSync:new Date().toISOString()});
+   if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
+   setCloudMeta({dirty:relOrderPendingSet().size>0,conflict:false,verified:true,lastSync:new Date().toISOString()});
    cloudConflict=null;
    cloudLogMsg(`V10 sincronizada · ${clientRows.length} clientes · ${productRows.length} produtos · ${orderRows.length} encomendas · ${quoteRows.length} orçamentos`);
    if(showToast)toast('Dados V10 sincronizados');
@@ -5554,53 +5642,62 @@ async function relationalHydrateCore(initial=false){
        return rr
      });
 
-     // V12.0.3 — quando este dispositivo não tem alterações locais pendentes,
-     // a Cloud é a fonte de verdade das encomendas. Assim, encomendas já apagadas
-     // noutro dispositivo não ficam eternamente presas no localStorage deste aparelho.
-     const localOrdersDirty=localStorage.getItem(REL_DIRTY)==='1';
-
-     // V12.0.4
-     // Encomendas ONLINE (source=online_store) são sempre espelho da Cloud.
-     // Assim, uma WEB- já apagada no Supabase nunca pode sobreviver apenas no localStorage.
-     // Encomendas manuais continuam protegidas quando existe trabalho local pendente.
-     const localManualOrders=localOrders.filter(o=>o?.source!=='online_store');
      const remoteHydratedOrders=mergeRows([],remoteOrdersAdjusted,'order');
 
-     if(localOrdersDirty){
-       const remoteKeys=new Set();
-       remoteHydratedOrders.forEach(o=>{
-         if(o?._rid)remoteKeys.add('rid:'+String(o._rid));
-         if(o?.id)remoteKeys.add('id:'+String(o.id));
-       });
+     // V12.1.0 — reconciliação segura:
+     // Cloud = fonte de verdade; só preservamos localmente encomendas explicitamente pendentes.
+     const pending=relOrderPendingSet();
 
-       // Preservar apenas encomendas MANUAIS locais ainda não presentes na Cloud.
-       const pendingManual=localManualOrders.filter(o=>{
-         const byRid=o?._rid&&remoteKeys.has('rid:'+String(o._rid));
-         const byId=o?.id&&remoteKeys.has('id:'+String(o.id));
-         return !byRid&&!byId;
+     // Migração única: se ainda não existe shadow e havia dirty da versão anterior,
+     // preservar apenas encomendas MANUAIS locais ausentes da Cloud.
+     // WEB antigas não são preservadas porque devem vir sempre da RPC/Cloud.
+     const hadShadow=Object.keys(relOrderShadowMap()).length>0;
+     if(!hadShadow&&localStorage.getItem(REL_DIRTY)==='1'){
+       const remoteRid=new Set(remoteHydratedOrders.filter(o=>o._rid).map(o=>String(o._rid)));
+       const remoteId=new Set(remoteHydratedOrders.filter(o=>o.id).map(o=>String(o.id)));
+       localOrders.forEach(o=>{
+         if(!o||o.source==='online_store')return;
+         const exists=(o._rid&&remoteRid.has(String(o._rid)))||(o.id&&remoteId.has(String(o.id)));
+         if(!exists){
+           const k=relOrderKey(o);if(k)pending.add(k)
+         }
        });
-
-       db.orders=mergeRows(pendingManual,remoteOrdersAdjusted,'order');
-     }else{
-       db.orders=remoteHydratedOrders;
+       relSaveOrderPending(pending)
      }
+
+     const pendingLocal=localOrders.filter(o=>relIsOrderPending(o,pending));
+
+     // Começar pelo estado confirmado da Cloud e depois aplicar por cima as alterações
+     // locais pendentes. O pending local tem prioridade até ser sincronizado.
+     db.orders=remoteHydratedOrders.map(o=>relClone(o));
+     pendingLocal.forEach(localOrder=>{
+       let target=(db.orders||[]).find(x=>localOrder._rid&&x?._rid===localOrder._rid);
+       if(!target&&localOrder.id)target=(db.orders||[]).find(x=>String(x?.id)===String(localOrder.id));
+       if(target)Object.assign(target,relClone(localOrder));
+       else db.orders.push(relClone(localOrder));
+     });
+
      db.quotes=mergeRows(localQuotes,remoteQuotesAdjusted,'quote');
 
      localStorage.setItem(KEY,JSON.stringify(db));
      localStorage.setItem(REL_MIGRATED,'1');
-     localStorage.removeItem(REL_DIRTY);
 
-     setCloudMeta({dirty:false,conflict:false,verified:true,lastSync:new Date().toISOString()});
+     // Shadow representa apenas o último estado confirmado da Cloud.
+     relShadowRememberOrders(remoteHydratedOrders);
+
+     if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
+
+     setCloudMeta({dirty:relOrderPendingSet().size>0,conflict:false,verified:true,lastSync:new Date().toISOString()});
      cloudConflict=null;
      renderAll();
-     cloudLogMsg(`V10 restaurada sem apagar dados locais · ${db.clients.length} clientes · ${(db.products||[]).length} produtos · ${db.orders.length} encomendas · ${(db.quotes||[]).length} orçamentos`);
+     cloudLogMsg(`Cloud reconciliada · ${db.clients.length} clientes · ${(db.products||[]).length} produtos · ${db.orders.length} encomendas · ${relOrderPendingSet().size} pendente(s) localmente`);
    }finally{
      cloudApplying=false
    }
    return true
  }catch(e){
    setCloudMeta({verified:false,conflict:false});
-   cloudLogMsg('Falha V10 ao restaurar: '+cloudErrText(e));
+   cloudLogMsg('Falha ao restaurar Cloud: '+cloudErrText(e));
    return false
  }finally{
    if(ownBusy)cloudBusy=false;
