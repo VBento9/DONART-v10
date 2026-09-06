@@ -1,0 +1,32 @@
+DONART V12.4.0 — ELIMINAÇÃO COMPLETA SEGURA
+
+Problema confirmado:
+- canDeleteOrder() bloqueava qualquer encomenda paga, produzida ou Entregue antes de chegar ao Supabase.
+- Por isso o botão Eliminar mostrava "Esta encomenda não pode ser eliminada neste estado".
+
+Correção:
+- Encomendas simples (Pedido/Cancelado, não pagas, não produzidas) usam o fluxo normal.
+- Encomendas manuais AS- já concluídas passam a ter "Eliminar definitivamente".
+- A eliminação definitiva é Cloud-first.
+- Apaga order_items e a row de donart_v10_orders pelo UUID/public_id.
+- Verifica que a row deixou realmente de existir.
+- Só depois limpa o dispositivo.
+- Remove movimentos de Caixa ligados à encomenda.
+- Produção exclusiva: repõe stock e remove movimentos/run.
+- Produção partilhada: remove apenas a referência da encomenda e mantém o stock já consumido.
+- Limpa pending/shadow para não ressuscitar após refresh.
+- WEB continua a usar a rotina própria Limpar teste; não foi alterada.
+
+Preservado:
+- Numeração Cloud V12.3.0.
+- Índice único Supabase.
+- Produção normal e consumo de stock.
+- Estados.
+- Caixa normal.
+- Dashboard.
+- Loja e pagamentos.
+
+Validação:
+- index JavaScript node --check OK.
+- sw.js node --check OK.
+- Funções críticas preservadas byte-a-byte.

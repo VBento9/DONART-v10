@@ -1204,9 +1204,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.3.2 · Diagnóstico Eliminação Cloud · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.0 · Eliminação Completa Segura · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.3.2</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.0</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -2801,7 +2801,7 @@ function renderOrders(){
         <button class="btn" onclick="showOrder('${escapeHtml(o.id)}')">Ver detalhe</button>
         <select aria-label="Alterar estado" onchange="setStatus('${escapeHtml(o.id)}',this.value)">${['Pedido','Confirmada','Em produção','Pronta','Entregue','Cancelado'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select>
         <button class="btn" onclick="sendWhatsApp('${escapeHtml(o.id)}')">WhatsApp</button>
-        <button class="btn danger" onclick="${canDeleteTestOrder(o)?'deleteTestOrder':'deleteOrder'}('${escapeHtml(o.id)}')">${canDeleteTestOrder(o)?'Limpar teste':'Eliminar'}</button>
+        <button class="btn danger" onclick="${canDeleteTestOrder(o)?'deleteTestOrder':'deleteOrder'}('${escapeHtml(o.id)}')">${canDeleteTestOrder(o)?'Limpar teste':(canDeleteOrder(o)?'Eliminar':'Eliminar definitivamente')}</button>
        </div>
      </article>`;
    }).join(''):`<div class="orders-empty"><span>🧾</span><b>Sem encomendas</b><small>Não existem encomendas para os filtros selecionados.</small><button class="btn primary" onclick="go('sale')">＋ Nova encomenda</button></div>`;
@@ -2821,9 +2821,149 @@ function supabaseDetailedError(e){
  return parts.join(' | ')||String(e)
 }
 
+function canPermanentlyDeleteOrder(o){
+ return !!o && String(o.id||'').startsWith('AS-');
+}
+
+function orderProductionRuns(id){
+ return (db.productionRuns||[]).filter(r=>Array.isArray(r.orders)&&r.orders.includes(id));
+}
+
+function orderProductionNeeds(o,run){
+ const needs={},add=(name,qty)=>needs[name]=(needs[name]||0)+(Number(qty)||0);
+ const batches=Math.max(0,Number(run?.batches)||Math.ceil(calcOrder(o).qty/(db.settings.yield||28)));
+ SEED.recipe.forEach(r=>add(r.name,(Number(r.qty)||0)*batches));
+ (o.items||[]).forEach(line=>(db.productRecipes[line.code]||[]).forEach(r=>add(r.item,(Number(r.qty)||0)*(Number(line.qty)||0))));
+ return needs;
+}
+
+function removeProductionMoveForRun(run,item,qty){
+ const targetTime=new Date(run?.createdAt||0).getTime();
+ let best=-1,bestTime=-Infinity;
+ (db.stockMoves||[]).forEach((m,i)=>{
+   if(m.type!=='production'||m.item!==item||m.note!=='Produção '+run.date)return;
+   if(Math.abs((Number(m.qty)||0)-(Number(qty)||0))>1e-7)return;
+   const mt=new Date(m.date||0).getTime();
+   if(Number.isFinite(targetTime)&&Number.isFinite(mt)&&mt<=targetTime+2000&&mt>bestTime){
+     best=i;bestTime=mt
+   }
+ });
+ if(best>=0){db.stockMoves.splice(best,1);return true}
+ return false
+}
+
+async function deleteOrderPermanent(id){
+ const o=db.orders.find(x=>x.id===id);if(!o)return;
+ if(!canPermanentlyDeleteOrder(o))return toast('Eliminação definitiva disponível apenas para encomendas manuais AS-');
+
+ const runs=orderProductionRuns(id);
+ const exclusiveRuns=runs.filter(r=>(r.orders||[]).length===1);
+ const sharedRuns=runs.filter(r=>(r.orders||[]).length>1);
+ const cashMoves=(db.cash||[]).filter(x=>x.orderId===id);
+ const paid=Number(o.paid)||0;
+
+ let msg='Eliminar DEFINITIVAMENTE '+id+'?';
+ if(paid>0||cashMoves.length)msg+=' Os movimentos de Caixa desta encomenda serão removidos.';
+ if(exclusiveRuns.length)msg+=' O stock de produções exclusivas será reposto.';
+ if(sharedRuns.length)msg+=' Em produções partilhadas, a encomenda será retirada do registo sem alterar o stock já consumido.';
+ msg+=' Esta operação remove a encomenda da Cloud e deste dispositivo.';
+ if(!confirm(msg))return;
+
+ const u=cloudUser||await ensureCloudSession();
+ if(!u||!cloudClient)return toast('Sem sessão Cloud. Nada foi apagado.');
+
+ try{
+   // Encontrar a row correta por UUID OU public_id.
+   const {data:rows,error:findErr}=await cloudClient
+     .from(REL_TABLES.orders)
+     .select('id,user_id,data,status')
+     .eq('user_id',u.id);
+   if(findErr)throw new Error('Pesquisa Cloud falhou | '+supabaseDetailedError(findErr));
+
+   const matches=(Array.isArray(rows)?rows:[]).filter(r=>{
+     const pub=r?.data?.id;
+     return (o._rid&&String(r.id)===String(o._rid)) ||
+            (pub&&String(pub)===String(o.id))
+   });
+
+   for(const r of matches){
+     const {error:itemErr}=await cloudClient
+       .from(REL_TABLES.order_items)
+       .delete()
+       .eq('user_id',u.id)
+       .eq('order_id',r.id);
+     if(itemErr)throw new Error('Falha ao apagar itens | '+supabaseDetailedError(itemErr));
+
+     const {error:orderErr}=await cloudClient
+       .from(REL_TABLES.orders)
+       .delete()
+       .eq('user_id',u.id)
+       .eq('id',r.id);
+     if(orderErr)throw new Error('Falha ao apagar encomenda | '+supabaseDetailedError(orderErr));
+   }
+
+   const {data:verify,error:verifyErr}=await cloudClient
+     .from(REL_TABLES.orders)
+     .select('id,data')
+     .eq('user_id',u.id);
+   if(verifyErr)throw new Error('Verificação Cloud falhou | '+supabaseDetailedError(verifyErr));
+
+   const stillThere=(Array.isArray(verify)?verify:[]).some(r=>{
+     const pub=r?.data?.id;
+     return (o._rid&&String(r.id)===String(o._rid)) ||
+            (pub&&String(pub)===String(o.id))
+   });
+   if(stillThere)throw new Error('A encomenda continua presente no Supabase após DELETE');
+
+   // Só depois de a Cloud confirmar a eliminação mexemos nos dados locais.
+   for(const run of exclusiveRuns){
+     const needs=orderProductionNeeds(o,run);
+     Object.entries(needs).forEach(([name,qty])=>{
+       const x=stockByName(name);
+       if(x)x.qty=(Number(x.qty)||0)+(Number(qty)||0);
+       removeProductionMoveForRun(run,name,qty);
+     });
+   }
+
+   for(const run of sharedRuns){
+     run.orders=(run.orders||[]).filter(orderId=>orderId!==id);
+   }
+
+   if(exclusiveRuns.length){
+     db.productionRuns=(db.productionRuns||[]).filter(r=>!exclusiveRuns.includes(r));
+   }
+
+   db.cash=(db.cash||[]).filter(x=>x.orderId!==id);
+   db.orders=db.orders.filter(x=>x.id!==id);
+   relClearOrderPending(o);
+   relShadowForgetOrder(o);
+
+   cloudApplying=true;
+   try{
+     localStorage.setItem(KEY,JSON.stringify(db));
+     renderAll()
+   }finally{
+     cloudApplying=false
+   }
+
+   if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
+   setCloudMeta({dirty:relOrderPendingSet().size>0,verified:true,conflict:false,lastSync:new Date().toISOString()});
+   cloudLogMsg('Encomenda eliminada definitivamente: '+id);
+   try{orderDialog?.close()}catch(_){}
+   toast('Encomenda eliminada definitivamente')
+ }catch(e){
+   const detail=supabaseDetailedError(e);
+   cloudLogMsg('Falha na eliminação definitiva '+id+': '+detail);
+   alert('Não foi possível eliminar definitivamente.\n\n'+detail+'\n\nNada foi alterado localmente.');
+ }
+}
+
 async function deleteOrder(id){
  const o=db.orders.find(x=>x.id===id);if(!o)return;
- if(!canDeleteOrder(o))return toast('Esta encomenda não pode ser eliminada neste estado');
+ if(!canDeleteOrder(o)){
+   if(canPermanentlyDeleteOrder(o))return deleteOrderPermanent(id);
+   return toast('Esta encomenda não pode ser eliminada neste estado');
+ }
  if(!confirm('Eliminar definitivamente a encomenda '+id+'?'))return;
 
  const u=cloudUser||await ensureCloudSession();
@@ -3488,7 +3628,7 @@ function showOrder(id){
  <div class="totalbox"><div class="mini"><span>Total</span><strong>${euro(c.total)}</strong></div><div class="mini"><span>Pago</span><strong>${euro(o.paid)}</strong></div><div class="mini"><span>Falta</span><strong>${euro(remaining)}</strong></div><div class="mini"><span>Margem</span><strong>${pct(c.margin)}</strong></div></div>
  <div class="section-title">Pagamentos</div><div class="form-grid"><div class="field"><label>Novo pagamento (€)</label><input id="detailNewPaid" type="number" min="0" step="0.01" placeholder="Ex.: 25,00"></div><div class="field"><label>Meio</label><select id="detailPayMethod">${['Dinheiro','MB Way','Transferência','Outro'].map(v=>`<option ${v===o.payment?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="registerOrderPayment('${o.id}')">Registar pagamento</button></div></div><div class="soft-note" style="margin-top:10px">${(o.paymentHistory||[]).length?'<strong>Histórico:</strong><br>'+(o.paymentHistory||[]).slice().reverse().map(x=>`${String(x.date||'').slice(0,10)} · ${x.method||'—'} · ${euro(x.amount||0)}`).join('<br>'):'Ainda sem pagamentos detalhados registados.'}</div><div class="btnrow"><button class="btn" onclick="correctOrderPaid('${o.id}')">Corrigir total recebido</button></div>
  <div class="section-title">Histórico de estados</div><div class="soft-note">${(o.statusHistory||[]).length?(o.statusHistory||[]).slice().reverse().map(x=>`${String(x.date||'').slice(0,16).replace('T',' ')} · ${x.from||'—'} → ${x.to||'—'}`).join('<br>'):'Ainda sem alterações de estado registadas.'}</div>
- <div class="section-title">Anulação / eliminação</div><div class="soft-note">${o.status==='Cancelado'?'Esta encomenda está anulada e não entra nos resultados. ':''}${produced?'Produção já concluída: se anular, o stock consumido é mantido.':'Ainda não existe produção concluída.'}${canDeleteTestOrder(o)?'<br><strong>Modo Testes:</strong> podes limpar esta encomenda WEB mesmo concluída/paga. A app remove o Caixa associado e, se a produção for exclusiva desta encomenda, repõe o stock consumido.':''}</div><div class="btnrow">${o.status!=='Cancelado'?`<button class="btn danger" onclick="voidOrder('${o.id}')">Anular encomenda</button>`:''}${canDeleteTestOrder(o)?`<button class="btn danger test-clean-btn" onclick="deleteTestOrder('${o.id}')">🧪 Eliminar encomenda de teste</button>`:`<button class="btn danger" onclick="deleteOrder('${o.id}')">Eliminar definitivamente</button>`}</div>`;
+ <div class="section-title">Anulação / eliminação</div><div class="soft-note">${o.status==='Cancelado'?'Esta encomenda está anulada e não entra nos resultados. ':''}${produced?'Produção já concluída: se anular, o stock consumido é mantido.':'Ainda não existe produção concluída.'}${canDeleteTestOrder(o)?'<br><strong>Modo Testes:</strong> podes limpar esta encomenda WEB mesmo concluída/paga. A app remove o Caixa associado e, se a produção for exclusiva desta encomenda, repõe o stock consumido.':''}</div><div class="btnrow">${o.status!=='Cancelado'?`<button class="btn danger" onclick="voidOrder('${o.id}')">Anular encomenda</button>`:''}${canDeleteTestOrder(o)?`<button class="btn danger test-clean-btn" onclick="deleteTestOrder('${o.id}')">🧪 Eliminar encomenda de teste</button>`:`<button class="btn danger" onclick="deleteOrder('${o.id}')">${canDeleteOrder(o)?'Eliminar':'Eliminar definitivamente'}</button>`}</div>`;
  orderDialog.showModal();
 }
 function updateOrderDetails(id){const o=db.orders.find(x=>x.id===id);if(!o)return;o.client=detailClient.value.trim();o.contact=detailContact.value.trim();o.clientId=upsertClientFromOrder(o.client,o.contact,o.email||'');o.clientDeleted=false;if(!isOrderProduced(id))o.delivery=detailDelivery.value;const pay=detailPayment.value;o.payment=pay==='Por definir'?'A definir':pay;const box=detailBox.value;o.box=box==='Sem embalagem definida'?'':box;o.boxes=o.box?Math.max(1,+detailBoxes.value||1):0;const pk=(db.packaging||[]).find(p=>p.name===o.box);o.boxCostSnapshot=pk?+pk.cost||0:0;save();showOrder(id);toast('Encomenda corrigida')}
