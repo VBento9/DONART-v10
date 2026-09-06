@@ -592,6 +592,43 @@
  .purchase-preview{grid-template-columns:1fr 1fr}
 }
 
+
+/* DONART V10.7.0 — Caixa interativa */
+.cash-hero{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 14px}
+.cash-hero .section-title{font-size:18px}
+.cash-hero small{font-size:9px;color:#8c7971}
+.cash-tools{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.cash-tools input,.cash-tools select{height:34px;font-size:10px;padding:6px 9px}
+.cash-tools input{min-width:190px}
+.cash-kpis{margin-top:9px;gap:8px}
+.cash-kpi{padding:10px 12px}
+.cash-kpi .label{font-size:8px}
+.cash-kpi .value{font-size:19px}
+.cash-kpi small{font-size:7.5px;color:#94837c}
+.cash-form-card,.cash-list-card{padding:10px 12px}
+.cash-form-head{margin-bottom:8px}
+.cash-form-head small,.cash-list-head small{font-size:8px;color:#8c7971}
+#cash .field label{font-size:9px}
+#cash .field input,#cash .field select{font-size:10px;min-height:34px}
+#cash .btn{font-size:9px}
+#cash .section-title{font-size:14px}
+.cash-list-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cash-table th{font-size:8px;white-space:nowrap}
+.cash-table td{font-size:9px;padding-top:8px;padding-bottom:8px}
+.cash-table td strong{font-size:9.5px}
+.cash-table .badge{font-size:7px;padding:4px 6px}
+.cash-table th:last-child,.cash-table td:last-child{min-width:125px}
+.cash-actions{display:grid;grid-template-columns:1fr 1fr;gap:4px;min-width:116px}
+.cash-actions .btn{width:100%;padding:5px 7px;font-size:7.5px;white-space:nowrap}
+.cash-locked{font-size:7.5px;color:#8b746c}
+.cash-value-in{color:#2f7f58}
+.cash-value-out{color:#9b4c3f}
+@media(max-width:850px){
+ .cash-hero{align-items:stretch;flex-direction:column}
+ .cash-tools{display:grid;grid-template-columns:1fr 1fr}
+ .cash-tools input{grid-column:1/-1;min-width:0}
+}
+
 </style>
 </head>
 <body>
@@ -1100,8 +1137,63 @@
   </section>
 
   <section id="cash" class="screen">
-    <div class="grid4" id="cashKpis"></div><div class="card" style="margin-top:12px"><div class="form-grid"><div class="field"><label>Data</label><input id="cashDate" type="date"></div><div class="field"><label>Tipo</label><select id="cashType"><option>Entrada</option><option>Despesa</option><option>Saída</option></select></div><div class="field"><label>Descrição</label><input id="cashDesc"></div><div class="field"><label>Meio</label><select id="cashMethod"><option>Dinheiro</option><option>MB Way</option><option>Transferência</option><option>Outro</option></select></div><div class="field"><label>Valor</label><input id="cashValue" type="number" step="0.01"></div><div class="field"><label>&nbsp;</label><button class="btn primary" id="cashSaveBtn" onclick="addCash()">Registar</button></div><div class="field"><label>&nbsp;</label><button class="btn hidden" id="cashCancelBtn" onclick="cancelCashEdit()">Cancelar edição</button></div></div></div>
-    <div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Data</th><th>Tipo</th><th>Descrição</th><th>Meio</th><th>Valor</th><th>Ações</th></tr></thead><tbody id="cashBody"></tbody></table></div>
+    <div class="cash-hero card">
+      <div>
+        <div class="section-title" style="margin:0">Caixa</div>
+        <small>Entradas, saídas e pagamentos num único controlo financeiro.</small>
+      </div>
+      <div class="cash-tools">
+        <input id="cashSearch" placeholder="Pesquisar descrição…" oninput="renderCash()">
+        <select id="cashTypeFilter" onchange="renderCash()">
+          <option value="all">Todos os tipos</option>
+          <option value="Entrada">Entradas</option>
+          <option value="Despesa">Despesas</option>
+          <option value="Saída">Saídas</option>
+        </select>
+        <select id="cashMethodFilter" onchange="renderCash()">
+          <option value="all">Todos os meios</option>
+          <option>Dinheiro</option>
+          <option>MB Way</option>
+          <option>Transferência</option>
+          <option>Outro</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid4 cash-kpis" id="cashKpis"></div>
+
+    <div class="card cash-form-card" style="margin-top:10px">
+      <div class="cash-form-head">
+        <div>
+          <div class="section-title" style="margin:0">Novo movimento</div>
+          <small>Compras e pagamentos de encomendas entram automaticamente no Caixa.</small>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label>Data</label><input id="cashDate" type="date"></div>
+        <div class="field"><label>Tipo</label><select id="cashType"><option>Entrada</option><option>Despesa</option><option>Saída</option></select></div>
+        <div class="field span2"><label>Descrição</label><input id="cashDesc" placeholder="Ex.: venda balcão, eletricidade, transporte…"></div>
+        <div class="field"><label>Meio</label><select id="cashMethod"><option>Dinheiro</option><option>MB Way</option><option>Transferência</option><option>Outro</option></select></div>
+        <div class="field"><label>Valor €</label><input id="cashValue" type="number" step="0.01"></div>
+        <div class="field"><label>&nbsp;</label><button class="btn primary" id="cashSaveBtn" onclick="addCash()">Registar</button></div>
+        <div class="field"><label>&nbsp;</label><button class="btn hidden" id="cashCancelBtn" onclick="cancelCashEdit()">Cancelar edição</button></div>
+      </div>
+    </div>
+
+    <div class="card cash-list-card" style="margin-top:10px">
+      <div class="cash-list-head">
+        <div>
+          <div class="section-title" style="margin:0">Movimentos</div>
+          <small id="cashResultCount">0 movimentos</small>
+        </div>
+      </div>
+      <div class="tablewrap cash-tablewrap">
+        <table class="cash-table">
+          <thead><tr><th>Data</th><th>Tipo</th><th>Descrição</th><th>Meio</th><th>Valor</th><th>Origem</th><th>Ações</th></tr></thead>
+          <tbody id="cashBody"></tbody>
+        </table>
+      </div>
+    </div>
   </section>
 
   <section id="clients" class="screen">
@@ -1733,7 +1825,52 @@ function addCash(){
 function editCash(id){const x=db.cash.find(x=>x.id===id);if(!x)return;if(x.source==='purchase')return toast('Corrija este movimento através da compra associada');if(['order_payment','order_payment_correction'].includes(x.source))return toast('Corrija este movimento através da encomenda associada');editingCashId=id;cashDate.value=x.date||todayISO();cashType.value=x.type;cashDesc.value=x.desc||'';cashMethod.value=x.method||'Dinheiro';cashValue.value=x.value;cashSaveBtn.textContent='Guardar correção';cashCancelBtn.classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
 function cancelCashEdit(clear=true){editingCashId=null;if(clear){cashDate.value=todayISO();cashType.value='Entrada';cashDesc.value='';cashMethod.value='Dinheiro';cashValue.value=''}cashSaveBtn.textContent='Registar';cashCancelBtn.classList.add('hidden')}
 function deleteCash(id){const x=db.cash.find(x=>x.id===id);if(!x)return;if(x.source==='purchase')return toast('Anule a compra associada');if(['order_payment','order_payment_correction'].includes(x.source))return toast('Corrija este movimento através da encomenda associada');if(!confirm('Eliminar este movimento de caixa?'))return;db.cash=db.cash.filter(x=>x.id!==id);save();toast('Movimento eliminado')}
-function renderCash(){const d=dash(),ei=db.cash.filter(x=>x.type==='Entrada'&&!['order_payment','order_payment_correction'].includes(x.source)).reduce((s,x)=>s+(+x.value||0),0),out=db.cash.filter(x=>x.type!=='Entrada'&&x.source!=='order_payment_correction').reduce((s,x)=>s+(+x.value||0),0);cashKpis.innerHTML=[['Recebido vendas',euro(d.paid)],['Entradas extra',euro(ei)],['Saídas',euro(out)],['Saldo líquido',euro(d.paid+ei-out)]].map(([l,v])=>`<div class="card kpi"><div class="label">${l}</div><div class="value">${v}</div></div>`).join('');cashBody.innerHTML=db.cash.length?db.cash.slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${x.type}</td><td>${x.desc||'—'}</td><td>${x.method}</td><td>${euro(x.value)}</td><td>${x.source==='purchase'?'<span class="badge warn">via Compras</span>':['order_payment','order_payment_correction'].includes(x.source)?'<span class="badge ok">via Encomenda</span>':`<button class="btn" onclick="editCash('${x.id}')">Editar</button> <button class="btn danger" onclick="deleteCash('${x.id}')">Apagar</button>`}</td></tr>`).join(''):`<tr><td colspan="6" class="empty">Sem movimentos</td></tr>`}
+function renderCash(){
+ ensureRecordIds();
+ const d=dash();
+ const ei=db.cash.filter(x=>x.type==='Entrada'&&!['order_payment','order_payment_correction'].includes(x.source)).reduce((s,x)=>s+(+x.value||0),0);
+ const out=db.cash.filter(x=>x.type!=='Entrada'&&x.source!=='order_payment_correction').reduce((s,x)=>s+(+x.value||0),0);
+ const balance=d.paid+ei-out;
+
+ cashKpis.innerHTML=[
+   ['Recebido vendas',euro(d.paid),'Pagamentos de encomendas'],
+   ['Entradas extra',euro(ei),'Movimentos manuais'],
+   ['Saídas',euro(out),'Compras e despesas'],
+   ['Saldo líquido',euro(balance),'Entradas menos saídas']
+ ].map(([l,v,n])=>`<div class="card kpi cash-kpi"><div class="label">${l}</div><div class="value">${v}</div><small>${n}</small></div>`).join('');
+
+ const q=(document.getElementById('cashSearch')?.value||'').trim().toLowerCase();
+ const type=document.getElementById('cashTypeFilter')?.value||'all';
+ const method=document.getElementById('cashMethodFilter')?.value||'all';
+
+ const rows=(db.cash||[]).slice().reverse().filter(x=>{
+   const mq=!q||String(x.desc||'').toLowerCase().includes(q)||String(x.method||'').toLowerCase().includes(q);
+   const mt=type==='all'||x.type===type;
+   const mm=method==='all'||x.method===method;
+   return mq&&mt&&mm;
+ });
+
+ const count=document.getElementById('cashResultCount');
+ if(count)count.textContent=rows.length===1?'1 movimento':rows.length+' movimentos';
+
+ cashBody.innerHTML=rows.length?rows.map(x=>{
+   const viaPurchase=x.source==='purchase';
+   const viaOrder=['order_payment','order_payment_correction'].includes(x.source);
+   const origin=viaPurchase?'Compra':viaOrder?'Encomenda':'Manual';
+   const originClass=viaPurchase?'warn':viaOrder?'ok':'';
+   const sign=x.type==='Entrada'?'+':'−';
+   const valueClass=x.type==='Entrada'?'cash-value-in':'cash-value-out';
+   return `<tr>
+     <td>${escapeHtml(x.date||'—')}</td>
+     <td><span class="badge ${x.type==='Entrada'?'ok':'warn'}">${escapeHtml(x.type||'—')}</span></td>
+     <td><strong>${escapeHtml(x.desc||'—')}</strong></td>
+     <td>${escapeHtml(x.method||'—')}</td>
+     <td><strong class="${valueClass}">${sign} ${euro(x.value)}</strong></td>
+     <td><span class="badge ${originClass}">${origin}</span></td>
+     <td>${viaPurchase?'<span class="cash-locked">Gerido em Compras</span>':viaOrder?'<span class="cash-locked">Gerido em Encomendas</span>':`<div class="cash-actions"><button class="btn" onclick="editCash('${x.id}')">Editar</button><button class="btn danger" onclick="deleteCash('${x.id}')">Apagar</button></div>`}</td>
+   </tr>`;
+ }).join(''):`<tr><td colspan="7" class="empty">Sem movimentos</td></tr>`;
+}
 function mergeDuplicateClients(){
  db.clients=db.clients||[];
  const keep=[],byPhone=new Map(),byEmail=new Map(),remap=new Map();
