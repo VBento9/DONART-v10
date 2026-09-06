@@ -984,6 +984,33 @@
   .creator-personalization-days{grid-template-columns:repeat(2,1fr)}
 }
 
+
+/* DONART V11.5 — Configuração interativa */
+.settings-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px}
+.settings-hero .section-title{font-size:18px}.settings-hero p{font-size:9px}
+.settings-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}
+.settings-kpi{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.settings-kpi span{font-size:8px;font-weight:800;text-transform:uppercase;color:#8b746c}
+.settings-kpi strong{font-size:18px;color:#503833}.settings-kpi small{font-size:7.5px;color:#94837c}
+.settings-grid{gap:9px!important}.settings-card{padding:11px 12px}
+.settings-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:9px}
+.settings-card-head small{font-size:8px;color:#8c7971}
+#settings .section-title{font-size:14px}#settings .field label{font-size:9px}
+#settings .field input,#settings .field select{font-size:10px;min-height:34px}
+#settings .btn{font-size:9px}
+.settings-pack-list,.settings-recipe-list{display:grid;gap:5px}
+.settings-pack-row,.settings-recipe-row{display:grid;align-items:center;gap:8px;padding:7px 8px;border:1px solid #eee5e1;border-radius:9px;background:#fcfaf9}
+.settings-pack-row{grid-template-columns:1fr auto auto}.settings-recipe-row{grid-template-columns:1fr auto}
+.settings-pack-row>div{display:flex;flex-direction:column;gap:1px}.settings-pack-row strong,.settings-recipe-row strong{font-size:8.5px;color:#4e3934}
+.settings-pack-row small,.settings-recipe-row span{font-size:7.5px;color:#8d7a72}
+.settings-yield-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 9px;border:1px solid #eee5e1;border-radius:9px;background:#fcfaf9;margin-bottom:7px}
+.settings-yield-row>span{font-size:8.5px;color:#604842}.settings-yield-row>div{display:flex;align-items:center;gap:6px}
+.settings-yield-row input{width:78px;min-height:34px;padding:7px;border:1px solid #e4d8d2;border-radius:8px}.settings-yield-row b{font-size:8px;color:#6f5b54}
+.settings-cost-preview{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.settings-cost-preview>div{padding:7px 8px;border:1px solid #eee5e1;border-radius:8px;background:#fcfaf9}
+.settings-cost-preview small{display:block;font-size:6.5px;color:#8d7a72}.settings-cost-preview strong{font-size:8.5px;color:#4e3934}
+@media(max-width:760px){.settings-hero{align-items:stretch;flex-direction:column}.settings-summary{grid-template-columns:1fr 1fr}.settings-cost-preview{grid-template-columns:1fr 1fr}}
+
 </style>
 </head>
 <body>
@@ -1590,32 +1617,97 @@
   </section>
 
   <section id="settings" class="screen">
-    <div class="grid2">
-      <div class="card"><div class="section-title" style="margin-top:0">Caixas físicas / Embalagens</div>
-        <p class="muted">Aqui defines a embalagem base por capacidade. Ex.: Caixa 6, Caixa 12, Caixa 24.</p>
-        <div class="form-grid"><div class="field span2"><label>Nome</label><input id="packName" placeholder="Ex.: Caixa 6"></div><div class="field"><label>Capacidade</label><input id="packCapacity" type="number"></div><div class="field"><label>Custo €</label><input id="packCost" type="number" step="0.01"></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="savePackaging()">Guardar</button></div></div>
-        <div id="packList" style="margin-top:10px"></div>
+    <div class="settings-hero card">
+      <div>
+        <div class="section-title" style="margin:0">Configuração</div>
+        <p class="muted" style="margin:4px 0 0">Embalagens, receita, custos e dados do negócio num único local.</p>
       </div>
-      <div class="card"><div class="section-title" style="margin-top:0">Caixas Temáticas</div>
-        <p class="muted">São apresentações personalizadas associadas a uma caixa física. Podem ter fotografia, preço ao cliente e custo extra de decoração.</p>
-        <div id="settingsThemedBoxesSummary"></div>
-        <div class="btnrow" style="margin-top:10px"><button class="btn primary" onclick="go('catalogs')">Gerir caixas temáticas</button></div>
-      </div>
-      <div class="card"><div class="section-title" style="margin-top:0">Receita base</div>
-        <div><strong>Rendimento:</strong> <input id="recipeYield" type="number" style="width:90px;padding:8px;border-radius:8px;border:1px solid #ddd"> donuts</div>
-        <div id="recipeList" style="margin-top:10px"></div>
-        <div class="btnrow"><button class="btn primary" onclick="saveSettings()">Guardar configuração</button></div>
+      <div class="settings-hero-actions">
+        <button class="btn" onclick="renderSettings()">Atualizar</button>
       </div>
     </div>
-    <div class="card" style="margin-top:12px"><div class="section-title" style="margin-top:0">Custos e margem</div><div class="form-grid"><div class="field"><label>Margem mínima</label><input id="minMarginInput" type="number" step="0.01"></div><div class="field"><label>Mão de obra €/hora</label><input id="laborRate" type="number" step="0.01"></div><div class="field"><label>Desperdício %</label><input id="wasteRate" type="number" step="0.01"></div><div class="field"><label>Minutos mão de obra/lote</label><input id="laborMinutes" type="number" step="1"></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveSettings()">Guardar</button></div></div></div>
 
-    <div class="card" style="margin-top:12px"><div class="section-title" style="margin-top:0">Negócio e mensagens ao cliente</div><div class="form-grid">
-      <div class="field span2"><label>Nome do negócio</label><input id="businessNameInput" placeholder="DONART"></div>
-      <div class="field"><label>Telemóvel / MB Way</label><input id="businessPhone" placeholder="9xxxxxxxx"></div>
-      <div class="field"><label>IBAN</label><input id="businessIban" placeholder="PT50..."></div>
-      <div class="field span4"><label>Mensagem adicional de pagamento</label><input id="paymentNote" placeholder="Ex.: Envie o comprovativo após o pagamento."></div>
-      <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveBusinessSettings()">Guardar dados</button></div>
-    </div><div class="security-note">Estes dados são usados nas mensagens ao cliente e nos PDFs de orçamento, incluindo os dados para pagamento.</div></div>
+    <div id="settingsSummary" class="settings-summary"></div>
+
+    <div class="grid2 settings-grid" style="margin-top:10px">
+      <div class="card settings-card">
+        <div class="settings-card-head">
+          <div>
+            <div class="section-title" style="margin:0">Caixas físicas / Embalagens</div>
+            <small>Define as embalagens base e o custo interno de cada uma.</small>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field span2"><label>Nome</label><input id="packName" placeholder="Ex.: Caixa 6"></div>
+          <div class="field"><label>Capacidade</label><input id="packCapacity" type="number"></div>
+          <div class="field"><label>Custo €</label><input id="packCost" type="number" step="0.01"></div>
+          <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="savePackaging()">Guardar embalagem</button></div>
+        </div>
+        <div id="packList" class="settings-pack-list" style="margin-top:9px"></div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="settings-card-head">
+          <div>
+            <div class="section-title" style="margin:0">Receita base</div>
+            <small>Rendimento e ingredientes usados no cálculo da produção.</small>
+          </div>
+        </div>
+        <div class="settings-yield-row">
+          <span>Rendimento por lote</span>
+          <div><input id="recipeYield" type="number"><b>donuts</b></div>
+        </div>
+        <div id="recipeList" class="settings-recipe-list"></div>
+        <div class="btnrow" style="margin-top:9px"><button class="btn primary" onclick="saveSettings()">Guardar receita</button></div>
+      </div>
+    </div>
+
+    <div class="grid2 settings-grid" style="margin-top:10px">
+      <div class="card settings-card">
+        <div class="settings-card-head">
+          <div>
+            <div class="section-title" style="margin:0">Custos e margem</div>
+            <small>Parâmetros usados para calcular custo e rentabilidade.</small>
+          </div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>Margem mínima</label><input id="minMarginInput" type="number" step="0.01"></div>
+          <div class="field"><label>Mão de obra €/hora</label><input id="laborRate" type="number" step="0.01"></div>
+          <div class="field"><label>Desperdício %</label><input id="wasteRate" type="number" step="0.01"></div>
+          <div class="field"><label>Minutos mão de obra/lote</label><input id="laborMinutes" type="number" step="1"></div>
+        </div>
+        <div class="settings-cost-preview" id="settingsCostPreview"></div>
+        <div class="btnrow" style="margin-top:9px"><button class="btn primary" onclick="saveSettings()">Guardar custos</button></div>
+      </div>
+
+      <div class="card settings-card">
+        <div class="settings-card-head">
+          <div>
+            <div class="section-title" style="margin:0">Caixas Temáticas</div>
+            <small>Resumo das caixas configuradas no módulo Catálogos.</small>
+          </div>
+          <button class="btn" onclick="go('catalogs')">Gerir</button>
+        </div>
+        <div id="settingsThemedBoxesSummary"></div>
+      </div>
+    </div>
+
+    <div class="card settings-card" style="margin-top:10px">
+      <div class="settings-card-head">
+        <div>
+          <div class="section-title" style="margin:0">Negócio e mensagens ao cliente</div>
+          <small>Dados usados nos contactos e documentos gerados pela DONART.</small>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="field span2"><label>Nome do negócio</label><input id="businessNameInput" placeholder="DONART"></div>
+        <div class="field"><label>Telemóvel / MB Way</label><input id="businessPhone" placeholder="9xxxxxxxx"></div>
+        <div class="field"><label>IBAN</label><input id="businessIban" placeholder="PT50..."></div>
+        <div class="field span4"><label>Mensagem adicional de pagamento</label><input id="paymentNote" placeholder="Ex.: Envie o comprovativo após o pagamento."></div>
+        <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveBusinessSettings()">Guardar dados</button></div>
+      </div>
+      <div class="security-note">Estes dados continuam apenas preparados para mensagens e documentos; a integração de pagamentos fica para a fase final.</div>
+    </div>
   </section>
 
   <section id="cash" class="screen">
@@ -4010,11 +4102,36 @@ function shareThemedBoxesPDF(){return sharePdfBlob(buildThemedBoxesPdfBlob,'DONA
 function renderSettings(){
  syncThemedPackagingSelect();renderSettingsThemedBoxesSummary();
  if(!document.getElementById('packList'))return;
- recipeYield.value=db.settings.yield||28;minMarginInput.value=db.settings.minMargin??0.65;laborRate.value=db.settings.laborRate??8;wasteRate.value=db.settings.wasteRate??0.10;
+ recipeYield.value=db.settings.yield||28;
+ minMarginInput.value=db.settings.minMargin??0.65;
+ laborRate.value=db.settings.laborRate??8;
+ wasteRate.value=db.settings.wasteRate??0.10;
  if(document.getElementById('laborMinutes'))laborMinutes.value=db.settings.laborMinutes??0;
- packList.innerHTML=(db.packaging||[]).map((p,i)=>`<div class="cart-row" style="grid-template-columns:1fr 90px 100px 80px"><strong>${p.name}</strong><span>${p.capacity} un.</span><strong>${euro(p.cost)}</strong><button class="btn" onclick="editPack(${i})">Editar</button></div>`).join('');
- recipeList.innerHTML=SEED.recipe.map(r=>`<div class="cart-row" style="grid-template-columns:1fr 100px"><span>${r.name}</span><strong>${r.qty} ${r.unit}</strong></div>`).join('')
+
+ const packs=db.packaging||[];
+ const themed=db.themedBoxes||[];
+ const avgPack=packs.length?packs.reduce((s,p)=>s+(Number(p.cost)||0),0)/packs.length:0;
+ const summary=document.getElementById('settingsSummary');
+ if(summary)summary.innerHTML=[
+   ['Embalagens',packs.length,'Caixas físicas'],
+   ['Caixas temáticas',themed.length,'Configurações'],
+   ['Rendimento',`${db.settings.yield||28} un.`,'Por lote'],
+   ['Margem mínima',pct(db.settings.minMargin??0.65),'Objetivo']
+ ].map(([a,b,c])=>`<div class="card settings-kpi"><span>${a}</span><strong>${b}</strong><small>${c}</small></div>`).join('');
+
+ packList.innerHTML=packs.length?packs.map((p,i)=>`<div class="settings-pack-row"><div><strong>${escapeHtml(p.name)}</strong><small>${Number(p.capacity)||0} un.</small></div><strong>${euro(p.cost)}</strong><button class="btn" onclick="editPack(${i})">Editar</button></div>`).join(''):'<div class="empty">Sem embalagens configuradas.</div>';
+
+ recipeList.innerHTML=SEED.recipe.map(r=>`<div class="settings-recipe-row"><span>${escapeHtml(r.name)}</span><strong>${r.qty} ${escapeHtml(r.unit)}</strong></div>`).join('');
+
+ const cp=document.getElementById('settingsCostPreview');
+ if(cp)cp.innerHTML=[
+   ['Margem mínima',pct(db.settings.minMargin??0.65)],
+   ['Mão de obra',euro(db.settings.laborRate??8)+'/h'],
+   ['Desperdício',pct(db.settings.wasteRate??0.10)],
+   ['Embalagem média',euro(avgPack)]
+ ].map(([a,b])=>`<div><small>${a}</small><strong>${b}</strong></div>`).join('');
 }
+
 function saveSettings(){
  db.settings.yield=+recipeYield.value||28;db.settings.minMargin=+minMarginInput.value||0.65;db.settings.laborRate=+laborRate.value||8;db.settings.wasteRate=+wasteRate.value||0.10;
  if(document.getElementById('laborMinutes'))db.settings.laborMinutes=+laborMinutes.value||0;
