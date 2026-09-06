@@ -1,0 +1,24 @@
+DONART V11.9.1 — RODAPÉ MOBILE COMPACTO
+
+BASE
+- DONART V11.9.0 Dashboard Diário.
+
+CORREÇÃO NA APP
+- No iPhone, o logótipo e texto institucional deixam de ocupar o painel inferior fixo.
+- Mantém apenas a navegação inferior compacta.
+- Reduz altura/padding dos botões inferiores.
+- Reserva espaço inferior suficiente no conteúdo para o último elemento poder ser visto com scroll.
+
+NÃO ALTERADO
+- HTML funcional.
+- JavaScript.
+- Dashboard diário.
+- Encomendas/estados.
+- Produção/stock.
+- Caixa/pagamentos.
+- Cloud/Supabase.
+- Limpeza de testes.
+
+VALIDAÇÃO
+- JavaScript idêntico à V11.9.0.
+- node --check OK.

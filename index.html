@@ -1061,6 +1061,61 @@
 
 
 .test-clean-btn{background:#fff4f7!important;border-color:#e9a9bf!important;color:#a32155!important}.test-clean-btn:hover{background:#ffe7ef!important}
+
+/* V11.9.1 — Rodapé compacto no iPhone
+   Corrige o painel inferior alto que tapava o fim das páginas. */
+@media (max-width:700px){
+  body{padding-bottom:104px!important}
+
+  footer{
+    padding:4px 8px calc(5px + env(safe-area-inset-bottom))!important;
+    min-height:0!important;
+    max-height:none!important;
+  }
+
+  footer .brand,
+  footer .footer-brand,
+  footer .footer-logo,
+  footer img{
+    display:none!important;
+  }
+
+  footer .muted,
+  footer .footer-copy,
+  footer > div:not(.bottomnav):not(.bottom-nav):not(nav){
+    display:none!important;
+  }
+
+  .bottomnav,
+  .bottom-nav,
+  footer nav{
+    margin:0!important;
+    padding:0!important;
+    gap:6px!important;
+    min-height:0!important;
+    background:transparent!important;
+  }
+
+  .bottomnav button,
+  .bottom-nav button,
+  footer nav button,
+  .bottomnav .navbtn,
+  .bottom-nav .navbtn{
+    min-height:58px!important;
+    height:58px!important;
+    padding:6px 8px!important;
+    border-radius:15px!important;
+  }
+
+  .bottomnav .ico,
+  .bottom-nav .ico,
+  footer nav .ico{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    font-size:18px!important;
+  }
+}
 </style>
 </head>
 <body>
