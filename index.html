@@ -877,6 +877,113 @@
 /* DONART V11.3 — Entregas interativas */
 .delivery-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px}.delivery-hero .section-title{font-size:18px}.delivery-hero p{font-size:9px}.delivery-overview-mode{display:inline-flex;padding:7px 12px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.06em}.delivery-overview-mode.testing{background:#fff0c9;color:#86600c}.delivery-overview-mode.production{background:#dff5e6;color:#267441}.delivery-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}.delivery-kpi{padding:10px 12px;display:flex;flex-direction:column;gap:2px}.delivery-kpi span{font-size:8px;font-weight:800;text-transform:uppercase;color:#8b746c}.delivery-kpi strong{font-size:16px;color:#503833}.delivery-kpi small{font-size:7.5px;color:#94837c}.delivery-settings-pro,.delivery-calendar-pro{padding:11px 12px}.delivery-block-head{margin-bottom:8px}.delivery-block-head small{font-size:8px;color:#8c7971}#delivery .delivery-v33{margin-top:0}#delivery .delivery-v33-card strong{font-size:10px}#delivery .delivery-v33-card small,#delivery .delivery-v33-card p{font-size:8px}#delivery .delivery-v33-card label{font-size:9px}#delivery .delivery-v33-card input,#delivery .delivery-v33-card select,#delivery .delivery-v33-card textarea{font-size:10px}#delivery .btn{font-size:9px}.delivery-calendar-pro .capacity-head h3{font-size:14px}.delivery-calendar-pro .capacity-head p{font-size:8px}@media(max-width:760px){.delivery-hero{align-items:stretch;flex-direction:column}.delivery-summary{grid-template-columns:1fr 1fr}}
 
+
+/* DONART V11.4 — Criador de Caixas refinado */
+.creator-ui-v114{padding:12px!important}
+.creator-ui-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.creator-ui-head small{font-size:8px;color:#8c7971}
+.creator-ui-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,.8fr);gap:10px}
+.creator-ui-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.creator-ui-block{background:#fcfaf9;border:1px solid #eadfdb;border-radius:10px;padding:9px}
+.creator-ui-block-head{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin-bottom:6px}
+.creator-ui-block-head strong{font-size:9.5px;color:#4f3934}
+.creator-ui-block-head small{font-size:7px;color:#927f77}
+.creator-ui-block textarea{width:100%;min-height:132px;resize:vertical;border-radius:9px;padding:9px;background:#fff7cf!important;font-size:10px;line-height:1.35}
+
+.creator-ui-personalization{background:#fcfaf9;border:1px solid #eadfdb;border-radius:10px;padding:9px}
+.creator-toggle-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.creator-toggle{display:flex;align-items:center;gap:8px;padding:7px 8px;border:1px solid #eee3df;border-radius:9px;background:#fff;cursor:pointer}
+.creator-toggle input{width:18px!important;height:18px!important;accent-color:#e91e63}
+.creator-toggle>span{display:flex;flex-direction:column;gap:1px}
+.creator-toggle b{font-size:8.5px;color:#4e3934}
+.creator-toggle small{font-size:6.5px;color:#927f77}
+
+.creator-pricing-title{margin:12px 0 7px;padding-top:10px;border-top:1px solid #eee3df}
+.creator-pricing-title>div{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.creator-pricing-title strong{font-size:10px;color:#4e3934}
+.creator-pricing-title small{font-size:7px;color:#927f77}
+
+.creator-pricing-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.creator-price-field{display:flex;flex-direction:column;gap:4px}
+.creator-price-field label{font-size:7.5px!important;color:#6f5b54}
+.creator-money{display:grid;grid-template-columns:26px 1fr;align-items:center;border:1px solid #eadfdb;border-radius:9px;background:#fff7cf;overflow:hidden}
+.creator-money span{display:grid;place-items:center;height:100%;font-size:9px;font-weight:800;color:#7d5a4d;background:#f3e7bd;border-right:1px solid #e4d6ac}
+.creator-money input{border:0!important;background:transparent!important;min-height:34px!important;padding:7px!important}
+.creator-availability-field select{min-height:36px!important;background:#fff7cf!important}
+
+.creator-ui-save{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:9px;border-top:1px solid #eee3df}
+.creator-ui-note{font-size:7.5px;color:#927f77}
+.creator-save-btn{min-width:230px}
+
+@media(max-width:900px){
+ .creator-ui-grid{grid-template-columns:1fr}
+ .creator-ui-options{grid-template-columns:repeat(3,1fr)}
+ .creator-pricing-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:700px){
+ .creator-ui-options{grid-template-columns:1fr}
+ .creator-toggle-grid{grid-template-columns:1fr 1fr}
+ .creator-pricing-grid{grid-template-columns:1fr 1fr}
+ .creator-ui-save{align-items:stretch;flex-direction:column}
+ .creator-save-btn{width:100%;min-width:0}
+}
+
+
+/* DONART V11.4.1 — Personalizações em formato de seleção rápida */
+.creator-personalization-days{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+}
+.creator-option-pill{
+  position:relative;
+  cursor:pointer;
+}
+.creator-option-pill input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.creator-option-pill span{
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 10px;
+  border:1px solid #e7dcd7;
+  border-radius:10px;
+  background:#fff;
+  font-size:8.5px;
+  font-weight:800;
+  color:#6f5b54;
+  transition:.15s ease;
+  user-select:none;
+}
+.creator-option-pill input:checked + span{
+  background:#f8dfe8;
+  border-color:#ed9fba;
+  color:#9b2752;
+  box-shadow:inset 0 0 0 1px #ed9fba;
+}
+.creator-option-pill input:checked + span:before{
+  content:"✓";
+  margin-right:5px;
+  font-size:9px;
+  font-weight:900;
+}
+.creator-option-pill:active span{
+  transform:scale(.98);
+}
+.creator-personalization-note{
+  margin-top:7px;
+  font-size:7px;
+  line-height:1.3;
+  color:#927f77;
+}
+@media(max-width:700px){
+  .creator-personalization-days{grid-template-columns:repeat(2,1fr)}
+}
+
 </style>
 </head>
 <body>
@@ -1310,37 +1417,83 @@
       <div style="margin-top:10px"><img id="themeBoxPreview" class="image-preview hidden" alt="Pré-visualização"></div>
     </div>
 
-    <div class="card catalog-creator-card" style="margin-top:10px">
-      <div class="catalog-editor-head">
+    <div class="card catalog-creator-card creator-ui-v114" style="margin-top:10px">
+      <div class="creator-ui-head">
         <div>
           <div class="section-title" style="margin:0">Criador de Caixas</div>
-          <small>Configuração reutilizável da experiência “Cria a tua DONART”.</small>
+          <small>Configuração da experiência “Cria a tua DONART” na loja.</small>
         </div>
         <span id="creatorStatusBadge" class="badge">—</span>
       </div>
-      <div class="form-grid">
-        <div class="field"><label>Ocasiões (uma por linha)</label><textarea id="creatorOccasions" rows="5"></textarea></div>
-        <div class="field"><label>Estilos / Temas (um por linha)</label><textarea id="creatorStyles" rows="5"></textarea></div>
-        <div class="field"><label>Cores disponíveis (uma por linha)</label><textarea id="creatorColors" rows="5"></textarea></div>
-        <div class="field"><label>Personalizações permitidas</label>
-          <div class="checkgrid">
-            <label><input id="creatorName" type="checkbox"> Nome</label>
-            <label><input id="creatorDate" type="checkbox"> Data</label>
-            <label><input id="creatorMessage" type="checkbox"> Mensagem</label>
-            <label><input id="creatorRibbon" type="checkbox"> Fita</label>
-            <label><input id="creatorLabel" type="checkbox"> Etiqueta</label>
-            <label><input id="creatorCard" type="checkbox"> Cartão</label>
+
+      <div class="creator-ui-grid">
+        <div class="creator-ui-options">
+          <div class="creator-ui-block">
+            <div class="creator-ui-block-head">
+              <strong>Ocasiões</strong>
+              <small>Uma opção por linha</small>
+            </div>
+            <textarea id="creatorOccasions" rows="7" placeholder="Aniversário&#10;Batizado&#10;Comunhão&#10;Natal"></textarea>
+          </div>
+
+          <div class="creator-ui-block">
+            <div class="creator-ui-block-head">
+              <strong>Estilos / Temas</strong>
+              <small>Uma opção por linha</small>
+            </div>
+            <textarea id="creatorStyles" rows="7" placeholder="Dinossauro&#10;Princesa&#10;Futebol"></textarea>
+          </div>
+
+          <div class="creator-ui-block">
+            <div class="creator-ui-block-head">
+              <strong>Cores disponíveis</strong>
+              <small>Uma opção por linha</small>
+            </div>
+            <textarea id="creatorColors" rows="7" placeholder="Rosa&#10;Azul&#10;Dourado"></textarea>
           </div>
         </div>
-        <div class="field"><label>Acréscimo base temático €</label><input id="creatorBaseExtra" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Preço extra · Nome €</label><input id="creatorPriceName" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Preço extra · Data €</label><input id="creatorPriceDate" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Preço extra · Mensagem €</label><input id="creatorPriceMessage" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Preço extra · Fita €</label><input id="creatorPriceRibbon" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Preço extra · Etiqueta €</label><input id="creatorPriceLabel" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Preço extra · Cartão €</label><input id="creatorPriceCard" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Disponível na loja</label><select id="creatorEnabled"><option value="1">Sim</option><option value="0">Não</option></select></div>
-        <div class="field span2"><label>&nbsp;</label><button class="btn primary" onclick="saveBoxCreatorSettings()">Guardar Criador de Caixas</button></div>
+
+        <div class="creator-ui-personalization">
+          <div class="creator-ui-block-head">
+            <strong>Personalizações permitidas</strong>
+            <small>Seleciona as opções disponíveis na loja</small>
+          </div>
+          <div class="creator-personalization-days">
+            <label class="creator-option-pill"><input id="creatorName" type="checkbox"><span>Nome</span></label>
+            <label class="creator-option-pill"><input id="creatorDate" type="checkbox"><span>Data</span></label>
+            <label class="creator-option-pill"><input id="creatorMessage" type="checkbox"><span>Mensagem</span></label>
+            <label class="creator-option-pill"><input id="creatorRibbon" type="checkbox"><span>Fita</span></label>
+            <label class="creator-option-pill"><input id="creatorLabel" type="checkbox"><span>Etiqueta</span></label>
+            <label class="creator-option-pill"><input id="creatorCard" type="checkbox"><span>Cartão</span></label>
+          </div>
+          <div class="creator-personalization-note">As opções destacadas ficam disponíveis no Criador de Caixas da loja.</div>
+        </div>
+      </div>
+
+      <div class="creator-pricing-title">
+        <div>
+          <strong>Preços do Criador</strong>
+          <small>Valores adicionais aplicados automaticamente na loja</small>
+        </div>
+      </div>
+
+      <div class="creator-pricing-grid">
+        <div class="creator-price-field"><label>Acréscimo base temático</label><div class="creator-money"><span>€</span><input id="creatorBaseExtra" type="number" min="0" step="0.01"></div></div>
+        <div class="creator-price-field"><label>Nome</label><div class="creator-money"><span>€</span><input id="creatorPriceName" type="number" min="0" step="0.01"></div></div>
+        <div class="creator-price-field"><label>Data</label><div class="creator-money"><span>€</span><input id="creatorPriceDate" type="number" min="0" step="0.01"></div></div>
+        <div class="creator-price-field"><label>Mensagem</label><div class="creator-money"><span>€</span><input id="creatorPriceMessage" type="number" min="0" step="0.01"></div></div>
+        <div class="creator-price-field"><label>Fita</label><div class="creator-money"><span>€</span><input id="creatorPriceRibbon" type="number" min="0" step="0.01"></div></div>
+        <div class="creator-price-field"><label>Etiqueta</label><div class="creator-money"><span>€</span><input id="creatorPriceLabel" type="number" min="0" step="0.01"></div></div>
+        <div class="creator-price-field"><label>Cartão</label><div class="creator-money"><span>€</span><input id="creatorPriceCard" type="number" min="0" step="0.01"></div></div>
+        <div class="creator-price-field creator-availability-field">
+          <label>Disponível na loja</label>
+          <select id="creatorEnabled"><option value="1">Sim</option><option value="0">Não</option></select>
+        </div>
+      </div>
+
+      <div class="creator-ui-save">
+        <div class="creator-ui-note">As alterações ficam aplicadas ao Criador de Caixas da loja após guardar.</div>
+        <button class="btn primary creator-save-btn" onclick="saveBoxCreatorSettings()">Guardar Criador de Caixas</button>
       </div>
     </div>
 
