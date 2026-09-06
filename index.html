@@ -2021,7 +2021,7 @@ function renderClients(){
      <div class="client-card-foot">
        <span>${last?`Última encomenda: ${escapeHtml(last.delivery||last.created||'—')}`:'Sem encomendas'}</span>
        <div class="client-actions">
-         <button class="btn" onclick="editClient(${i})">Editar</button>
+         <button class="btn" onclick="editClient('${c.id}')">Editar</button>
          ${c.phone?`<button class="btn" onclick="window.open('https://wa.me/${String(c.phone).replace(/\D/g,'')}','_blank')">WhatsApp</button>`:''}
        </div>
      </div>
@@ -2029,6 +2029,54 @@ function renderClients(){
  }).join(''):'<div class="empty">Sem clientes</div>';
 }
 
+
+let editingClientId=null;
+function resetClientForm(){
+ editingClientId=null;
+ const n=document.getElementById('clientName'),p=document.getElementById('clientPhone'),e=document.getElementById('clientEmail'),note=document.getElementById('clientNote');
+ if(n)n.value='';if(p)p.value='';if(e)e.value='';if(note)note.value='';
+ const saveBtn=document.getElementById('clientSaveBtn'),cancelBtn=document.getElementById('clientCancelBtn');
+ if(saveBtn)saveBtn.textContent='Guardar cliente';
+ if(cancelBtn)cancelBtn.classList.add('hidden');
+}
+function editClient(id){
+ const c=(db.clients||[]).find(x=>x.id===id);
+ if(!c)return toast('Cliente não encontrado');
+ editingClientId=c.id;
+ document.getElementById('clientName').value=c.name||'';
+ document.getElementById('clientPhone').value=c.phone||'';
+ document.getElementById('clientEmail').value=c.email||'';
+ document.getElementById('clientNote').value=c.note||c.notes||'';
+ const saveBtn=document.getElementById('clientSaveBtn'),cancelBtn=document.getElementById('clientCancelBtn');
+ if(saveBtn)saveBtn.textContent='Guardar alterações';
+ if(cancelBtn)cancelBtn.classList.remove('hidden');
+ document.getElementById('clientName')?.focus();
+ document.getElementById('clients')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function cancelClientEdit(){resetClientForm()}
+function addClient(){
+ const name=(document.getElementById('clientName')?.value||'').trim();
+ const phone=(document.getElementById('clientPhone')?.value||'').trim();
+ const email=(document.getElementById('clientEmail')?.value||'').trim();
+ const note=(document.getElementById('clientNote')?.value||'').trim();
+ if(!name)return toast('Indica o nome do cliente');
+
+ db.clients=db.clients||[];
+ const normPhone=normalizePhone(phone), normMail=email.toLowerCase();
+ const duplicate=db.clients.find(c=>c.id!==editingClientId&&((normPhone&&normalizePhone(c.phone)===normPhone)||(normMail&&String(c.email||'').trim().toLowerCase()===normMail)));
+ if(duplicate)return toast('Já existe um cliente com este telefone ou email');
+
+ if(editingClientId){
+   const c=db.clients.find(x=>x.id===editingClientId);
+   if(!c)return toast('Cliente não encontrado');
+   c.name=name;c.phone=phone;c.email=email;c.note=note;c.notes=note;
+   save();resetClientForm();renderClients();toast('Cliente atualizado');
+ }else{
+   const c={id:uid('CLI'),name,phone,email,note,notes:note,createdAt:new Date().toISOString(),source:'manual'};
+   relUuid(c);db.clients.push(c);
+   save();resetClientForm();renderClients();toast('Cliente guardado');
+ }
+}
 async function deleteClient(id){
  const c=db.clients.find(x=>x.id===id);if(!c)return;
  const cPhone=normalizePhone(c.phone),cName=normText(c.name);
