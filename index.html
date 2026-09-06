@@ -389,6 +389,28 @@
 @media(max-width:950px){.dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-period{grid-template-columns:90px 150px auto}}
 @media(max-width:700px){.dashboard-hero{align-items:stretch;flex-direction:column}.dashboard-period{grid-template-columns:1fr 1fr}.dashboard-update{grid-column:1/-1}.dashboard-actions{grid-template-columns:1fr 1fr}}
 
+/* V11.9.0 — Dashboard Diário */
+.dashboard-daily{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 14px}
+.dashboard-daily-card{border:1px solid #eadfdb;background:#fff;border-radius:17px;padding:13px;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;color:#5d3933;transition:.16s ease;min-width:0}
+.dashboard-daily-card:hover{transform:translateY(-2px);border-color:#e9b9c9;box-shadow:0 8px 20px rgba(80,44,34,.06)}
+.dashboard-daily-card>span{width:40px;height:40px;border-radius:13px;background:#f8f1ed;display:grid;place-items:center;font-size:18px;flex:0 0 40px}
+.dashboard-daily-card b{display:block;font-size:20px;line-height:1.05}
+.dashboard-daily-card small{display:block;margin-top:3px;font-size:9px;color:#8c776f}
+.dashboard-daily-card.warn>span{background:#fff3d8}.dashboard-daily-card.good>span{background:#e9f6ed}.dashboard-daily-card.bad>span{background:#fde9e8}
+.dashboard-today-card{padding:0;overflow:hidden}
+.dashboard-today-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-bottom:1px solid #eee3de;background:#fffaf7}
+.dashboard-today-head strong{font-size:13px;color:#5d3933}.dashboard-today-head span{font-size:9px;color:#8c776f}
+.dashboard-today-list{display:grid}
+.dashboard-today-row{display:grid;grid-template-columns:105px minmax(120px,1fr) 90px 100px auto;align-items:center;gap:9px;padding:11px 15px;border-bottom:1px solid #f1e8e4;cursor:pointer;transition:.14s ease}
+.dashboard-today-row:last-child{border-bottom:0}.dashboard-today-row:hover{background:#fffaf7}
+.dashboard-today-id{font-size:9px;font-weight:900;color:#674943;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dashboard-today-client{min-width:0}.dashboard-today-client b{display:block;font-size:11px;color:#5d3933;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dashboard-today-client small{font-size:8px;color:#917d75}
+.dashboard-today-date{font-size:9px;color:#6f5a52}.dashboard-today-total{font-size:10px;font-weight:900;color:#5d3933;text-align:right}
+.dashboard-today-status{justify-self:end}
+.dashboard-today-empty{padding:18px;text-align:center;color:#8b766e;font-size:10px}
+@media(max-width:900px){.dashboard-daily{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-today-row{grid-template-columns:95px minmax(120px,1fr) 85px auto}.dashboard-today-total{display:none}}
+@media(max-width:650px){.dashboard-daily{grid-template-columns:1fr 1fr}.dashboard-today-row{grid-template-columns:minmax(0,1fr) auto;padding:12px}.dashboard-today-id{grid-column:1}.dashboard-today-status{grid-column:2;grid-row:1}.dashboard-today-client{grid-column:1/-1}.dashboard-today-date{grid-column:1}.dashboard-today-total{display:block;grid-column:2}.dashboard-today-head{align-items:flex-start;flex-direction:column;gap:3px}}
+
 
 /* V10.3.9 — Encomendas Interativas */
 .orders-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
@@ -1073,6 +1095,17 @@
       </div>
     </div>
     <div class="grid4 dashboard-kpis" id="kpis"></div>
+
+    <div class="dashboard-section-head"><div><span>HOJE</span><h3>Centro de controlo diário</h3></div></div>
+    <div class="dashboard-daily" id="dashboardDaily"></div>
+    <div class="card dashboard-today-card">
+      <div class="dashboard-today-head">
+        <strong>Entregas e trabalho mais próximo</strong>
+        <span id="dashboardTodayLabel">Hoje e próximos dias</span>
+      </div>
+      <div class="dashboard-today-list" id="dashboardTodayList"></div>
+    </div>
+
     <div id="setupNotice" class="card" style="margin-top:12px;border:2px solid #F6246D">
 <strong>Configuração inicial</strong>
 <div style="margin-top:7px;font-size:13px">Antes da primeira venda real: confirme custos das embalagens, introduza o stock físico existente e ajuste PVP/custos dos produtos quando tiver os valores reais.</div>
@@ -2263,6 +2296,48 @@ function dashboardKpiGo(label){
  const map={'Faturação':'reports','Recebido':'cash','Por receber':'orders','Encomendas':'orders','Lucro':'reports','Margem':'reports','Pendentes':'orders','Stock baixo':'stock'};
  go(map[label]||'dashboard');
 }
+function dashboardDailyOpen(id){
+ const o=db.orders.find(x=>String(x.id)===String(id));
+ if(!o)return toast('Encomenda não encontrada');
+ go('orders');
+ setTimeout(()=>showOrder(id),120);
+}
+function renderDashboardDaily(){
+ const cards=document.getElementById('dashboardDaily'),list=document.getElementById('dashboardTodayList'),label=document.getElementById('dashboardTodayLabel');
+ if(!cards||!list)return;
+ const today=todayISO();
+ const live=(db.orders||[]).filter(o=>completed(o)&&o.status!=='Cancelado');
+ const dueToday=live.filter(o=>(o.delivery||'')===today&&o.status!=='Entregue');
+ const inProd=live.filter(o=>o.status==='Em produção');
+ const ready=live.filter(o=>o.status==='Pronta');
+ const unpaid=live.filter(o=>{const c=calcOrder(o);return Math.max(0,(Number(c.total)||0)-(Number(o.paid)||0))>.001&&o.status!=='Entregue'});
+ const daily=[
+  ['📅',dueToday.length,'Entregas hoje',dueToday.length?'warn':'good',"go('orders')"],
+  ['🍩',inProd.length,'Em produção',inProd.length?'warn':'good',"go('production')"],
+  ['✅',ready.length,'Prontas',ready.length?'good':'neutral',"go('orders')"],
+  ['💶',unpaid.length,'Por receber',unpaid.length?'bad':'good',"go('cash')"]
+ ];
+ cards.innerHTML=daily.map(([icon,n,txt,state,action])=>`<button class="dashboard-daily-card ${state}" type="button" onclick="${action}"><span>${icon}</span><div><b>${n}</b><small>${txt}</small></div></button>`).join('');
+
+ const upcoming=live
+   .filter(o=>o.status!=='Entregue'&&o.delivery)
+   .sort((a,b)=>String(a.delivery).localeCompare(String(b.delivery)))
+   .filter(o=>String(o.delivery)>=today)
+   .slice(0,8);
+ if(label)label.textContent=new Date().toLocaleDateString('pt-PT',{weekday:'long',day:'2-digit',month:'long'});
+ list.innerHTML=upcoming.length?upcoming.map(o=>{
+   const c=calcOrder(o);
+   const isToday=o.delivery===today;
+   const due=Math.max(0,(Number(c.total)||0)-(Number(o.paid)||0));
+   return `<div class="dashboard-today-row" onclick="dashboardDailyOpen('${String(o.id).replaceAll("'","\\'")}')">
+     <div class="dashboard-today-id">${o.id}${o.source==='online_store'?' · ONLINE':''}</div>
+     <div class="dashboard-today-client"><b>${o.client||'Cliente'}</b><small>${due>.001?'Falta '+euro(due):'Pagamento OK'}</small></div>
+     <div class="dashboard-today-date">${isToday?'HOJE':o.delivery}</div>
+     <div class="dashboard-today-total">${euro(c.total)}</div>
+     <span class="badge ${o.status==='Pronta'?'ok':o.status==='Em produção'?'warn':''} dashboard-today-status">${o.status}</span>
+   </div>`
+ }).join(''):`<div class="dashboard-today-empty">Sem entregas pendentes a partir de hoje.</div>`;
+}
 function renderDashboard(){
  const lb=localStorage.getItem(LAST);const notice=document.getElementById('setupNotice');
  if(notice&&lb){notice.querySelectorAll('.backupwarn').forEach(x=>x.remove());const days=(Date.now()-new Date(lb).getTime())/86400000;if(days>7)notice.insertAdjacentHTML('beforeend','<div class="badge bad backupwarn" style="margin-top:8px">Backup com mais de 7 dias</div>')}
@@ -2279,7 +2354,7 @@ function renderDashboard(){
  ];
  document.getElementById('kpis').innerHTML=kpiData.map(([icon,l,v,state])=>`<button class="card kpi dashboard-kpi-card ${state}" type="button" onclick="dashboardKpiGo('${l}')"><div class="dashboard-kpi-icon">${icon}</div><div><div class="label">${l}</div><div class="value">${v}</div></div><span class="dashboard-kpi-arrow">›</span></button>`).join('');
  const rows=filteredOrders().filter(o=>o.status!=='Entregue').slice(-8).reverse();
- document.getElementById('pendingOrders').innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o);return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}</td><td><span class="badge warn">${o.status}</span></td></tr>`}).join(''):`<tr><td colspan="6" class="empty">Sem encomendas pendentes</td></tr>`;renderReceivables();renderQuotePipeline();renderTrend()
+ document.getElementById('pendingOrders').innerHTML=rows.length?rows.map(o=>{const c=calcOrder(o);return`<tr><td>${o.id}${o.source==='online_store'?'<br><span class="badge ok">ONLINE</span>':''}</td><td>${o.client||'—'}</td><td>${o.delivery||'—'}</td><td>${euro(c.total)}</td><td>${euro(o.paid)}</td><td><span class="badge warn">${o.status}</span></td></tr>`}).join(''):`<tr><td colspan="6" class="empty">Sem encomendas pendentes</td></tr>`;renderDashboardDaily();renderReceivables();renderQuotePipeline();renderTrend()
 }
 function renderCart(){const el=document.getElementById('cart');el.innerHTML=cart.length?cart.map((x,i)=>`<div class="cart-row"><div><strong>${x.name}</strong><br><small>${x.category}</small></div><input type="number" min="1" value="${x.qty}" onchange="cart[${i}].qty=+this.value||1;renderCart()"><strong>${euro(x.qty*x.price)}</strong><button class="btn danger" onclick="cart.splice(${i},1);renderCart()">×</button></div>`).join(''):'<div class="empty">Toque num sabor para adicionar</div>';const q=cart.reduce((s,x)=>s+x.qty,0),t=cart.reduce((s,x)=>s+x.qty*x.price,0),c=cart.reduce((s,x)=>s+x.qty*x.cost,0),p=t-c;$('cartQty').textContent=q;$('cartTotal').textContent=euro(t);$('cartProfit').textContent=euro(p);$('cartMargin').textContent=pct(t?p/t:0)}
 function clearSale(){cart=[];$('saleClient').value='';$('saleContact').value='';$('salePaid').value=0;renderCart()}

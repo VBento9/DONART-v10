@@ -1,0 +1,24 @@
+DONART V11.9.0 — DASHBOARD DIÁRIO
+
+BASE
+- DONART V11.8.4 (validada pelo utilizador).
+
+ALTERAÇÃO ÚNICA
+- Dashboard/Início transformado num centro de controlo diário.
+- Novos cartões: Entregas hoje, Em produção, Prontas e Por receber.
+- Nova lista "Entregas e trabalho mais próximo", com acesso direto ao detalhe da encomenda.
+- Layout adaptado a tablet e iPhone.
+
+NÃO ALTERADO
+- Estados das encomendas.
+- Produção e consumo de stock.
+- Stock.
+- Caixa e pagamentos.
+- Cloud/Supabase.
+- Limpeza de testes.
+- Nova venda.
+- Restantes módulos.
+
+VALIDAÇÃO TÉCNICA
+- JavaScript: node --check OK.
+- Funções críticas comparadas com a V11.8.4 e preservadas.
