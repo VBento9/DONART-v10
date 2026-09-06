@@ -1,0 +1,33 @@
+DONART V12.0.3 — CLOUD COMO FONTE DE VERDADE DAS ENCOMENDAS
+
+BASE
+- DONART V12.0.2.
+
+CAUSA CORRIGIDA
+- O hydrate anterior fazia MERGE entre encomendas locais antigas e Cloud.
+- Por isso, uma encomenda apagada na Cloud podia continuar guardada no localStorage
+  de outro dispositivo e reaparecer sempre.
+
+NOVA REGRA
+- Se não existem alterações locais pendentes (REL_DIRTY != 1), a lista de encomendas
+  local passa a espelhar exatamente a Cloud.
+- Se existem alterações locais pendentes, mantém o merge para não perder trabalho offline.
+
+EFEITO
+- Encomendas apagadas definitivamente deixam de reaparecer noutros dispositivos limpos.
+- Continua protegido o trabalho offline ainda não sincronizado.
+
+NÃO ALTERADO
+- Produção.
+- Stock.
+- Caixa/pagamentos.
+- Estados.
+- Limpeza WEB.
+- Eliminação AS.
+- pullOnlineOrders.
+- relationalSyncCore.
+- Dashboard.
+
+VALIDAÇÃO
+- JavaScript node --check OK.
+- Funções críticas preservadas.
