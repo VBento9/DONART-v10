@@ -1,0 +1,20 @@
+DONART V12.4.1
+Erro corrigido: Invalid relation name: relation must be a non-empty string.
+
+Causa confirmada no código V12.4.0:
+REL_TABLES contém clients, products, orders, quotes e sales.
+Não contém order_items.
+A V12.4.0 chamou supabase.from(REL_TABLES.order_items), portanto enviou undefined.
+
+Correção:
+As duas referências inválidas foram substituídas pela tabela real:
+donart_v10_order_items
+
+Não foi necessário alterar Supabase, RLS ou SQL.
+Fluxo Cloud-first e proteção contra eliminação local em caso de erro mantidos.
+Cache PWA atualizado para V12.4.1.
+
+Validação:
+JavaScript: OK
+Service Worker: OK
+0 referências REL_TABLES.order_items restantes.

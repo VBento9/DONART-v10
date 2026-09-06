@@ -1,7 +1,7 @@
 {
   "name": "DONART Gestão",
   "short_name": "DONART",
-  "start_url": "./?v=12.4.0",
+  "start_url": "./?v=12.4.1",
   "display": "standalone",
   "background_color": "#FFFDF9",
   "theme_color": "#F12473",

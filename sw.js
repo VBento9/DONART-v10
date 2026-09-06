@@ -1,4 +1,4 @@
-const CACHE_NAME='donart-v12-4-0';
+const CACHE_NAME='donart-v12-4-1';
 const STATIC_ASSETS=['./icon-192.png','./icon-512.png','./logo-donart-ui.png','./logo-donart.png'];
 
 self.addEventListener('install',event=>{
