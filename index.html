@@ -2739,27 +2739,79 @@ function voidOrder(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const p
 async function deleteOrder(id){
  const o=db.orders.find(x=>x.id===id);
  if(!o)return;
- if(!canDeleteOrder(o))return toast('Só pode eliminar encomendas em estado Pedido');
+ if(!canDeleteOrder(o))return toast('Só pode eliminar encomendas sem pagamento e sem produção, em Pedido ou Cancelado');
  if(!confirm('Eliminar esta encomenda definitivamente?'))return;
+
  const u=cloudUser||await ensureCloudSession();
- if(u&&o._rid){
-   try{
-     const {error:itemsError}=await cloudClient.from('donart_v10_order_items').delete().eq('user_id',u.id).eq('order_id',o._rid);
-     if(itemsError)throw itemsError;
-     const {error}=await cloudClient.from(REL_TABLES.orders).delete().eq('user_id',u.id).eq('id',o._rid);
-     if(error)throw error;
-   }catch(e){
-     cloudLogMsg('Falha ao eliminar encomenda na cloud: '+cloudErrText(e));
-     toast('Não foi possível eliminar da Cloud. Nada foi apagado.');
-     return
-   }
+ if(!u||!cloudClient){
+   toast('Liga à Cloud para eliminar definitivamente. Nada foi apagado.');
+   return;
  }
+
+ try{
+   // Descobrir a linha Cloud pelo UUID relacional OU pelo número visível da encomenda.
+   // Isto resolve encomendas antigas que existem na Cloud mas perderam o _rid local.
+   const {data:remoteRows,error:fetchError}=await cloudClient
+     .from(REL_TABLES.orders)
+     .select('id,data')
+     .eq('user_id',u.id);
+   if(fetchError)throw fetchError;
+
+   const matches=(Array.isArray(remoteRows)?remoteRows:[]).filter(r=>{
+     const appId=r?.data&&typeof r.data==='object'?r.data.id:null;
+     return (o._rid&&String(r.id)===String(o._rid)) || String(appId||'')===String(o.id||'');
+   });
+
+   // Se existir na Cloud, apagar primeiro itens e depois a encomenda.
+   for(const r of matches){
+     const {error:itemsError}=await cloudClient
+       .from('donart_v10_order_items')
+       .delete()
+       .eq('user_id',u.id)
+       .eq('order_id',r.id);
+     if(itemsError)throw itemsError;
+
+     const {error:orderError}=await cloudClient
+       .from(REL_TABLES.orders)
+       .delete()
+       .eq('user_id',u.id)
+       .eq('id',r.id);
+     if(orderError)throw orderError;
+   }
+
+   // Confirmar que já não ficou nenhuma cópia Cloud com o mesmo ID visível.
+   const {data:verifyRows,error:verifyError}=await cloudClient
+     .from(REL_TABLES.orders)
+     .select('id,data')
+     .eq('user_id',u.id);
+   if(verifyError)throw verifyError;
+   const stillThere=(Array.isArray(verifyRows)?verifyRows:[]).some(r=>{
+     const appId=r?.data&&typeof r.data==='object'?r.data.id:null;
+     return String(appId||'')===String(o.id||'');
+   });
+   if(stillThere)throw new Error('A encomenda continua presente na Cloud após a tentativa de eliminação');
+
+ }catch(e){
+   cloudLogMsg('Falha ao eliminar encomenda persistentemente: '+cloudErrText(e));
+   toast('Não foi possível eliminar da Cloud. Nada foi apagado localmente.');
+   return;
+ }
+
+ // Só depois de confirmada a eliminação Cloud, apagar a cópia local.
  db.orders=db.orders.filter(x=>x.id!==id);
- localStorage.setItem(KEY,JSON.stringify(db));
- setCloudMeta({dirty:false,verified:true,conflict:false,lastSync:new Date().toISOString()});
- cloudLogMsg('Encomenda eliminada definitivamente: '+id);
- renderOrders();renderClients();renderCloudUI();
- toast('Encomenda eliminada definitivamente')
+ cloudApplying=true;
+ try{
+   localStorage.setItem(KEY,JSON.stringify(db));
+   renderAll();
+ }finally{
+   cloudApplying=false;
+ }
+ localStorage.setItem(REL_DIRTY,'1');
+ setCloudMeta({dirty:true,verified:false,conflict:false,localChangedAt:new Date().toISOString()});
+ if(typeof scheduleRelationalSync==='function')scheduleRelationalSync();
+ cloudLogMsg('Encomenda eliminada persistentemente: '+id);
+ try{orderDialog?.close()}catch(_){}
+ toast('Encomenda eliminada definitivamente · não reaparece ao atualizar');
 }
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();

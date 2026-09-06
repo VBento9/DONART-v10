@@ -1,0 +1,28 @@
+DONART V12.0.1 — ELIMINAÇÃO PERSISTENTE DE ENCOMENDAS
+
+BASE
+- DONART V12.0 Dashboard Operacional.
+
+CORREÇÃO
+- A eliminação normal de encomendas passa a ser Cloud-first.
+- A app procura a encomenda remota pelo _rid OU pelo número visível (AS-..., WEB-..., etc.).
+- Apaga primeiro os itens relacionais e depois a encomenda na Cloud.
+- Confirma que a encomenda já não existe na Cloud.
+- Só depois apaga a cópia local.
+- Se não houver sessão Cloud ou ocorrer erro, nada é apagado localmente.
+
+OBJETIVO
+- Impedir que encomendas eliminadas voltem a aparecer depois de atualizar/reabrir a app.
+
+NÃO ALTERADO
+- Dashboard V12.
+- Estados.
+- Produção/stock.
+- Caixa/pagamentos.
+- pullOnlineOrders.
+- Limpeza específica de testes WEB.
+- relationalSyncCore.
+
+VALIDAÇÃO
+- JavaScript node --check OK.
+- Funções críticas preservadas.
