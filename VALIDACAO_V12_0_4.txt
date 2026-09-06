@@ -1,0 +1,27 @@
+DONART V12.0.4 — WEB SEMPRE ESPELHO DA CLOUD
+
+BASE
+- DONART V12.0.3.
+
+CORREÇÃO
+- Encomendas source=online_store / WEB- passam a ser SEMPRE autoridade da Cloud no hydrate.
+- Uma WEB- ausente no Supabase é removida localmente mesmo que REL_DIRTY esteja ativo.
+- O estado global "dirty" deixa de permitir que WEB antigas sobrevivam no localStorage.
+- Encomendas manuais locais continuam protegidas quando ainda não foram sincronizadas.
+
+OBJETIVO
+- Eliminar definitivamente WEB antigas que continuam visíveis no tablet apesar de já não existirem no Supabase.
+
+NÃO ALTERADO
+- pullOnlineOrders.
+- deleteTestOrder.
+- deleteOrder.
+- relationalSyncCore.
+- Produção/stock.
+- Caixa/pagamentos.
+- Estados.
+- Dashboard.
+
+VALIDAÇÃO
+- JavaScript node --check OK.
+- Funções críticas preservadas.

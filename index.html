@@ -5531,10 +5531,31 @@ async function relationalHydrateCore(initial=false){
      // a Cloud é a fonte de verdade das encomendas. Assim, encomendas já apagadas
      // noutro dispositivo não ficam eternamente presas no localStorage deste aparelho.
      const localOrdersDirty=localStorage.getItem(REL_DIRTY)==='1';
+
+     // V12.0.4
+     // Encomendas ONLINE (source=online_store) são sempre espelho da Cloud.
+     // Assim, uma WEB- já apagada no Supabase nunca pode sobreviver apenas no localStorage.
+     // Encomendas manuais continuam protegidas quando existe trabalho local pendente.
+     const localManualOrders=localOrders.filter(o=>o?.source!=='online_store');
+     const remoteHydratedOrders=mergeRows([],remoteOrdersAdjusted,'order');
+
      if(localOrdersDirty){
-       db.orders=mergeRows(localOrders,remoteOrdersAdjusted,'order');
+       const remoteKeys=new Set();
+       remoteHydratedOrders.forEach(o=>{
+         if(o?._rid)remoteKeys.add('rid:'+String(o._rid));
+         if(o?.id)remoteKeys.add('id:'+String(o.id));
+       });
+
+       // Preservar apenas encomendas MANUAIS locais ainda não presentes na Cloud.
+       const pendingManual=localManualOrders.filter(o=>{
+         const byRid=o?._rid&&remoteKeys.has('rid:'+String(o._rid));
+         const byId=o?.id&&remoteKeys.has('id:'+String(o.id));
+         return !byRid&&!byId;
+       });
+
+       db.orders=mergeRows(pendingManual,remoteOrdersAdjusted,'order');
      }else{
-       db.orders=mergeRows([],remoteOrdersAdjusted,'order');
+       db.orders=remoteHydratedOrders;
      }
      db.quotes=mergeRows(localQuotes,remoteQuotesAdjusted,'quote');
 
