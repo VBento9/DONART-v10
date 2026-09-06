@@ -1011,6 +1011,19 @@
 .settings-cost-preview small{display:block;font-size:6.5px;color:#8d7a72}.settings-cost-preview strong{font-size:8.5px;color:#4e3934}
 @media(max-width:760px){.settings-hero{align-items:stretch;flex-direction:column}.settings-summary{grid-template-columns:1fr 1fr}.settings-cost-preview{grid-template-columns:1fr 1fr}}
 
+
+/* DONART V11.6 — Cloud interativa */
+.cloud-pro-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px}.cloud-pro-hero .section-title{font-size:18px}.cloud-pro-hero p{font-size:9px}
+.cloud-hero-status{padding:7px 11px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.05em;background:#eee;color:#6e625d}.cloud-hero-status.ok{background:#dff5e6;color:#267441}.cloud-hero-status.pending{background:#fff0c9;color:#86600c}.cloud-hero-status.offline{background:#fbe3e0;color:#98483d}
+.cloud-pro-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}.cloud-pro-kpi{padding:10px 12px;display:flex;flex-direction:column;gap:2px}.cloud-pro-kpi span{font-size:8px;font-weight:800;text-transform:uppercase;color:#8b746c}.cloud-pro-kpi strong{font-size:15px;color:#503833}.cloud-pro-kpi small{font-size:7px;color:#94837c;overflow:hidden;text-overflow:ellipsis}
+.cloud-pro-grid{gap:9px!important}.cloud-pro-card,.cloud-safety-card,.cloud-activity-card{padding:11px 12px}.cloud-pro-card-head{margin-bottom:9px}.cloud-pro-card-head small{font-size:8px;color:#8c7971}
+#cloud .section-title{font-size:14px}#cloud .field label{font-size:9px}#cloud .field input{font-size:10px;min-height:34px}#cloud .btn{font-size:9px}
+.cloud-primary-actions,.cloud-sync-actions,.cloud-safety-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.cloud-state-pro{padding:10px;border-radius:9px;background:#fcfaf9;border:1px solid #eee5e1;font-size:8.5px;line-height:1.4}
+.cloud-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}.cloud-info-item{padding:8px;border:1px solid #eee5e1;border-radius:9px;background:#fcfaf9;min-width:0}.cloud-info-item small{display:block;font-size:6.5px;color:#8d7a72}.cloud-info-item strong{display:block;font-size:7.5px;color:#4e3934;margin-top:2px;overflow:hidden;text-overflow:ellipsis}
+.cloud-safety-note{font-size:7.5px;color:#927f77;margin-top:8px}.cloud-activity-card .cloud-log{max-height:150px;overflow:auto;font-size:7.5px}
+@media(max-width:760px){.cloud-pro-hero{align-items:stretch;flex-direction:column}.cloud-pro-summary{grid-template-columns:1fr 1fr}.cloud-info-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -1945,32 +1958,57 @@
   </section>
 
   <section id="cloud" class="screen">
-    <div class="grid2">
-      <div class="card">
-        <div class="section-title" style="margin-top:0">DONART Cloud Sync</div>
-        <p>Sincroniza os mesmos dados entre iPhone, Android e outros dispositivos. A app continua a guardar uma cópia local e pode trabalhar temporariamente sem internet.</p>
+    <div class="cloud-pro-hero card">
+      <div><div class="section-title" style="margin:0">DONART Cloud</div><p class="muted" style="margin:4px 0 0">Sincronização segura entre tablet, iPhone e outros dispositivos.</p></div>
+      <div id="cloudHeroStatus" class="cloud-hero-status">A verificar…</div>
+    </div>
+    <div id="cloudProSummary" class="cloud-pro-summary"></div>
+
+    <div class="grid2 cloud-pro-grid" style="margin-top:10px">
+      <div class="card cloud-pro-card">
+        <div class="cloud-pro-card-head"><div><div class="section-title" style="margin:0">Ligação à Cloud</div><small>Dados do projeto Supabase e conta DONART.</small></div></div>
         <div class="form-grid">
           <div class="field span2"><label>Supabase Project URL</label><input id="cloudUrl" placeholder="https://xxxx.supabase.co" autocomplete="off"></div>
           <div class="field span2"><label>Publishable / anon key</label><input id="cloudKey" type="password" placeholder="sb_publishable_... ou anon key" autocomplete="off"></div>
           <div class="field span2"><label>Email da conta DONART</label><input id="cloudEmail" type="email" placeholder="email@exemplo.pt" autocomplete="username"></div>
           <div class="field span2"><label>Palavra-passe</label><input id="cloudPassword" type="password" placeholder="Palavra-passe da conta Supabase" autocomplete="current-password"></div>
         </div>
-        <div class="btnrow"><button class="btn primary" onclick="cloudConnect()">Ligar / Entrar</button><button class="btn" onclick="cloudDisconnect()">Terminar sessão</button><button class="btn" onclick="saveCloudConfig()">Guardar configuração</button></div>
-        <p class="security-note">A palavra-passe nunca é guardada pela DONART. A sessão autenticada é gerida pelo cliente Supabase neste dispositivo. Nunca uses uma service_role key na app.</p>
+        <div class="cloud-primary-actions">
+          <button class="btn primary" onclick="cloudConnect()">Ligar / Entrar</button>
+          <button class="btn" onclick="saveCloudConfig()">Guardar configuração</button>
+          <button class="btn" onclick="cloudDisconnect()">Terminar sessão</button>
+        </div>
+        <p class="security-note">A palavra-passe não é guardada pela DONART. Nunca uses uma service_role key na aplicação.</p>
       </div>
-      <div class="card">
-        <h3>Estado da sincronização</h3>
-        <div id="cloudStateBox" class="soft-note">Cloud ainda não configurada.</div>
-        <div class="cloud-kpi" id="cloudLastSync">Última sincronização: —</div>
-        <div class="cloud-kpi" id="cloudUserInfo">Conta: —</div>
-        <div class="btnrow"><button class="btn primary" onclick="cloudPushNow()">Enviar agora</button><button class="btn" onclick="cloudPullNow(true)">Receber agora</button><button class="btn" onclick="cloudApiDiagnostic(true)">Testar Data API</button><button class="btn" onclick="cloudResolveConflict('local')">Usar dados deste dispositivo</button><button class="btn" onclick="cloudResolveConflict('remote')">Usar dados da cloud</button></div>
-        <div class="btnrow"><button class="btn danger" onclick="restoreCloudSafetySnapshot()">Recuperar cópia de antes da última receção Cloud</button></div>
-        <p class="security-note">Sempre que a app substitui os dados locais pelos da Cloud, guarda primeiro uma cópia de segurança neste aparelho. Usa o botão acima se alguma sincronização tiver apagado dados que ainda não tinhas enviado.</p>
-        <p class="security-note">Se houver alterações locais ainda não enviadas e chegar uma versão diferente da cloud, a app não substitui dados automaticamente: marca conflito e pede uma escolha.</p>
+
+      <div class="card cloud-pro-card">
+        <div class="cloud-pro-card-head"><div><div class="section-title" style="margin:0">Estado da sincronização</div><small>Confirma rapidamente se este dispositivo está atualizado.</small></div></div>
+        <div id="cloudStateBox" class="cloud-state-pro">Cloud ainda não configurada.</div>
+        <div class="cloud-info-grid">
+          <div class="cloud-info-item"><small>Última sincronização</small><strong id="cloudLastSync">—</strong></div>
+          <div class="cloud-info-item"><small>Conta</small><strong id="cloudUserInfo">—</strong></div>
+        </div>
+        <div class="cloud-sync-actions">
+          <button class="btn primary" onclick="cloudPushNow()">Enviar agora</button>
+          <button class="btn" onclick="cloudPullNow(true)">Receber agora</button>
+          <button class="btn" onclick="cloudApiDiagnostic(true)">Testar ligação</button>
+        </div>
       </div>
     </div>
-    <div class="card" style="margin-top:12px">
-      <h3>Atividade</h3><div id="cloudLog" class="cloud-log">Sem atividade de sincronização.</div>
+
+    <div class="card cloud-safety-card" style="margin-top:10px">
+      <div class="cloud-pro-card-head"><div><div class="section-title" style="margin:0">Recuperação & conflitos</div><small>Usa estas opções apenas quando houver um conflito ou uma sincronização incorreta.</small></div></div>
+      <div class="cloud-safety-actions">
+        <button class="btn" onclick="cloudResolveConflict('local')">Manter dados deste dispositivo</button>
+        <button class="btn" onclick="cloudResolveConflict('remote')">Usar dados da Cloud</button>
+        <button class="btn danger" onclick="restoreCloudSafetySnapshot()">Recuperar cópia anterior</button>
+      </div>
+      <div class="cloud-safety-note">Antes de substituir dados locais pelos da Cloud, a DONART guarda uma cópia de segurança neste dispositivo.</div>
+    </div>
+
+    <div class="card cloud-activity-card" style="margin-top:10px">
+      <div class="cloud-pro-card-head"><div><div class="section-title" style="margin:0">Atividade</div><small>Registo técnico das últimas operações de sincronização.</small></div></div>
+      <div id="cloudLog" class="cloud-log">Sem atividade de sincronização.</div>
     </div>
   </section>
 
@@ -4411,7 +4449,7 @@ function cloudMeta(){
 function setCloudMeta(patch){const m={...cloudMeta(),...patch};localStorage.setItem(CLOUD_META,JSON.stringify(m));renderCloudUI();return m}
 function cloudLogMsg(msg){const stamp=new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});const key=CLOUD_LOG;let arr=[];try{arr=JSON.parse(localStorage.getItem(key))||[]}catch(e){}arr.unshift(stamp+' · '+msg);arr=arr.slice(0,40);localStorage.setItem(key,JSON.stringify(arr));renderCloudUI()}
 function cloudLogData(){try{return JSON.parse(localStorage.getItem(CLOUD_LOG))||[]}catch(e){return[]}}
-function renderCloudUI(){
+function renderCloudUICore(){
  const cfg=cloudCfg(),m=cloudMeta(),online=navigator.onLine;
  const url=document.getElementById('cloudUrl'),key=document.getElementById('cloudKey'),email=document.getElementById('cloudEmail');
  if(url&&document.activeElement!==url)url.value=cfg.url||'';if(key&&document.activeElement!==key)key.value=cfg.key||'';if(email&&document.activeElement!==email)email.value=cfg.email||'';
@@ -4430,6 +4468,25 @@ function renderCloudUI(){
  const ui=document.getElementById('cloudUserInfo');if(ui)ui.textContent='Conta: '+(cloudUser?.email||cfg.email||'—');
  const log=document.getElementById('cloudLog');if(log){const a=cloudLogData();log.innerHTML=a.length?a.map(x=>'<div>'+escapeHtml(x)+'</div>').join(''):'Sem atividade de sincronização.'}
 }
+function renderCloudUI(){
+ renderCloudUICore();
+ const meta=cloudMeta(),cfg=cloudCfg(),online=navigator.onLine!==false;
+ const connected=!!cloudUser;
+ const dirty=!!meta.dirty;
+ const hero=document.getElementById('cloudHeroStatus');
+ if(hero){
+   hero.textContent=!online?'SEM INTERNET':connected?(dirty?'POR SINCRONIZAR':'SINCRONIZADA'):(cfg.url?'DESLIGADA':'NÃO CONFIGURADA');
+   hero.className='cloud-hero-status '+(!online?'offline':connected?(dirty?'pending':'ok'):'off');
+ }
+ const sum=document.getElementById('cloudProSummary');
+ if(sum)sum.innerHTML=[
+   ['Ligação',online?'Online':'Offline',online?'Internet disponível':'A trabalhar localmente'],
+   ['Conta',connected?'Ligada':'Desligada',connected?(cloudUser?.email||'Sessão ativa'):'Sem sessão'],
+   ['Dados locais',dirty?'Pendentes':'Guardados',dirty?'Existem alterações por enviar':'Sem alterações pendentes'],
+   ['Multi-dispositivo',connected?'Ativo':'Inativo',connected?'Sincronização disponível':'Liga a conta DONART']
+ ].map(([a,b,c])=>`<div class="card cloud-pro-kpi"><span>${a}</span><strong>${b}</strong><small>${escapeHtml(String(c))}</small></div>`).join('');
+}
+
 function saveCloudConfig(){const url=(document.getElementById('cloudUrl')?.value||'').trim().replace(/\/$/,'');const key=(document.getElementById('cloudKey')?.value||'').trim();const email=(document.getElementById('cloudEmail')?.value||'').trim();if(url&&!/^https:\/\/[^\s]+$/i.test(url)){toast('URL Supabase inválido');return false}if((url&&!key)||(!url&&key)){toast('Preenche URL e chave');return false}const prev=cloudCfg();localStorage.setItem(CLOUD_CFG,JSON.stringify({url,key,email}));if(prev.url!==url||prev.key!==key){cloudClient=null;cloudUser=null;cloudChannel=null;setCloudMeta({verified:false})}cloudLogMsg('Configuração cloud guardada');toast('Configuração cloud guardada');renderCloudUI();return true}
 function initCloudClient(){const cfg=cloudCfg();if(!cfg.url||!cfg.key)return null;if(!window.supabase||!window.supabase.createClient){cloudLogMsg('Biblioteca Supabase indisponível');return null}if(cloudClient)return cloudClient;cloudClient=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true},db:{schema:'public'}});cloudClient.auth.onAuthStateChange((event,session)=>{cloudUser=session?.user||null;renderCloudUI();if(cloudUser&&cloudStartupDone&&!cloudHydrating&&(event==='SIGNED_IN'||event==='TOKEN_REFRESHED')&&!cloudChannel)subscribeCloud()});return cloudClient}
 function cloudStateQuery(){return cloudClient.schema('public').from(CLOUD_TABLE)}
