@@ -1204,7 +1204,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.2.0 · Cloud de Encomendas Corrigida · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.3.0 · IDs Cloud Únicos · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -2611,9 +2611,7 @@ async function saveOrder(){
        paid=Number($('salePaid').value)||0;
  if(paid<0||paid>total)return toast('O valor pago deve estar entre 0 € e o total da encomenda');
 
- const yr=new Date().getFullYear(),
-       nums=db.orders.filter(o=>o.id&&o.id.startsWith('AS-'+yr+'-')).map(o=>+o.id.split('-').pop()||0),
-       id='AS-'+yr+'-'+String((nums.length?Math.max(...nums):0)+1).padStart(4,'0'),
+ const id=await nextManualOrderId(),
        boxName=$('saleBox').value,
        pk=db.packaging.find(p=>p.name===boxName),
        clientName=$('saleClient').value.trim(),
@@ -5386,15 +5384,78 @@ function relClientRid(appClientId,name){
 }
 function relClone(x){return JSON.parse(JSON.stringify(x))}
 
+function manualOrderNumber(id,yr){
+ const m=String(id||'').match(new RegExp('^AS-'+yr+'-(\\\\d+)$'));
+ return m?Number(m[1])||0:0
+}
+
+async function nextManualOrderId(){
+ const yr=new Date().getFullYear();
+ const u=cloudUser||await ensureCloudSession();
+
+ // Caminho principal: numeração atómica no Supabase.
+ if(u&&cloudClient&&navigator.onLine){
+   const {data,error}=await cloudClient.rpc('donart_next_manual_order_id_v1',{p_year:yr});
+   if(!error&&data)return String(data);
+
+   // Compatibilidade temporária caso o RPC ainda não esteja instalado:
+   // lê a Cloud antes de calcular, para nunca depender só do localStorage.
+   const {data:rows,error:readError}=await cloudClient
+     .from(REL_TABLES.orders)
+     .select('data')
+     .eq('user_id',u.id);
+   if(!readError){
+     const cloudNums=(Array.isArray(rows)?rows:[])
+       .map(r=>manualOrderNumber(r?.data?.id,yr))
+       .filter(Boolean);
+     const localNums=(db.orders||[])
+       .map(o=>manualOrderNumber(o?.id,yr))
+       .filter(Boolean);
+     const n=Math.max(0,...cloudNums,...localNums)+1;
+     return 'AS-'+yr+'-'+String(n).padStart(4,'0')
+   }
+ }
+
+ // Offline: apenas como último recurso. O índice único do Supabase continua a
+ // impedir duplicados quando a ligação regressar.
+ const localNums=(db.orders||[])
+   .map(o=>manualOrderNumber(o?.id,yr))
+   .filter(Boolean);
+ return 'AS-'+yr+'-'+String(Math.max(0,...localNums)+1).padStart(4,'0')
+}
+
+async function bindOrderRidFromCloud(order,u){
+ if(!order||!order.id||!u||!cloudClient)return null;
+ try{
+   const {data,error}=await cloudClient
+     .from(REL_TABLES.orders)
+     .select('id,data,status,updated_at')
+     .eq('user_id',u.id)
+     .contains('data',{id:order.id})
+     .limit(1);
+   if(error)throw error;
+   const row=Array.isArray(data)?data[0]:null;
+   if(row?.id){
+     order._rid=row.id;
+     return row
+   }
+ }catch(e){
+   cloudLogMsg('Falha ao procurar UUID Cloud de '+order.id+': '+cloudErrText(e))
+ }
+ return null
+}
+
 async function syncSingleOrderToCloud(order){
  const u=cloudUser||await ensureCloudSession();
  if(!u||!cloudClient)throw new Error('Cloud sem sessão');
  if(!navigator.onLine)throw new Error('Sem internet');
  if(!order)throw new Error('Encomenda inválida');
 
+ // Regra V12.3.0:
+ // 1 public_id = 1 row_id. Antes de gerar UUID, procurar sempre o public_id na Cloud.
+ if(order.id)await bindOrderRidFromCloud(order,u);
  relUuid(order);
 
- // Se a encomenda tem cliente associado, garantir PRIMEIRO que o cliente existe na Cloud.
  const client=(db.clients||[]).find(c=>c.id===order.clientId)||
               (db.clients||[]).find(c=>normText(c.name)===normText(order.client||''));
  let clientRid=null;
@@ -5409,19 +5470,35 @@ async function syncSingleOrderToCloud(order){
    if(clientError)throw clientError;
  }
 
- const c=calcOrder(order);
- const row={
-   id:order._rid,user_id:u.id,client_id:clientRid,
-   status:order.status||'Pedido',order_date:relDate(order.created),due_at:relDue(order.delivery),
-   subtotal:Number(c.total)||0,total:Number(c.total)||0,notes:order.notes||null,
-   data:relClone(order),updated_at:new Date().toISOString()
+ const buildRow=()=>{
+   const c=calcOrder(order);
+   return {
+     id:order._rid,user_id:u.id,client_id:clientRid,
+     status:order.status||'Pedido',order_date:relDate(order.created),due_at:relDue(order.delivery),
+     subtotal:Number(c.total)||0,total:Number(c.total)||0,notes:order.notes||null,
+     data:relClone(order),updated_at:new Date().toISOString()
+   }
  };
- const {error}=await cloudClient.from(REL_TABLES.orders).upsert(row,{onConflict:'id'});
+
+ let row=buildRow();
+ let {error}=await cloudClient.from(REL_TABLES.orders).upsert(row,{onConflict:'id'});
+
+ // Proteção adicional: se a constraint de public_id bloquear um UUID antigo/local,
+ // ligar a encomenda à row já existente e atualizar ESSA row em vez de criar outra.
+ if(error&&String(error.code||'')==='23505'&&order.id){
+   const existing=await bindOrderRidFromCloud(order,u);
+   if(existing?.id){
+     row=buildRow();
+     const retry=await cloudClient.from(REL_TABLES.orders).upsert(row,{onConflict:'id'});
+     error=retry.error
+   }
+ }
  if(error)throw error;
 
  relShadowRememberOrder(order);
  relClearOrderPending(order);
  if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
+ localStorage.setItem(KEY,JSON.stringify(db));
  setCloudMeta({dirty:relOrderPendingSet().size>0,verified:true,conflict:false,lastSync:new Date().toISOString()});
  return true
 }
@@ -5721,7 +5798,24 @@ async function relationalHydrateCore(initial=false){
        return rr
      });
 
-     const remoteHydratedOrders=mergeRows([],remoteOrdersAdjusted,'order');
+     let remoteHydratedOrders=mergeRows([],remoteOrdersAdjusted,'order');
+
+     // V12.3.0 — defesa adicional: uma única encomenda lógica por public_id.
+     // Se existirem dados históricos inconsistentes, preferir Entregue; caso contrário a mais recente.
+     const logicalMap=new Map();
+     remoteHydratedOrders.forEach(o=>{
+       const k=String(o?.id||o?._rid||'');
+       const prev=logicalMap.get(k);
+       if(!prev){logicalMap.set(k,o);return}
+       const prevDelivered=prev.status==='Entregue', curDelivered=o.status==='Entregue';
+       if(curDelivered&&!prevDelivered){logicalMap.set(k,o);return}
+       if(curDelivered===prevDelivered){
+         const a=String(prev.updated_at||prev.created||'');
+         const b=String(o.updated_at||o.created||'');
+         if(b>a)logicalMap.set(k,o)
+       }
+     });
+     remoteHydratedOrders=[...logicalMap.values()];
 
      // V12.1.0 — reconciliação segura:
      // Cloud = fonte de verdade; só preservamos localmente encomendas explicitamente pendentes.

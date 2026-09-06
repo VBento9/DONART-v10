@@ -1,0 +1,38 @@
+create or replace function public.donart_next_manual_order_id_v1(p_year integer default extract(year from current_date)::integer)
+returns text
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_user uuid := auth.uid();
+  v_max integer;
+begin
+  if v_user is null then
+    raise exception 'authentication required';
+  end if;
+
+  perform pg_advisory_xact_lock(
+    hashtext(v_user::text),
+    p_year
+  );
+
+  select coalesce(max(
+    case
+      when (o.data->>'id') ~ ('^AS-' || p_year::text || '-[0-9]+$')
+      then split_part(o.data->>'id','-',3)::integer
+      else null
+    end
+  ),0)
+  into v_max
+  from public.donart_v10_orders o
+  where o.user_id = v_user;
+
+  return 'AS-' || p_year::text || '-' || lpad((v_max + 1)::text,4,'0');
+end;
+$$;
+
+revoke all on function public.donart_next_manual_order_id_v1(integer) from public;
+grant execute on function public.donart_next_manual_order_id_v1(integer) to authenticated;
+
+select public.donart_next_manual_order_id_v1(extract(year from current_date)::integer) as proxima_encomenda;

@@ -1,0 +1,21 @@
+DONART V12.3.0 — CORREÇÃO DEFINITIVA DOS IDs DE ENCOMENDA
+
+Confirmado no Supabase antes desta versão:
+- AS-2026-0001 existia 6 vezes com UUIDs diferentes.
+- 5 duplicados foram removidos.
+- AS-2026-0001 e AS-2026-0002 ficaram únicos e Entregues.
+- Foi criado o índice único donart_v10_orders_user_public_id_uidx.
+
+Correções da app:
+1. O próximo número deixa de ser calculado apenas pelo localStorage.
+2. A app chama donart_next_manual_order_id_v1 no Supabase.
+3. O RPC usa advisory lock para atribuir o próximo número de forma atómica entre dispositivos.
+4. Antes de gerar um UUID novo, syncSingleOrderToCloud procura o public_id na Cloud.
+5. Se já existir, reutiliza exatamente o row_id existente.
+6. Se o índice único devolver erro 23505, a app religa ao UUID Cloud e volta a atualizar a mesma row.
+7. Hydrate inclui defesa contra duplicados históricos.
+8. Produção, stock, estados, caixa e dashboard não foram alterados.
+
+Validação:
+- JavaScript node --check: OK.
+- Funções operacionais críticas preservadas.
