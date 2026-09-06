@@ -1,0 +1,20 @@
+DONART V11.8.3 — ERRO SUPABASE DETALHADO
+
+BASE
+- DONART V11.8.2 Limpeza de Testes Persistente.
+
+ALTERAÇÃO ÚNICA
+- Se a eliminação de uma encomenda de teste falhar no Supabase, a app passa a mostrar
+  numa janela o erro real devolvido pelo Supabase.
+- A encomenda continua sem ser apagada localmente quando existe erro.
+
+PRESERVADO
+- Produção.
+- Estados.
+- Stock.
+- Caixa.
+- pullOnlineOrders.
+- Restante lógica de eliminação.
+
+VALIDAÇÃO
+- JavaScript: node --check OK.

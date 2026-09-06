@@ -2402,8 +2402,10 @@ async function deleteTestOrder(id){
      if(orderError)throw orderError;
    }
  }catch(e){
-   cloudLogMsg('Falha ao eliminar teste na origem da Loja: '+cloudErrText(e));
-   toast('Falta instalar a função de limpeza no Supabase ou ocorreu um erro. Nada foi apagado localmente.');
+   const detail=cloudErrText(e);
+   cloudLogMsg('Falha ao eliminar teste na origem da Loja: '+detail);
+   toast('Erro Supabase na limpeza do teste');
+   setTimeout(()=>alert('Erro Supabase ao eliminar '+id+'\n\n'+detail+'\n\nNada foi apagado localmente.'),80);
    return;
  }
 
