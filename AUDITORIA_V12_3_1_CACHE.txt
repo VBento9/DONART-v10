@@ -1,0 +1,30 @@
+DONART V12.3.1 — CORREÇÃO DE CACHE / SERVICE WORKER
+
+ERRO CONCRETO ENCONTRADO
+O index.html das versões anteriores registava:
+  navigator.serviceWorker.register('sw.js')
+
+e também referenciava:
+  manifest.webmanifest
+
+Mas o ZIP V12.3.0 NÃO continha sw.js nem manifest.webmanifest.
+
+Isto permite que um Service Worker antigo já instalado no iPhone/tablet continue a controlar a aplicação
+e possa devolver uma versão antiga do index.html mesmo depois de publicar um ZIP novo.
+Este conflito explica o sintoma repetido: várias versões diferentes comportarem-se "tudo igual".
+
+CORREÇÃO V12.3.1
+- sw.js volta a existir no pacote.
+- skipWaiting() + clients.claim().
+- remove caches DONART antigos no activate.
+- navegação/index usa network-first com cache:no-store.
+- register usa updateViaCache:'none' e reg.update().
+- manifest.webmanifest incluído.
+- marcador visual V12.3.1 na topbar.
+- limpeza de Cache Storage não elimina localStorage nem dados DONART.
+- toda a lógica de IDs Cloud únicos da V12.3.0 foi preservada.
+
+VALIDAÇÃO
+- JavaScript do index: node --check OK.
+- sw.js incluído.
+- manifest.webmanifest incluído.
