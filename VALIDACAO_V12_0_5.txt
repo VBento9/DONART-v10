@@ -1,0 +1,31 @@
+DONART V12.0.5 — PULL ONLINE AUTORITATIVO
+
+BASE
+- DONART V12.0.4.
+
+CAUSA CORRIGIDA
+- pullOnlineOrders apenas adicionava/atualizava encomendas vindas do Supabase.
+- Nunca removia do localStorage encomendas WEB que já tinham desaparecido da Cloud.
+
+NOVA REGRA
+- A resposta de donart_get_online_orders_v1 passa a ser a fonte de verdade das encomendas ONLINE.
+- Antes de adicionar/atualizar, a app remove qualquer source=online_store local cujo _rid e ID público não existam na resposta Cloud.
+- A limpeza é gravada mesmo quando a RPC devolve 0 encomendas.
+
+EFEITO ESPERADO
+- WEB-CABA5FF770, WEB-EE22AEFB1F e outras WEB antigas deixam de reaparecer após refresh se já não existem no Supabase.
+
+NÃO ALTERADO
+- Produção.
+- Stock.
+- Caixa/pagamentos.
+- Estados.
+- deleteTestOrder.
+- deleteOrder.
+- relationalSyncCore.
+- relationalHydrateCore.
+- Dashboard.
+
+VALIDAÇÃO
+- JavaScript node --check OK.
+- Funções críticas não relacionadas preservadas.

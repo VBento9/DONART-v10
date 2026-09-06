@@ -5325,6 +5325,24 @@ async function pullOnlineOrders(showToast=false){
    const {data,error}=await cloudClient.rpc('donart_get_online_orders_v1');
    if(error)throw error;
    const rows=Array.isArray(data)?data:[];
+
+   // V12.0.5 — a RPC é a fonte de verdade das encomendas online.
+   // Primeiro eliminamos do local quaisquer WEB/online que já não existam na resposta Cloud.
+   const remoteRids=new Set(rows.map(r=>String(r.id)));
+   const remotePublicIds=new Set(rows.map(r=>{
+     const d=(r.data&&typeof r.data==='object')?r.data:{};
+     return String(d.id||('WEB-'+String(r.id).replaceAll('-','').slice(0,10).toUpperCase()));
+   }));
+
+   const before=(db.orders||[]).length;
+   db.orders=(db.orders||[]).filter(o=>{
+     if(o?.source!=='online_store')return true;
+     const byRid=o?._rid&&remoteRids.has(String(o._rid));
+     const byPublic=o?.id&&remotePublicIds.has(String(o.id));
+     return !!(byRid||byPublic);
+   });
+   const removed=Math.max(0,before-db.orders.length);
+
    let added=0,updated=0;
    rows.forEach(r=>{
      const d=(r.data&&typeof r.data==='object')?relClone(r.data):{};
@@ -5349,13 +5367,22 @@ async function pullOnlineOrders(showToast=false){
      if(target){Object.assign(target,base);updated++}
      else{db.orders.push(base);added++}
    });
-   if(rows.length){
-     ensureClientsFromOrders();
+
+   // Guardar SEMPRE, mesmo quando rows=0, porque pode haver WEB antigas a remover.
+   ensureClientsFromOrders();
+   cloudApplying=true;
+   try{
      localStorage.setItem(KEY,JSON.stringify(db));
      renderAll();
+   }finally{
+     cloudApplying=false;
    }
-   cloudLogMsg(`Loja online verificada · ${rows.length} recebida(s) · ${added} nova(s) · ${updated} atualizada(s)`);
-   if(showToast)toast(rows.length?`${rows.length} encomenda(s) online recebida(s)`:'Sem novas encomendas online');
+
+   cloudLogMsg(`Loja online verificada · ${rows.length} recebida(s) · ${added} nova(s) · ${updated} atualizada(s) · ${removed} removida(s) localmente`);
+   if(showToast){
+     if(removed)toast(`${removed} encomenda(s) online antiga(s) removida(s)`);
+     else toast(rows.length?`${rows.length} encomenda(s) online recebida(s)`:'Sem encomendas online');
+   }
    return true
  }catch(e){
    cloudLogMsg('Falha ao receber encomendas online: '+cloudErrText(e));
