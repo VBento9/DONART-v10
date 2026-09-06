@@ -3459,17 +3459,103 @@ function reportPeriodData(){
   return {y,m,pref,orders,purchases,cash,d,qty,pending,byMethod};
 }
 function pdfAscii(s){return String(s??'').replace(/[\u00A0\u202F]/g,' ').replace(/€/g,'EUR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,'?').replace(/([\\()])/g,'\\$1')}
-function makeSimplePDF(lines){
-  const pages=[]; for(let i=0;i<lines.length;i+=45)pages.push(lines.slice(i,i+45));
-  const objs=[null]; const add=x=>(objs.push(x),objs.length-1); const catalog=add(''); const pagesObj=add(''); const pageIds=[];
-  for(const pg of pages){const content=['BT','/F1 10 Tf','45 800 Td','14 TL']; pg.forEach((ln,i)=>{if(i)content.push('T*');content.push('('+pdfAscii(ln)+') Tj')});content.push('ET');const stream=content.join('\n');const c=add(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);const page=add(`<< /Type /Page /Parent ${pagesObj} 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents ${c} 0 R >>`);pageIds.push(page)}
-  objs[catalog]=`<< /Type /Catalog /Pages ${pagesObj} 0 R >>`; objs[pagesObj]=`<< /Type /Pages /Kids [${pageIds.map(x=>x+' 0 R').join(' ')}] /Count ${pageIds.length} >>`;
-  let out='%PDF-1.4\n',offs=[0]; for(let i=1;i<objs.length;i++){offs[i]=out.length;out+=`${i} 0 obj\n${objs[i]}\nendobj\n`} const xref=out.length;out+=`xref\n0 ${objs.length}\n0000000000 65535 f \n`;for(let i=1;i<objs.length;i++)out+=String(offs[i]).padStart(10,'0')+' 00000 n \n';out+=`trailer\n<< /Size ${objs.length} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF`;return new Blob([out],{type:'application/pdf'})
+function pdfAscii(s){return String(s??'').replace(/[\u00A0\u202F]/g,' ').replace(/€/g,'EUR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,'?').replace(/([\\()])/g,'\\$1')}
+function pdfText(x,y,text,size=10,font='F1'){
+ return `BT /${font} ${size} Tf ${x} ${y} Td (${pdfAscii(text)}) Tj ET`;
+}
+function pdfRect(x,y,w,h,gray=.96,stroke=.86){
+ return `${gray} g ${x} ${y} ${w} ${h} re f ${stroke} G ${x} ${y} ${w} ${h} re S 0 g`;
+}
+function makeManagementPDF(){
+ const r=reportPeriodData(),d=r.d;
+ const purchaseTotal=(r.purchases||[]).reduce((a,p)=>a+(Number(p.total)||0),0);
+ const methods=Object.entries(r.byMethod||{});
+ const orderRows=(r.orders||[]).map(o=>{const c=calcOrder(o);return [o.id,o.client||'-',o.delivery||o.created||'-',`${c.qty} un`,euro(c.total),o.status||'-']});
+ const purchaseRows=(r.purchases||[]).map(p=>[p.date||'-',p.supplier||'-',p.item||'-',euro(Number(p.total)||0)]);
+ const pages=[],W=595,H=842,M=42;
+ let cmds=[],y=0,pageNo=0;
+
+ function newPage(){
+   if(cmds.length)pages.push(cmds.join('\n'));
+   cmds=[];pageNo++;
+   cmds.push(pdfRect(0,0,W,H,1,1));
+   cmds.push(pdfText(M,804,'DONART',22,'F2'));
+   cmds.push(pdfText(M,785,'MINI DONUTS',8,'F2'));
+   cmds.push(pdfText(355,804,'RELATORIO DE GESTAO',15,'F2'));
+   cmds.push(pdfText(355,785,'Periodo: '+r.pref,9,'F1'));
+   cmds.push(`0.82 G ${M} 768 ${W-M*2} 0 re S`);
+   y=744;
+ }
+ function ensure(h=40){if(y-h<58)newPage()}
+ function section(title){
+   ensure(34);cmds.push(pdfRect(M,y-4,W-M*2,25,.94,.86));cmds.push(pdfText(M+10,y+4,title,11,'F2'));y-=37;
+ }
+ function kv(label,value,x,w){
+   cmds.push(pdfRect(x,y-40,w,48,.975,.88));
+   cmds.push(pdfText(x+9,y-8,label.toUpperCase(),7,'F2'));
+   cmds.push(pdfText(x+9,y-28,value,13,'F2'));
+ }
+ function table(headers,rows,widths){
+   const x0=M,rowH=22;
+   ensure(48);
+   let x=x0;cmds.push(pdfRect(x0,y-16,widths.reduce((a,b)=>a+b,0),22,.91,.82));
+   headers.forEach((h,i)=>{cmds.push(pdfText(x+5,y-8,h,7,'F2'));x+=widths[i]});y-=22;
+   for(const row of rows){
+     ensure(rowH+8);x=x0;
+     cmds.push(`${.9} G ${x0} ${y-16} ${widths.reduce((a,b)=>a+b,0)} ${rowH} re S`);
+     row.forEach((v,i)=>{
+       let txt=String(v??'-');const max=Math.max(5,Math.floor(widths[i]/5.3));
+       if(txt.length>max)txt=txt.slice(0,max-1)+'...';
+       cmds.push(pdfText(x+5,y-8,txt,7,'F1'));x+=widths[i];
+     });y-=rowH;
+   }
+   y-=8;
+ }
+
+ newPage();
+ cmds.push(pdfText(M,744,'Resumo do periodo',9,'F1'));y=716;
+ const gap=8,kw=(W-M*2-gap*2)/3;
+ kv('Faturacao',euro(d.total),M,kw);kv('Recebido',euro(d.paid),M+kw+gap,kw);kv('Lucro estimado',euro(d.profit),M+(kw+gap)*2,kw);y-=60;
+ kv('Por receber',euro(r.pending),M,kw);kv('Custo estimado',euro(d.cost),M+kw+gap,kw);kv('Margem',pct(d.margin),M+(kw+gap)*2,kw);y-=70;
+
+ section('ATIVIDADE');
+ const aw=(W-M*2-gap*2)/3;
+ kv('Encomendas',String(r.orders.length),M,aw);kv('Donuts',String(r.qty),M+aw+gap,aw);kv('Compras',euro(purchaseTotal),M+(aw+gap)*2,aw);y-=68;
+
+ section('MEIOS DE PAGAMENTO');
+ if(methods.length){
+   methods.forEach(([k,v])=>{ensure(24);cmds.push(pdfText(M+8,y,k,8,'F1'));cmds.push(pdfText(440,y,euro(v),8,'F2'));cmds.push(`0.92 G ${M+8} ${y-7} 460 0 re S`);y-=21});
+ }else{cmds.push(pdfText(M+8,y,'Sem pagamentos registados no periodo.',8,'F1'));y-=24}
+
+ section('ENCOMENDAS');
+ if(orderRows.length)table(['N.','Cliente','Data','Qtd.','Total','Estado'],orderRows,[94,126,78,48,68,97]);
+ else{cmds.push(pdfText(M+8,y,'Sem encomendas concluidas no periodo.',8,'F1'));y-=24}
+
+ section('COMPRAS');
+ if(purchaseRows.length)table(['Data','Fornecedor','Artigo','Total'],purchaseRows,[82,145,190,94]);
+ else{cmds.push(pdfText(M+8,y,'Sem compras registadas no periodo.',8,'F1'));y-=24}
+
+ pages.push(cmds.join('\n'));
+
+ const objs=[null],add=x=>(objs.push(x),objs.length-1),catalog=add(''),pagesObj=add(''),pageIds=[];
+ pages.forEach((body,i)=>{
+   const footer=`${body}\n${pdfText(M,30,'DONART - Relatorio interno de gestao',7,'F1')}\n${pdfText(468,30,'Pagina '+(i+1)+' / '+pages.length,7,'F1')}`;
+   const c=add(`<< /Length ${footer.length} >>\nstream\n${footer}\nendstream`);
+   const page=add(`<< /Type /Page /Parent ${pagesObj} 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> /F2 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> >> >> /Contents ${c} 0 R >>`);
+   pageIds.push(page);
+ });
+ objs[catalog]=`<< /Type /Catalog /Pages ${pagesObj} 0 R >>`;
+ objs[pagesObj]=`<< /Type /Pages /Kids [${pageIds.map(x=>x+' 0 R').join(' ')}] /Count ${pageIds.length} >>`;
+ let out='%PDF-1.4\n',offs=[0];
+ for(let i=1;i<objs.length;i++){offs[i]=out.length;out+=`${i} 0 obj\n${objs[i]}\nendobj\n`}
+ const xref=out.length;out+=`xref\n0 ${objs.length}\n0000000000 65535 f \n`;
+ for(let i=1;i<objs.length;i++)out+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+ out+=`trailer\n<< /Size ${objs.length} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+ return new Blob([out],{type:'application/pdf'});
 }
 function managementReportLines(){const r=reportPeriodData(),title='DONART MINI DONUTS - RELATORIO DE GESTAO '+r.pref;const lines=[title,'Gerado em: '+new Date().toLocaleString('pt-PT'),'','RESUMO','Faturacao: '+euro(r.d.total),'Recebido: '+euro(r.d.paid),'Por receber: '+euro(r.pending),'Custo estimado: '+euro(r.d.cost),'Lucro estimado: '+euro(r.d.profit),'Margem: '+pct(r.d.margin),'Encomendas: '+r.orders.length,'Donuts: '+r.qty,'','MEIOS DE PAGAMENTO'];Object.entries(r.byMethod).forEach(([k,v])=>lines.push(k+': '+euro(v)));lines.push('','ENCOMENDAS');r.orders.forEach(o=>{const c=calcOrder(o);lines.push(`${o.id} | ${o.client||'-'} | ${o.delivery||o.created||'-'} | ${c.qty} un | ${euro(c.total)} | ${o.status||'-'}`)});lines.push('','COMPRAS');r.purchases.forEach(p=>lines.push(`${p.date||'-'} | ${p.supplier||'-'} | ${p.item||'-'} | ${euro(Number(p.total)||0)}`));return lines}
-function exportManagementPDF(){const r=reportPeriodData(),blob=makeSimplePDF(managementReportLines()),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='DONART_Relatorio_'+r.pref+'.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
-function previewManagementReport(){const blob=makeSimplePDF(managementReportLines()),u=URL.createObjectURL(blob);window.open(u,'_blank');setTimeout(()=>URL.revokeObjectURL(u),60000)}
-
+function exportManagementPDF(){const r=reportPeriodData(),blob=makeManagementPDF(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='DONART_Relatorio_'+r.pref+'.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+function previewManagementReport(){const blob=makeManagementPDF(),u=URL.createObjectURL(blob);window.open(u,'_blank');setTimeout(()=>URL.revokeObjectURL(u),60000)}
 
 function quoteCalc(q){const sub=(q.items||[]).reduce((a,i)=>a+(Number(i.qty)||0)*(Number(i.price)||0),0),disc=Math.max(0,Number(q.discount)||0),total=Math.max(0,sub-disc);return{sub,total}}
 function quoteDepositPct(q){if(q.paymentTerms==='100_upfront')return 100;if(q.paymentTerms==='50_50')return 50;const v=Number(q.depositPct);return Math.min(100,Math.max(0,Number.isFinite(v)?v:50))}
