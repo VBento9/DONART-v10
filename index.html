@@ -1204,9 +1204,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.1 · Relação Supabase Corrigida · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.2 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.1</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.2</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -3337,6 +3337,7 @@ function renderClients(){
        <div class="client-actions">
          <button class="btn" onclick="editClient('${c.id}')">Editar</button>
          ${c.phone?`<button class="btn" onclick="window.open('https://wa.me/${String(c.phone).replace(/\D/g,'')}','_blank')">WhatsApp</button>`:''}
+         <button class="btn danger" onclick="deleteClient('${c.id}')">Eliminar definitivamente</button>
        </div>
      </div>
    </div>`;
@@ -3393,34 +3394,107 @@ function addClient(){
 }
 async function deleteClient(id){
  const c=db.clients.find(x=>x.id===id);if(!c)return;
+
  const cPhone=normalizePhone(c.phone),cName=normText(c.name);
- const relatedOrders=(db.orders||[]).filter(o=>o.clientId===id||(cPhone&&normalizePhone(o.contact)===cPhone)||(!cPhone&&cName&&normText(o.client)===cName));
- const relatedQuotes=(db.quotes||[]).filter(q=>q.clientId===id||(cPhone&&normalizePhone(q.contact)===cPhone)||(!cPhone&&cName&&normText(q.client)===cName));
- const used=relatedOrders.length>0||relatedQuotes.length>0;
- if(used&&!confirm('Este cliente tem encomendas/orçamentos associados. Eliminar o cliente sem apagar o histórico?'))return;
- if(!used&&!confirm('Eliminar definitivamente este cliente?'))return;
+ const relatedOrders=(db.orders||[]).filter(o=>
+   o.clientId===id||
+   (cPhone&&normalizePhone(o.contact)===cPhone)||
+   (!cPhone&&cName&&normText(o.client)===cName)
+ );
+ const relatedQuotes=(db.quotes||[]).filter(q=>
+   q.clientId===id||
+   (cPhone&&normalizePhone(q.contact)===cPhone)||
+   (!cPhone&&cName&&normText(q.client)===cName)
+ );
 
- let cloudOk=true;
- try{
-   const u=cloudUser||await ensureCloudSession();
-   if(u&&cloudClient&&c._rid){
-     const {error}=await cloudClient.from('donart_v10_clients').delete().eq('id',c._rid).eq('user_id',u.id);
-     if(error)throw error;
-     cloudLogMsg('Cliente eliminado da cloud: '+(c.name||c.id));
-   }
- }catch(e){
-   cloudOk=false;
-   cloudLogMsg('Falha ao eliminar cliente da cloud: '+cloudErrText(e));
+ let msg='Eliminar definitivamente o cliente "'+(c.name||'Sem nome')+'"?';
+ if(relatedOrders.length||relatedQuotes.length){
+   msg+=' O histórico das encomendas/orçamentos será mantido, mas ficará sem ligação a este cliente.';
  }
+ msg+=' Esta operação remove o cliente da Cloud e deste dispositivo.';
+ if(!confirm(msg))return;
 
- db.clients=db.clients.filter(x=>x.id!==id);
- relatedOrders.forEach(o=>{o.clientId=null;o.clientDeleted=true});
- relatedQuotes.forEach(q=>{q.clientId=null;q.clientDeleted=true});
- save();
- renderClients();
+ const u=cloudUser||await ensureCloudSession();
+ if(!u||!cloudClient)return toast('Sem sessão Cloud. Nada foi apagado.');
 
- if(cloudOk)toast('Cliente eliminado definitivamente');
- else toast('Eliminado localmente, mas falhou na cloud');
+ try{
+   const {data:clientRows,error:findErr}=await cloudClient
+     .from(REL_TABLES.clients)
+     .select('id,user_id,data,name,phone,email')
+     .eq('user_id',u.id);
+
+   if(findErr)throw new Error('Pesquisa do cliente falhou | '+supabaseDetailedError(findErr));
+
+   const matches=(Array.isArray(clientRows)?clientRows:[]).filter(r=>{
+     const d=r?.data||{};
+     return (c._rid&&String(r.id)===String(c._rid)) ||
+            (d.id&&String(d.id)===String(c.id)) ||
+            (!c._rid&&cPhone&&normalizePhone(r.phone||d.phone)===cPhone) ||
+            (!c._rid&&!cPhone&&cName&&normText(r.name||d.name)===cName);
+   });
+
+   const cloudClientIds=new Set(matches.map(r=>String(r.id)));
+
+   for(const rid of cloudClientIds){
+     const {error:oErr}=await cloudClient
+       .from(REL_TABLES.orders)
+       .update({client_id:null,updated_at:new Date().toISOString()})
+       .eq('user_id',u.id)
+       .eq('client_id',rid);
+     if(oErr)throw new Error('Falha ao desligar encomendas do cliente | '+supabaseDetailedError(oErr));
+
+     const {error:qErr}=await cloudClient
+       .from(REL_TABLES.quotes)
+       .update({client_id:null,updated_at:new Date().toISOString()})
+       .eq('user_id',u.id)
+       .eq('client_id',rid);
+     if(qErr)throw new Error('Falha ao desligar orçamentos do cliente | '+supabaseDetailedError(qErr));
+   }
+
+   for(const r of matches){
+     const {error:delErr}=await cloudClient
+       .from(REL_TABLES.clients)
+       .delete()
+       .eq('user_id',u.id)
+       .eq('id',r.id);
+     if(delErr)throw new Error('Falha ao eliminar cliente | '+supabaseDetailedError(delErr));
+   }
+
+   if(matches.length){
+     const ids=[...cloudClientIds];
+     const {data:verify,error:vErr}=await cloudClient
+       .from(REL_TABLES.clients)
+       .select('id')
+       .eq('user_id',u.id)
+       .in('id',ids);
+     if(vErr)throw new Error('Verificação do cliente falhou | '+supabaseDetailedError(vErr));
+     if(Array.isArray(verify)&&verify.length)throw new Error('O cliente continua presente no Supabase após DELETE');
+   }
+
+   db.clients=db.clients.filter(x=>x.id!==id);
+   relatedOrders.forEach(o=>{o.clientId=null;o.clientDeleted=true});
+   relatedQuotes.forEach(q=>{q.clientId=null;q.clientDeleted=true});
+   relatedOrders.forEach(o=>relMarkOrderPending(o));
+
+   cloudApplying=true;
+   try{
+     localStorage.setItem(KEY,JSON.stringify(db));
+     renderAll();
+   }finally{
+     cloudApplying=false
+   }
+
+   if(relatedOrders.length)await syncPendingOrdersOnly(false);
+
+   cloudLogMsg('Cliente eliminado definitivamente: '+(c.name||c.id));
+   resetClientForm();
+   renderClients();
+   toast('Cliente eliminado definitivamente')
+ }catch(e){
+   const detail=supabaseDetailedError(e);
+   cloudLogMsg('Falha ao eliminar cliente '+(c.name||c.id)+': '+detail);
+   alert('Não foi possível eliminar definitivamente o cliente.\n\n'+detail+'\n\nNada foi alterado localmente.');
+ }
 }
 function startOrderForClient(id){const c=(db.clients||[]).find(x=>x.id===id);if(!c)return;go('sale');setTimeout(()=>{saleClient.value=c.name;saleContact.value=c.phone||''},0)}
 function simpleHash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).padStart(8,'0')}

@@ -1,0 +1,14 @@
+DONART V12.4.2 — ELIMINAÇÃO DEFINITIVA DE CLIENTES
+
+- Botão "Eliminar definitivamente" adicionado em cada cartão de cliente.
+- Eliminação Cloud-first.
+- Antes de apagar o cliente, client_id é desligado nas encomendas e orçamentos Cloud.
+- Histórico de encomendas/orçamentos é preservado.
+- Só apaga localmente depois da confirmação do Supabase.
+- Em caso de erro, nada é alterado localmente.
+- Encomendas relacionadas ficam com clientId=null/clientDeleted=true e são sincronizadas.
+- Cache PWA atualizado para V12.4.2.
+
+Validação:
+JavaScript OK.
+Service Worker OK.
