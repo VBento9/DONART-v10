@@ -815,6 +815,64 @@
  .catalog-pro-img{width:100px}
 }
 
+
+/* DONART V11.2 — Edições Especiais interativas */
+.special-hero{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px}
+.special-hero .section-title{font-size:18px}
+.special-hero p{font-size:9px}
+.special-hero-actions{display:flex;gap:6px;flex-wrap:wrap}
+.special-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}
+.special-kpi{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.special-kpi span{font-size:8px;font-weight:800;text-transform:uppercase;color:#8b746c}
+.special-kpi strong{font-size:18px;color:#503833}
+.special-kpi small{font-size:7.5px;color:#94837c}
+.special-editor-card{padding:11px 12px}
+.special-editor-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:9px}
+.special-editor-head small{font-size:8px;color:#8c7971}
+.special-editor-grid{display:grid;grid-template-columns:minmax(0,1.6fr) 250px;gap:10px}
+.special-cover-panel{border:1px solid #eadfdb;border-radius:11px;padding:9px;background:#fcfaf9}
+.special-cover-title{font-size:9px;font-weight:800;margin-bottom:7px;color:#5a413a}
+.special-cover-panel .special-edition-preview{width:100%;height:155px;object-fit:cover;border-radius:9px;border:1px solid #eadfdb;margin-bottom:7px}
+.special-image-fallback{height:155px;border-radius:9px;border:1px dashed #dbc8c0;background:#fff;display:grid;place-items:center;font-size:9px;color:#9a857d;margin-bottom:7px}
+.special-cover-panel input{font-size:9px}
+.special-products-panel{margin-top:10px;padding-top:10px;border-top:1px solid #eee5e1}
+.special-products-head{margin-bottom:7px}
+.special-products-head small{font-size:8px;color:#8c7971}
+.special-editor-actions{display:flex;gap:6px;margin-top:10px}
+#specialEditions .field label{font-size:9px}
+#specialEditions .field input,#specialEditions .field select{font-size:10px}
+#specialEditions .btn{font-size:9px}
+#specialEditions .section-title{font-size:14px}
+.special-saved-head{display:flex;justify-content:space-between;align-items:center;margin:12px 2px 7px}
+.special-saved-head small{font-size:8px;color:#8c7971}
+.special-editions-grid-pro{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.special-pro-card{display:grid!important;grid-template-columns:140px 1fr;overflow:hidden;padding:0!important}
+.special-pro-cover{width:140px;height:100%;min-height:205px;background-size:cover;background-position:center;background-color:#fff7df}
+.special-pro-fallback{display:grid;place-items:center;font-size:40px}
+.special-pro-card .special-edition-body{padding:10px;min-width:0}
+.special-pro-statuses{display:flex;gap:4px;flex-wrap:wrap}
+.special-edition-status.planned{background:#e8eefc;color:#4967a8}
+.special-pro-card h3{font-size:12px;margin:7px 0 3px}
+.special-pro-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+.special-pro-metrics>div{background:#fcfaf9;border:1px solid #eee5e1;border-radius:8px;padding:6px}
+.special-pro-metrics small{display:block;font-size:6.5px;color:#8d7a72}
+.special-pro-metrics strong{font-size:9px;color:#4e3934}
+.special-pro-dates{display:grid;grid-template-columns:1fr auto 1fr;gap:5px;align-items:center;margin-top:8px;padding:6px 0;font-size:7.5px;color:#6f5b54}
+.special-pro-dates span:last-child{text-align:right}
+.special-pro-foot{display:flex;justify-content:space-between;align-items:center;gap:7px;border-top:1px solid #eee5e1;padding-top:7px;margin-top:4px}
+.special-pro-foot>span{font-size:7px;color:#8d7a72}
+.special-pro-foot .btn{padding:5px 7px;font-size:7.5px}
+@media(max-width:900px){
+ .special-editions-grid-pro{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+ .special-hero{align-items:stretch;flex-direction:column}
+ .special-summary{grid-template-columns:1fr 1fr}
+ .special-editor-grid{grid-template-columns:1fr}
+ .special-pro-card{grid-template-columns:105px 1fr}
+ .special-pro-cover{width:105px}
+}
+
 </style>
 </head>
 <body>
@@ -1293,49 +1351,85 @@
 
 
   <section id="specialEditions" class="screen">
-    <div class="card">
-      <div class="special-editions-toolbar">
-        <div>
-          <div class="section-title" style="margin:0">Edições Especiais</div>
-          <p class="muted" style="margin-bottom:0">Gere coleções sazonais independentes, como Natal, Halloween e Páscoa. Só as edições ativas e dentro das datas aparecem na loja.</p>
-        </div>
+    <div class="special-hero card">
+      <div>
+        <div class="section-title" style="margin:0">Edições Especiais</div>
+        <p class="muted" style="margin:4px 0 0">Coleções sazonais independentes para Natal, Páscoa, Halloween e outras campanhas.</p>
+      </div>
+      <div class="special-hero-actions">
         <button class="btn" onclick="loadSpecialEditionsAdmin(true)">Atualizar da Cloud</button>
+        <button class="btn primary" onclick="clearSpecialEditionForm();document.getElementById('specialEditionName')?.focus()">Nova edição</button>
       </div>
     </div>
 
-    <div class="card" style="margin-top:12px">
-      <div class="section-title" style="margin-top:0">Criar / editar edição</div>
+    <div id="specialEditionsSummary" class="special-summary"></div>
+
+    <div class="card special-editor-card" style="margin-top:10px">
+      <div class="special-editor-head">
+        <div>
+          <div class="section-title" style="margin:0">Criar / editar edição</div>
+          <small>Define datas, capa, produtos associados e se a edição fica em destaque na loja.</small>
+        </div>
+        <span id="specialEditorMode" class="badge">Nova edição</span>
+      </div>
+
       <input id="specialEditionId" type="hidden">
       <input id="specialEditionImageUrl" type="hidden">
-      <div class="form-grid">
-        <div class="field span2"><label>Nome da edição</label><input id="specialEditionName" placeholder="Ex.: Natal 2026"></div>
-        <div class="field"><label>Identificador</label><input id="specialEditionSlug" placeholder="natal-2026"></div>
-        <div class="field"><label>Estado</label><select id="specialEditionActive"><option value="1">Ativa</option><option value="0">Inativa</option></select></div><div class="field"><label>Destaque na loja</label><select id="specialEditionFeatured"><option value="0">Normal</option><option value="1">Em destaque</option></select><div class="muted" style="font-size:11px;margin-top:5px">Só pode existir uma edição em destaque de cada vez. Ao destacar esta, a anterior deixa automaticamente de estar em destaque.</div></div>
-        <div class="field"><label>Começa em</label><input id="specialEditionStarts" type="datetime-local"></div>
-        <div class="field"><label>Termina em</label><input id="specialEditionEnds" type="datetime-local"></div>
-        <div class="field"><label>Ordem</label><input id="specialEditionOrder" type="number" step="1" value="0"></div>
-        <div class="field"><label>Emoji / ícone</label><input id="specialEditionEmoji" placeholder="🎄"></div>
-        <div class="field span2"><label>Subtítulo / descrição</label><input id="specialEditionSubtitle" placeholder="Ex.: A magia do Natal em mini donuts"></div>
-        <div class="field"><label>Etiqueta</label><input id="specialEditionBadge" placeholder="EDIÇÃO LIMITADA"></div>
-        <div class="field span2"><label>Nota opcional</label><input id="specialEditionNote" placeholder="Ex.: Encomendas até 20 de dezembro"></div>
-        <div class="field span2">
-          <label>Produtos desta edição</label>
-          <div class="muted" style="font-size:12px;margin-bottom:7px">Seleciona os produtos publicados que devem aparecer dentro desta coleção na loja.</div>
-          <div id="specialEditionProducts" class="special-product-picker"></div>
+
+      <div class="special-editor-grid">
+        <div class="special-editor-main">
+          <div class="form-grid">
+            <div class="field span2"><label>Nome da edição</label><input id="specialEditionName" placeholder="Ex.: Natal 2026"></div>
+            <div class="field"><label>Identificador</label><input id="specialEditionSlug" placeholder="natal-2026"></div>
+            <div class="field"><label>Estado</label><select id="specialEditionActive"><option value="1">Ativa</option><option value="0">Inativa</option></select></div>
+            <div class="field"><label>Destaque na loja</label><select id="specialEditionFeatured"><option value="0">Normal</option><option value="1">Em destaque</option></select></div>
+            <div class="field"><label>Começa em</label><input id="specialEditionStarts" type="datetime-local"></div>
+            <div class="field"><label>Termina em</label><input id="specialEditionEnds" type="datetime-local"></div>
+            <div class="field"><label>Ordem</label><input id="specialEditionOrder" type="number" step="1" value="0"></div>
+            <div class="field"><label>Emoji / ícone</label><input id="specialEditionEmoji" placeholder="🎄"></div>
+            <div class="field span2"><label>Subtítulo / descrição</label><input id="specialEditionSubtitle" placeholder="Ex.: A magia do Natal em mini donuts"></div>
+            <div class="field"><label>Etiqueta</label><input id="specialEditionBadge" placeholder="EDIÇÃO LIMITADA"></div>
+            <div class="field span2"><label>Nota opcional</label><input id="specialEditionNote" placeholder="Ex.: Encomendas até 20 de dezembro"></div>
+          </div>
         </div>
-        <div class="field span2"><label>Imagem de capa</label><input id="specialEditionImageFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewSpecialEditionImageFile()"></div>
-        <div class="field"><label>&nbsp;</label><button class="btn" onclick="uploadSpecialEditionImage()">Carregar imagem</button></div>
-        <div class="field"><label>&nbsp;</label><button class="btn danger" onclick="removeSpecialEditionImage()">Remover imagem</button></div>
+
+        <div class="special-editor-side">
+          <div class="special-cover-panel">
+            <div class="special-cover-title">Imagem de capa</div>
+            <img id="specialEditionPreview" class="special-edition-preview hidden" alt="Pré-visualização">
+            <div id="specialEditionImageFallback" class="special-image-fallback">Sem imagem</div>
+            <input id="specialEditionImageFile" type="file" accept="image/jpeg,image/png,image/webp" onchange="previewSpecialEditionImageFile()">
+            <div class="btnrow" style="margin-top:7px">
+              <button class="btn" onclick="uploadSpecialEditionImage()">Carregar</button>
+              <button class="btn danger" onclick="removeSpecialEditionImage()">Remover</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="margin-top:10px"><img id="specialEditionPreview" class="special-edition-preview hidden" alt="Pré-visualização"></div>
-      <div class="btnrow" style="margin-top:14px">
+
+      <div class="special-products-panel">
+        <div class="special-products-head">
+          <div>
+            <div class="section-title" style="margin:0">Produtos desta edição</div>
+            <small>Seleciona os produtos publicados que aparecem dentro desta coleção na loja.</small>
+          </div>
+        </div>
+        <div id="specialEditionProducts" class="special-product-picker"></div>
+      </div>
+
+      <div class="special-editor-actions">
         <button class="btn primary" onclick="saveSpecialEdition()">Guardar edição</button>
-        <button class="btn" onclick="clearSpecialEditionForm()">Limpar</button>
+        <button class="btn" onclick="clearSpecialEditionForm()">Limpar formulário</button>
       </div>
     </div>
 
-    <div class="section-title">Edições guardadas</div>
-    <div id="specialEditionsGrid" class="special-editions-grid"></div>
+    <div class="special-saved-head">
+      <div>
+        <div class="section-title" style="margin:0">Edições guardadas</div>
+        <small id="specialEditionsCount">0 edições</small>
+      </div>
+    </div>
+    <div id="specialEditionsGrid" class="special-editions-grid special-editions-grid-pro"></div>
   </section>
 
   <section id="settings" class="screen">
@@ -3467,6 +3561,15 @@ async function removeSpecialEditionImage(){
  setSpecialEditionPreview('');
  const f=document.getElementById('specialEditionImageFile');if(f)f.value='';
 }
+
+function refreshSpecialEditionEditorVisual(){
+ const editing=!!document.getElementById('specialEditionId')?.value;
+ const badge=document.getElementById('specialEditorMode');
+ if(badge){badge.textContent=editing?'A editar':'Nova edição';badge.className='badge '+(editing?'warn':'')}
+ const img=document.getElementById('specialEditionPreview');
+ const fallback=document.getElementById('specialEditionImageFallback');
+ if(img&&fallback)fallback.style.display=img.classList.contains('hidden')?'grid':'none';
+}
 function clearSpecialEditionForm(){
  for(const id of ['specialEditionId','specialEditionName','specialEditionSlug','specialEditionStarts','specialEditionEnds','specialEditionEmoji','specialEditionSubtitle','specialEditionBadge','specialEditionNote']){
    const el=document.getElementById(id);if(el)el.value='';
@@ -3476,6 +3579,7 @@ function clearSpecialEditionForm(){
  const f=document.getElementById('specialEditionImageFile');if(f)f.value='';
  setSpecialEditionPreview('');
  renderSpecialEditionProductPicker([]);
+ refreshSpecialEditionEditorVisual();
 }
 
 function selectedSpecialEditionProductIds(){
@@ -3521,19 +3625,65 @@ function specialEditionProductSnapshot(){
 function renderSpecialEditionsAdmin(){
  const grid=document.getElementById('specialEditionsGrid');if(!grid)return;
  const arr=Array.isArray(specialEditionsAdmin)?specialEditionsAdmin:[];
+ const now=Date.now();
+ const active=arr.filter(ed=>ed.active).length;
+ const featured=arr.filter(ed=>ed.data?.featured).length;
+ const live=arr.filter(ed=>{
+   if(!ed.active)return false;
+   const s=ed.starts_at?new Date(ed.starts_at).getTime():null;
+   const e=ed.ends_at?new Date(ed.ends_at).getTime():null;
+   return (!s||s<=now)&&(!e||e>=now)
+ }).length;
+ const products=arr.reduce((n,ed)=>n+(Array.isArray(ed.data?.products)?ed.data.products.length:0),0);
+
+ const summary=document.getElementById('specialEditionsSummary');
+ if(summary)summary.innerHTML=[
+   ['Edições',arr.length,'Total na Cloud'],
+   ['Ativas',active,'Marcadas como ativas'],
+   ['Na loja agora',live,'Dentro das datas'],
+   ['Produtos associados',products,'Associações totais']
+ ].map(([label,value,note])=>`<div class="card special-kpi"><span>${label}</span><strong>${value}</strong><small>${note}</small></div>`).join('');
+
+ const count=document.getElementById('specialEditionsCount');
+ if(count)count.textContent=arr.length===1?'1 edição':arr.length+' edições';
+
+ const editorMode=document.getElementById('specialEditorMode');
+ const editing=!!document.getElementById('specialEditionId')?.value;
+ if(editorMode){editorMode.textContent=editing?'A editar':'Nova edição';editorMode.className='badge '+(editing?'warn':'')}
+
  grid.innerHTML=arr.length?arr.map(ed=>{
    const d=ed.data||{},img=String(d.imageUrl||d.image_url||'').trim(),emoji=d.emoji||'🎁';
-   const start=ed.starts_at?new Date(ed.starts_at).toLocaleString('pt-PT'):'Sem início';
-   const end=ed.ends_at?new Date(ed.ends_at).toLocaleString('pt-PT'):'Sem fim';
-   return `<div class="special-edition-card">
-     <div class="special-edition-cover" ${img?`style="background-image:url('${escapeHtml(img)}')"`:''}>${img?'':escapeHtml(emoji)}</div>
+   const start=ed.starts_at?new Date(ed.starts_at):null;
+   const end=ed.ends_at?new Date(ed.ends_at):null;
+   const startLabel=start?start.toLocaleDateString('pt-PT'):'Sem início';
+   const endLabel=end?end.toLocaleDateString('pt-PT'):'Sem fim';
+   const isLive=ed.active&&(!start||start.getTime()<=now)&&(!end||end.getTime()>=now);
+   const isFuture=ed.active&&start&&start.getTime()>now;
+   const isExpired=end&&end.getTime()<now;
+   const statusLabel=isLive?'NA LOJA':isFuture?'AGENDADA':isExpired?'TERMINADA':ed.active?'ATIVA':'INATIVA';
+   const statusClass=isLive?'on':isFuture?'planned':'off';
+   const prodCount=Array.isArray(d.products)?d.products.length:0;
+   const exclusiveCount=Array.isArray(d.products)?d.products.filter(x=>x&&typeof x==='object'&&x.exclusive).length:0;
+   const cover=img?`<div class="special-pro-cover" style="background-image:url('${escapeHtml(img)}')"></div>`:`<div class="special-pro-cover special-pro-fallback">${escapeHtml(emoji)}</div>`;
+   return `<div class="special-edition-card special-pro-card">
+     ${cover}
      <div class="special-edition-body">
-       <div><span class="special-edition-status ${ed.active?'on':'off'}">${ed.active?'ATIVA':'INATIVA'}</span>${d.featured?' <span class="special-edition-status on">DESTAQUE</span>':''}</div>
+       <div class="special-pro-statuses">
+         <span class="special-edition-status ${statusClass}">${statusLabel}</span>
+         ${d.featured?'<span class="special-edition-status on">DESTAQUE</span>':''}
+       </div>
        <h3>${escapeHtml(ed.name||'Edição Especial')}</h3>
-       <div class="special-edition-meta">${escapeHtml(d.subtitle||'')}</div>
-       <div class="special-edition-meta"><b>${Array.isArray(d.products)?d.products.length:0}</b> produto(s) associados · <b>${Array.isArray(d.products)?d.products.filter(x=>x&&typeof x==='object'&&x.exclusive).length:0}</b> exclusivo(s)</div>
-       <div class="special-edition-meta">${escapeHtml(start)}<br>${escapeHtml(end)}</div>
-       <div class="btnrow"><button class="btn" onclick="editSpecialEdition('${ed.id}')">Editar</button><button class="btn danger" onclick="deleteSpecialEdition('${ed.id}')">Apagar</button></div>
+       <div class="special-edition-meta">${escapeHtml(d.subtitle||'Sem subtítulo')}</div>
+       <div class="special-pro-metrics">
+         <div><small>Produtos</small><strong>${prodCount}</strong></div>
+         <div><small>Exclusivos</small><strong>${exclusiveCount}</strong></div>
+         <div><small>Ordem</small><strong>${Number(ed.sort_order)||0}</strong></div>
+       </div>
+       <div class="special-pro-dates"><span>${escapeHtml(startLabel)}</span><b>→</b><span>${escapeHtml(endLabel)}</span></div>
+       <div class="special-pro-foot">
+         <span>${d.badge?escapeHtml(d.badge):'Sem etiqueta'}</span>
+         <div class="btnrow"><button class="btn" onclick="editSpecialEdition('${ed.id}')">Editar</button><button class="btn danger" onclick="deleteSpecialEdition('${ed.id}')">Apagar</button></div>
+       </div>
      </div>
    </div>`;
  }).join(''):'<div class="card empty">Ainda não existem Edições Especiais na Cloud.</div>';
@@ -3565,6 +3715,7 @@ function editSpecialEdition(id){
  document.getElementById('specialEditionNote').value=d.note||'';
  renderSpecialEditionProductPicker(d.products||[]);
  setSpecialEditionPreview(d.imageUrl||d.image_url||'');
+ refreshSpecialEditionEditorVisual();
  window.scrollTo({top:0,behavior:'smooth'});
 }
 async function saveSpecialEdition(){
