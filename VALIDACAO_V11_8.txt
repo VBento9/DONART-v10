@@ -1,0 +1,13 @@
+DONART V11.8 — REVISÃO GLOBAL
+
+Base validada: DONART_V11_7_BACKUP_INTERATIVO.zip
+Aplicação alterada nesta revisão: NÃO
+JavaScript: OK
+Screens encontradas (17): sale, orders, quotes, production, costs, stock, purchases, catalogs, specialEditions, settings, cash, clients, reports, products, delivery, cloud, backup
+Funções essenciais: OK
+Ações onclick: OK
+IDs do Criador de Caixas: OK
+UI antiga de PIN: ausente
+Pagamentos: não alterados
+
+Resultado: revisão estrutural concluída. A validação visual/funcional final continua a ser feita no dispositivo.
