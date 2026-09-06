@@ -1204,7 +1204,7 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V10.3.9 · Loja Etapa 29 · Encomendas Interativas · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.2.0 · Cloud de Encomendas Corrigida · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
   <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
@@ -2357,7 +2357,10 @@ function save(){
    localStorage.setItem(REL_DIRTY,'1');
    setCloudMeta({dirty:true,verified:false,conflict:false,localChangedAt:new Date().toISOString()});
    clearTimeout(cloudPushTimer);
-   if(cloudStartupDone)cloudPushTimer=setTimeout(()=>cloudPushNow(false),500)
+   if(cloudStartupDone)cloudPushTimer=setTimeout(async()=>{
+     await syncPendingOrdersOnly(false);
+     await cloudPushNow(false)
+   },650)
  }
  renderAll()
 }
@@ -2625,48 +2628,31 @@ async function saveOrder(){
    boxCostSnapshot:pk?+pk.cost||0:0,boxes:+$('saleBoxes').value||1,
    paid,status:'Pedido',items:cart.map(x=>({...x})),paymentHistory
  };
+
+ // 1. Guardar SEMPRE primeiro no dispositivo.
  relUuid(order);
  relMarkOrderPending(order);
  db.orders.push(order);
  localStorage.setItem(KEY,JSON.stringify(db));
+ localStorage.setItem(REL_DIRTY,'1');
+ setCloudMeta({dirty:true,verified:false,conflict:false,localChangedAt:new Date().toISOString()});
  renderOrders();
  clearSale();
+ go('orders');
+ toast('Encomenda '+id+' guardada');
 
- const u=cloudUser||await ensureCloudSession();
- if(!u){
-   localStorage.setItem(REL_DIRTY,'1');
-   setCloudMeta({dirty:true,verified:false,conflict:false});
-   toast('Encomenda '+id+' guardada neste dispositivo');
-   go('orders');
-   return
- }
-
+ // 2. Depois tentar sincronizar APENAS esta encomenda.
  try{
-   const c=calcOrder(order);
-   const row={
-     id:order._rid,user_id:u.id,client_id:relClientRid(order.clientId,order.client),
-     status:order.status||'Pedido',order_date:relDate(order.created),due_at:relDue(order.delivery),
-     subtotal:Number(c.total)||0,total:Number(c.total)||0,notes:order.notes||null,
-     data:relClone(order),updated_at:new Date().toISOString()
-   };
-   const {error}=await cloudClient.from(REL_TABLES.orders).upsert(row,{onConflict:'id'});
-   if(error)throw error;
-
-   relShadowRememberOrder(order);
-   relClearOrderPending(order);
-   if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
-   setCloudMeta({dirty:relOrderPendingSet().size>0,verified:true,conflict:false,lastSync:new Date().toISOString()});
-   cloudLogMsg('Encomenda guardada em linha própria: '+id+' · total local '+db.orders.length);
+   await syncSingleOrderToCloud(order);
+   cloudLogMsg('Encomenda confirmada na Cloud: '+id);
    renderCloudUI();
-   toast('Encomenda '+id+' guardada')
  }catch(e){
    localStorage.setItem(REL_DIRTY,'1');
    setCloudMeta({dirty:true,verified:false,conflict:false});
-   cloudLogMsg('Erro ao guardar encomenda V10: '+cloudErrText(e));
+   cloudLogMsg('Encomenda '+id+' segura localmente · Cloud pendente: '+cloudErrText(e));
    renderCloudUI();
-   toast('Encomenda guardada localmente; Cloud pendente')
+   scheduleRelationalSync();
  }
- go('orders')
 }
 function canDeleteOrder(o){return !!o&&(+o.paid||0)===0&&!isOrderProduced(o.id)&&['Pedido','Cancelado'].includes(o.status)}
 function canDeleteTestOrder(o){
@@ -2759,13 +2745,14 @@ async function deleteTestOrder(id){
  }
  db.cash=(db.cash||[]).filter(x=>x.orderId!==id);
  db.orders=db.orders.filter(x=>x.id!==id);
+ relClearOrderPending(o);
+ relShadowForgetOrder(o);
 
- // Guardar localmente sem re-enviar imediatamente a encomenda eliminada.
+ // Guardar localmente sem voltar a enviar a encomenda eliminada.
  cloudApplying=true;
  try{localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
  finally{cloudApplying=false}
- localStorage.setItem(REL_DIRTY,'1');
- scheduleRelationalSync();
+ if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
 
  try{orderDialog?.close()}catch(_){}
  cloudLogMsg('Teste eliminado persistentemente da Loja/Cloud: '+id);
@@ -2816,7 +2803,7 @@ function renderOrders(){
         <button class="btn" onclick="showOrder('${escapeHtml(o.id)}')">Ver detalhe</button>
         <select aria-label="Alterar estado" onchange="setStatus('${escapeHtml(o.id)}',this.value)">${['Pedido','Confirmada','Em produção','Pronta','Entregue','Cancelado'].map(s=>`<option ${s===o.status?'selected':''}>${s}</option>`).join('')}</select>
         <button class="btn" onclick="sendWhatsApp('${escapeHtml(o.id)}')">WhatsApp</button>
-        ${canDeleteTestOrder(o)?`<button class="btn danger test-clean-btn" onclick="deleteTestOrder('${escapeHtml(o.id)}')">Limpar teste</button>`:''}
+        <button class="btn danger" onclick="${canDeleteTestOrder(o)?'deleteTestOrder':'deleteOrder'}('${escapeHtml(o.id)}')">${canDeleteTestOrder(o)?'Limpar teste':'Eliminar'}</button>
        </div>
      </article>`;
    }).join(''):`<div class="orders-empty"><span>🧾</span><b>Sem encomendas</b><small>Não existem encomendas para os filtros selecionados.</small><button class="btn primary" onclick="go('sale')">＋ Nova encomenda</button></div>`;
@@ -2898,9 +2885,8 @@ async function deleteOrder(id){
  }finally{
    cloudApplying=false;
  }
- localStorage.setItem(REL_DIRTY,'1');
- setCloudMeta({dirty:true,verified:false,conflict:false,localChangedAt:new Date().toISOString()});
- if(typeof scheduleRelationalSync==='function')scheduleRelationalSync();
+ if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
+ setCloudMeta({dirty:relOrderPendingSet().size>0,verified:true,conflict:false,lastSync:new Date().toISOString()});
  cloudLogMsg('Encomenda eliminada persistentemente: '+id);
  try{orderDialog?.close()}catch(_){}
  toast('Encomenda eliminada definitivamente · não reaparece ao atualizar');
@@ -3493,7 +3479,7 @@ function showOrder(id){
  <div class="totalbox"><div class="mini"><span>Total</span><strong>${euro(c.total)}</strong></div><div class="mini"><span>Pago</span><strong>${euro(o.paid)}</strong></div><div class="mini"><span>Falta</span><strong>${euro(remaining)}</strong></div><div class="mini"><span>Margem</span><strong>${pct(c.margin)}</strong></div></div>
  <div class="section-title">Pagamentos</div><div class="form-grid"><div class="field"><label>Novo pagamento (€)</label><input id="detailNewPaid" type="number" min="0" step="0.01" placeholder="Ex.: 25,00"></div><div class="field"><label>Meio</label><select id="detailPayMethod">${['Dinheiro','MB Way','Transferência','Outro'].map(v=>`<option ${v===o.payment?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>&nbsp;</label><button class="btn primary" onclick="registerOrderPayment('${o.id}')">Registar pagamento</button></div></div><div class="soft-note" style="margin-top:10px">${(o.paymentHistory||[]).length?'<strong>Histórico:</strong><br>'+(o.paymentHistory||[]).slice().reverse().map(x=>`${String(x.date||'').slice(0,10)} · ${x.method||'—'} · ${euro(x.amount||0)}`).join('<br>'):'Ainda sem pagamentos detalhados registados.'}</div><div class="btnrow"><button class="btn" onclick="correctOrderPaid('${o.id}')">Corrigir total recebido</button></div>
  <div class="section-title">Histórico de estados</div><div class="soft-note">${(o.statusHistory||[]).length?(o.statusHistory||[]).slice().reverse().map(x=>`${String(x.date||'').slice(0,16).replace('T',' ')} · ${x.from||'—'} → ${x.to||'—'}`).join('<br>'):'Ainda sem alterações de estado registadas.'}</div>
- <div class="section-title">Anulação / eliminação</div><div class="soft-note">${o.status==='Cancelado'?'Esta encomenda está anulada e não entra nos resultados. ':''}${produced?'Produção já concluída: se anular, o stock consumido é mantido.':'Ainda não existe produção concluída.'}${canDeleteTestOrder(o)?'<br><strong>Modo Testes:</strong> podes limpar esta encomenda WEB mesmo concluída/paga. A app remove o Caixa associado e, se a produção for exclusiva desta encomenda, repõe o stock consumido.':''}</div><div class="btnrow">${o.status!=='Cancelado'?`<button class="btn danger" onclick="voidOrder('${o.id}')">Anular encomenda</button>`:''}${canDeleteOrder(o)?`<button class="btn danger" onclick="deleteOrder('${o.id}')">Eliminar definitivamente</button>`:''}${canDeleteTestOrder(o)?`<button class="btn danger test-clean-btn" onclick="deleteTestOrder('${o.id}')">🧪 Eliminar encomenda de teste</button>`:''}</div>`;
+ <div class="section-title">Anulação / eliminação</div><div class="soft-note">${o.status==='Cancelado'?'Esta encomenda está anulada e não entra nos resultados. ':''}${produced?'Produção já concluída: se anular, o stock consumido é mantido.':'Ainda não existe produção concluída.'}${canDeleteTestOrder(o)?'<br><strong>Modo Testes:</strong> podes limpar esta encomenda WEB mesmo concluída/paga. A app remove o Caixa associado e, se a produção for exclusiva desta encomenda, repõe o stock consumido.':''}</div><div class="btnrow">${o.status!=='Cancelado'?`<button class="btn danger" onclick="voidOrder('${o.id}')">Anular encomenda</button>`:''}${canDeleteTestOrder(o)?`<button class="btn danger test-clean-btn" onclick="deleteTestOrder('${o.id}')">🧪 Eliminar encomenda de teste</button>`:`<button class="btn danger" onclick="deleteOrder('${o.id}')">Eliminar definitivamente</button>`}</div>`;
  orderDialog.showModal();
 }
 function updateOrderDetails(id){const o=db.orders.find(x=>x.id===id);if(!o)return;o.client=detailClient.value.trim();o.contact=detailContact.value.trim();o.clientId=upsertClientFromOrder(o.client,o.contact,o.email||'');o.clientDeleted=false;if(!isOrderProduced(id))o.delivery=detailDelivery.value;const pay=detailPayment.value;o.payment=pay==='Por definir'?'A definir':pay;const box=detailBox.value;o.box=box==='Sem embalagem definida'?'':box;o.boxes=o.box?Math.max(1,+detailBoxes.value||1):0;const pk=(db.packaging||[]).find(p=>p.name===o.box);o.boxCostSnapshot=pk?+pk.cost||0:0;save();showOrder(id);toast('Encomenda corrigida')}
@@ -5373,7 +5359,7 @@ async function cloudStartup(){
    await cloudApiDiagnostic(false);
    await relationalHydrateCore(true);
    await pullOnlineOrders(false);
-   if(relOrderPendingSet().size)await relationalSyncCore(false)
+   if(relOrderPendingSet().size)await syncPendingOrdersOnly(false)
  }finally{
    cloudHydrating=false;cloudStartupDone=true;renderCloudUI()
  }
@@ -5399,6 +5385,99 @@ function relClientRid(appClientId,name){
  return c?relUuid(c):null
 }
 function relClone(x){return JSON.parse(JSON.stringify(x))}
+
+async function syncSingleOrderToCloud(order){
+ const u=cloudUser||await ensureCloudSession();
+ if(!u||!cloudClient)throw new Error('Cloud sem sessão');
+ if(!navigator.onLine)throw new Error('Sem internet');
+ if(!order)throw new Error('Encomenda inválida');
+
+ relUuid(order);
+
+ // Se a encomenda tem cliente associado, garantir PRIMEIRO que o cliente existe na Cloud.
+ const client=(db.clients||[]).find(c=>c.id===order.clientId)||
+              (db.clients||[]).find(c=>normText(c.name)===normText(order.client||''));
+ let clientRid=null;
+ if(client){
+   clientRid=relUuid(client);
+   const clientRow={
+     id:clientRid,user_id:u.id,name:client.name||order.client||'',
+     phone:client.phone||order.contact||null,email:client.email||order.email||null,
+     notes:client.notes||null,data:relClone(client),updated_at:new Date().toISOString()
+   };
+   const {error:clientError}=await cloudClient.from(REL_TABLES.clients).upsert(clientRow,{onConflict:'id'});
+   if(clientError)throw clientError;
+ }
+
+ const c=calcOrder(order);
+ const row={
+   id:order._rid,user_id:u.id,client_id:clientRid,
+   status:order.status||'Pedido',order_date:relDate(order.created),due_at:relDue(order.delivery),
+   subtotal:Number(c.total)||0,total:Number(c.total)||0,notes:order.notes||null,
+   data:relClone(order),updated_at:new Date().toISOString()
+ };
+ const {error}=await cloudClient.from(REL_TABLES.orders).upsert(row,{onConflict:'id'});
+ if(error)throw error;
+
+ relShadowRememberOrder(order);
+ relClearOrderPending(order);
+ if(!relOrderPendingSet().size)localStorage.removeItem(REL_DIRTY);
+ setCloudMeta({dirty:relOrderPendingSet().size>0,verified:true,conflict:false,lastSync:new Date().toISOString()});
+ return true
+}
+
+async function diagnoseOrdersCloud(showToast=true){
+ const u=cloudUser||await ensureCloudSession();
+ if(!u||!cloudClient){if(showToast)toast('Cloud sem sessão');return null}
+ try{
+   const {data:rel,error:relErr}=await cloudClient.from(REL_TABLES.orders).select('id,status,data,updated_at').eq('user_id',u.id);
+   if(relErr)throw relErr;
+   const {data:online,error:onErr}=await cloudClient.rpc('donart_get_online_orders_v1');
+   if(onErr)throw onErr;
+   const pending=relOrderPendingSet();
+   const info={
+     relational:Array.isArray(rel)?rel.length:0,
+     onlineRpc:Array.isArray(online)?online.length:0,
+     local:(db.orders||[]).length,
+     pending:pending.size
+   };
+   cloudLogMsg(`Diagnóstico encomendas · local ${info.local} · relacional ${info.relational} · loja ${info.onlineRpc} · pendentes ${info.pending}`);
+   if(showToast)toast(`Cloud: ${info.relational} · Loja: ${info.onlineRpc} · Local: ${info.local} · Pendentes: ${info.pending}`);
+   return info
+ }catch(e){
+   cloudLogMsg('Diagnóstico encomendas falhou: '+cloudErrText(e));
+   if(showToast)toast('Falha no diagnóstico Cloud');
+   return null
+ }
+}
+
+async function syncPendingOrdersOnly(showToast=false){
+ const u=cloudUser||await ensureCloudSession();
+ if(!u||!cloudClient)return false;
+ const pending=relOrderPendingSet();
+ const rows=(db.orders||[]).filter(o=>relIsOrderPending(o,pending));
+ if(!rows.length)return true;
+
+ let ok=0;
+ for(const order of rows){
+   try{
+     await syncSingleOrderToCloud(order);
+     ok++;
+   }catch(e){
+     localStorage.setItem(REL_DIRTY,'1');
+     setCloudMeta({dirty:true,verified:false,conflict:false});
+     cloudLogMsg('Falha ao sincronizar '+(order.id||'encomenda')+': '+cloudErrText(e));
+   }
+ }
+ if(showToast)toast(ok===rows.length?'Encomendas sincronizadas':`${ok}/${rows.length} encomenda(s) sincronizada(s)`);
+ return ok===rows.length
+}
+
+function scheduleRelationalSync(){
+ clearTimeout(cloudPushTimer);
+ if(!cloudStartupDone||cloudHydrating)return;
+ cloudPushTimer=setTimeout(()=>syncPendingOrdersOnly(false),650)
+}
 async function pullOnlineOrders(showToast=false){
  const u=cloudUser||await ensureCloudSession();
  if(!u||!cloudClient)return false;

@@ -1,0 +1,48 @@
+DONART V12.2.0 — AUDITORIA CLOUD / ENCOMENDAS
+
+CONFLITOS REAIS ENCONTRADOS NO FICHEIRO V12.1.1
+
+1. GUARDA DE NOVA ENCOMENDA DEPENDIA DE UMA ESCRITA DIRETA EM donart_v10_orders.
+   O client_id podia apontar para um cliente local ainda não criado na Cloud.
+   Se existir FK, a encomenda falha no Supabase.
+
+2. A sincronização global relationalSyncCore inclui clientes, produtos, encomendas e orçamentos.
+   Um erro num módulo não relacionado podia impedir a sincronização da encomenda.
+
+3. deleteTestOrder chamava scheduleRelationalSync(), mas essa função NÃO EXISTIA no ficheiro.
+   Era um erro JavaScript real no caminho de eliminação de testes.
+
+4. O botão Eliminar normal não existia nos cartões de encomenda.
+   Só aparecia "Limpar teste" para WEB em modo Testes; o Eliminar normal estava apenas na tabela/detalhe e condicionado.
+
+5. As versões V12.0.x misturaram "Cloud autoritativa" com um dirty global.
+   Isso originou os dois sintomas opostos:
+   - encomendas apagadas reapareciam;
+   - encomendas novas podiam desaparecer no refresh.
+
+CORREÇÕES V12.2.0
+
+- syncSingleOrderToCloud(): sincronização dedicada e isolada por encomenda.
+- Cliente é criado/atualizado primeiro; encomenda só depois.
+- Nova encomenda é sempre guardada localmente antes da Cloud.
+- Pending por encomenda continua ativo até confirmação real do Supabase.
+- Retry dedicado das encomendas pendentes.
+- scheduleRelationalSync() passa a existir.
+- Eliminação de teste limpa pending/shadow e não reenvia o registo apagado.
+- Eliminação normal não marca a encomenda apagada como dirty.
+- Botão Eliminar/Limpar teste visível em todos os cartões.
+- Diagnóstico de encomendas adicionado à área Cloud.
+- SQL de diagnóstico incluído no ZIP (só leitura).
+- Versão visível atualizada para V12.2.0.
+
+PRESERVADO
+- Produção e consumo de stock.
+- Estados.
+- Caixa/pagamentos.
+- Dashboard V12.
+- Produtos/Catálogos/Edições.
+- Lógica da loja pública.
+
+VALIDAÇÃO TÉCNICA
+- JavaScript: node --check OK.
+- Funções operacionais críticas comparadas e preservadas.
