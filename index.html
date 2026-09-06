@@ -2403,10 +2403,15 @@ async function deleteTestOrder(id){
    }
  }catch(e){
    const detail=cloudErrText(e);
-   cloudLogMsg('Falha ao eliminar teste na origem da Loja: '+detail);
-   toast('Erro Supabase na limpeza do teste');
-   setTimeout(()=>alert('Erro Supabase ao eliminar '+id+'\n\n'+detail+'\n\nNada foi apagado localmente.'),80);
-   return;
+   const alreadyGone=(String(e?.code||'')==='P0001'&&/online test order not found/i.test(detail));
+   if(alreadyGone){
+     cloudLogMsg('Teste já não existe na origem da Loja · limpeza local autorizada: '+id);
+   }else{
+     cloudLogMsg('Falha ao eliminar teste na origem da Loja: '+detail);
+     toast('Erro Supabase na limpeza do teste');
+     setTimeout(()=>alert('Erro Supabase ao eliminar '+id+'\n\n'+detail+'\n\nNada foi apagado localmente.'),80);
+     return;
+   }
  }
 
  for(const run of runs){

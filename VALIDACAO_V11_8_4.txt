@@ -1,0 +1,19 @@
+DONART V11.8.4 — LIMPEZA DE TESTES STALE
+
+BASE
+- DONART V11.8.3.
+
+CORREÇÃO
+- Se o Supabase responder P0001 / "online test order not found", a app interpreta
+  que a encomenda já não existe na origem online e prossegue apenas com a limpeza local.
+- Outros erros Supabase continuam a bloquear a eliminação local e mostram o erro real.
+
+PRESERVADO
+- Produção e consumo de stock.
+- Estados.
+- Caixa.
+- pullOnlineOrders.
+- Restante lógica Cloud.
+
+VALIDAÇÃO
+- JavaScript: node --check OK.
