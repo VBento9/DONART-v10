@@ -1,0 +1,24 @@
+DONART V11.9.4 — CONTAGEM DE ENTREGAS DO DIA
+
+BASE
+- DONART V11.9.3.
+
+CORREÇÃO
+- O cartão "Entregas hoje" passa a contar todas as encomendas com entrega marcada para hoje,
+  incluindo as que já foram marcadas como Entregue.
+- Quando já existem entregas concluídas, o cartão indica também quantas foram entregues.
+
+EXEMPLO
+- 1 encomenda para hoje e já Entregue -> cartão mostra 1 e "Entregas hoje · 1 entregue(s)".
+
+NÃO ALTERADO
+- Estados das encomendas.
+- Produção.
+- Stock.
+- Caixa/pagamentos.
+- Cloud/Supabase.
+- Limpeza de testes.
+
+VALIDAÇÃO
+- JavaScript node --check OK.
+- Funções críticas preservadas.

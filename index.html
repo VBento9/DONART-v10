@@ -1175,6 +1175,20 @@
   .dashboard-today-actions{grid-column:1/-1;justify-content:flex-start;margin-top:3px}
   .dashboard-mini-btn{min-height:34px;padding:7px 10px;font-size:9px}
 }
+
+/* V12.0 — Dashboard Operacional */
+.dashboard-ops-strip{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.dashboard-ops-pill{background:#fff;border:1px solid #eadfdb;border-radius:999px;padding:8px 12px;font-size:9px;font-weight:900;color:#65443d;display:flex;align-items:center;gap:6px}
+.dashboard-ops-pill b{font-size:11px}
+.dashboard-daily-card small em{font-style:normal;font-weight:900;color:#5e4039}
+.dashboard-priority{font-size:8px;font-weight:900;border-radius:999px;padding:4px 7px;display:inline-block}
+.dashboard-priority.today{background:#fde8ee;color:#b5114e}
+.dashboard-priority.tomorrow{background:#fff1cf;color:#8a5a00}
+.dashboard-priority.later{background:#eef6f2;color:#4c6f5d}
+@media(max-width:650px){
+ .dashboard-ops-strip{gap:6px}
+ .dashboard-ops-pill{padding:7px 10px;font-size:8px}
+}
 </style>
 </head>
 <body>
@@ -1211,6 +1225,7 @@
     <div class="grid4 dashboard-kpis" id="kpis"></div>
 
     <div class="dashboard-section-head"><div><span>HOJE</span><h3>Centro de controlo diário</h3></div></div>
+    <div class="dashboard-ops-strip" id="dashboardOpsStrip"></div>
     <div class="dashboard-daily" id="dashboardDaily"></div>
     <div class="card dashboard-today-card">
       <div class="dashboard-today-head">
@@ -2430,41 +2445,58 @@ function dashboardGoProduction(id){
  },120);
 }
 function renderDashboardDaily(){
- const cards=document.getElementById('dashboardDaily'),list=document.getElementById('dashboardTodayList'),label=document.getElementById('dashboardTodayLabel');
+ const cards=document.getElementById('dashboardDaily'),list=document.getElementById('dashboardTodayList'),label=document.getElementById('dashboardTodayLabel'),strip=document.getElementById('dashboardOpsStrip');
  if(!cards||!list)return;
  const today=todayISO();
+ const tomorrow=new Date(Date.now()+86400000).toISOString().slice(0,10);
  const live=(db.orders||[]).filter(o=>completed(o)&&o.status!=='Cancelado');
- const dueToday=live.filter(o=>(o.delivery||'')===today&&o.status!=='Entregue');
+ const deliveriesToday=live.filter(o=>(o.delivery||'')===today);
+ const deliveredToday=deliveriesToday.filter(o=>o.status==='Entregue');
+ const remainingToday=deliveriesToday.filter(o=>o.status!=='Entregue');
  const inProd=live.filter(o=>o.status==='Em produção');
  const ready=live.filter(o=>o.status==='Pronta');
  const unpaid=live.filter(o=>{const c=calcOrder(o);return Math.max(0,(Number(c.total)||0)-(Number(o.paid)||0))>.001&&o.status!=='Entregue'});
+ const unpaidTotal=unpaid.reduce((sum,o)=>{const c=calcOrder(o);return sum+Math.max(0,(Number(c.total)||0)-(Number(o.paid)||0))},0);
+ const prodUnits=inProd.reduce((sum,o)=>sum+calcOrder(o).qty,0);
+
+ if(strip)strip.innerHTML=[
+   [`📅`,deliveriesToday.length,'entregas hoje'],
+   [`🍩`,prodUnits,'donuts em produção'],
+   [`💶`,unpaid.length,'pagamentos pendentes']
+ ].map(([i,n,txt])=>`<div class="dashboard-ops-pill">${i}<b>${n}</b>${txt}</div>`).join('');
+
  const daily=[
-  ['📅',dueToday.length,'Entregas hoje',dueToday.length?'warn':'good',"go('orders')"],
-  ['🍩',inProd.length,'Em produção',inProd.length?'warn':'good',"go('production')"],
-  ['✅',ready.length,'Prontas',ready.length?'good':'neutral',"go('orders')"],
-  ['💶',unpaid.length,'Por receber',unpaid.length?'bad':'good',"go('cash')"]
+  ['📅',deliveriesToday.length,'Entregas hoje',deliveriesToday.length?'good':'neutral',"go('orders')",`${deliveredToday.length} concluída(s) · ${remainingToday.length} por entregar`],
+  ['🍩',inProd.length,'Produção',inProd.length?'warn':'good',"go('production')",`${prodUnits} donut(s) por terminar`],
+  ['✅',ready.length,'Prontas',ready.length?'good':'neutral',"go('orders')",ready.length?'À espera de entrega':'Sem encomendas prontas'],
+  ['💶',unpaid.length,'Pagamentos pendentes',unpaid.length?'bad':'good',"go('cash')",`${euro(unpaidTotal)} por receber`]
  ];
- cards.innerHTML=daily.map(([icon,n,txt,state,action])=>`<button class="dashboard-daily-card ${state}" type="button" onclick="${action}"><span>${icon}</span><div><b>${n}</b><small>${txt}</small></div></button>`).join('');
+ cards.innerHTML=daily.map(([icon,n,txt,state,action,note])=>`<button class="dashboard-daily-card ${state}" type="button" onclick="${action}"><span>${icon}</span><div><b>${n}</b><small>${txt}<br><em>${note}</em></small></div></button>`).join('');
 
  const upcoming=live
    .filter(o=>o.status!=='Entregue'&&o.delivery)
    .sort((a,b)=>String(a.delivery).localeCompare(String(b.delivery)))
    .filter(o=>String(o.delivery)>=today)
    .slice(0,8);
+
  if(label)label.textContent=new Date().toLocaleDateString('pt-PT',{weekday:'long',day:'2-digit',month:'long'});
  list.innerHTML=upcoming.length?upcoming.map(o=>{
    const c=calcOrder(o);
-   const isToday=o.delivery===today;
    const due=Math.max(0,(Number(c.total)||0)-(Number(o.paid)||0));
    const safeId=String(o.id).replaceAll("'","\\'");
    const productionAction=['Confirmada','Em produção','Produção','Confirmado'].includes(o.status)
      ? `<button type="button" class="dashboard-mini-btn production" onclick="event.stopPropagation();dashboardGoProduction('${safeId}')">Produção</button>`
      : '';
    const openLabel=o.status==='Pronta'?'Finalizar':'Abrir';
+   const pr=o.delivery===today
+     ? `<span class="dashboard-priority today">HOJE</span>`
+     : o.delivery===tomorrow
+       ? `<span class="dashboard-priority tomorrow">AMANHÃ</span>`
+       : `<span class="dashboard-priority later">${o.delivery}</span>`;
    return `<div class="dashboard-today-row" onclick="dashboardDailyOpen('${safeId}')">
-     <div class="dashboard-today-id">${o.id}${o.source==='online_store'?' · ONLINE':''}</div>
+     <div class="dashboard-today-id">${o.id}${o.source==='online_store'?' · ONLINE':''}<br>${pr}</div>
      <div class="dashboard-today-client"><b>${o.client||'Cliente'}</b><small>${due>.001?'Falta '+euro(due):'Pagamento OK'}</small></div>
-     <div class="dashboard-today-date">${isToday?'HOJE':o.delivery}</div>
+     <div class="dashboard-today-date">${o.delivery}</div>
      <div class="dashboard-today-total">${euro(c.total)}</div>
      <span class="badge ${o.status==='Pronta'?'ok':o.status==='Em produção'?'warn':''} dashboard-today-status">${o.status}</span>
      <div class="dashboard-today-actions">
@@ -2474,6 +2506,7 @@ function renderDashboardDaily(){
    </div>`
  }).join(''):`<div class="dashboard-today-empty">Sem entregas pendentes a partir de hoje.</div>`;
 }
+
 function renderDashboard(){
  const lb=localStorage.getItem(LAST);const notice=document.getElementById('setupNotice');
  if(notice&&lb){notice.querySelectorAll('.backupwarn').forEach(x=>x.remove());const days=(Date.now()-new Date(lb).getTime())/86400000;if(days>7)notice.insertAdjacentHTML('beforeend','<div class="badge bad backupwarn" style="margin-top:8px">Backup com mais de 7 dias</div>')}

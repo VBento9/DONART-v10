@@ -1,0 +1,27 @@
+DONART V12.0 — DASHBOARD OPERACIONAL
+
+BASE
+- DONART V11.9.4.
+
+ALTERAÇÕES
+- Cartão "Por receber" renomeado para "Pagamentos pendentes".
+- Cartões diários mostram também contexto:
+  * Entregas hoje: concluídas + por entregar
+  * Produção: donuts por terminar
+  * Prontas: estado operacional
+  * Pagamentos pendentes: valor total em euros
+- Barra-resumo rápida com entregas, donuts em produção e pagamentos pendentes.
+- Próximas entregas ganham prioridade visual: HOJE, AMANHÃ ou data.
+- Mantidos atalhos Produção / Abrir / Finalizar.
+
+NÃO ALTERADO
+- Estados.
+- Produção e consumo de stock.
+- Stock.
+- Caixa/pagamentos.
+- Cloud/Supabase.
+- Limpeza de testes.
+
+VALIDAÇÃO
+- JavaScript node --check OK.
+- Funções críticas preservadas byte-a-byte.
