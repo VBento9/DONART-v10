@@ -1,0 +1,8 @@
+DONART V11.8.2 — LIMPEZA PERSISTENTE DE TESTES
+- Corrige reaparecimento após refresh.
+- A limpeza chama uma RPC autenticada que elimina a encomenda WEB na mesma origem usada por donart_get_online_orders_v1.
+- Só depois limpa tabela relacional, Caixa, produção/stock e cópia local.
+- Se a RPC não estiver instalada/falhar, nada é apagado localmente.
+- A função Supabase só aceita WEB- e só opera em modo Testes.
+- Produção, estados e pullOnlineOrders preservados.
+- node --check OK.

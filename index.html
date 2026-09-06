@@ -2383,21 +2383,28 @@ async function deleteTestOrder(id){
  let msg='Eliminar esta encomenda de TESTE definitivamente?';
  if((+o.paid||0)>0||cashCount)msg+=' Os movimentos de Caixa ligados à encomenda serão removidos.';
  if(produced)msg+=' O stock consumido será reposto e o registo de produção de teste será removido.';
- msg+=' Esta opção existe apenas em modo Testes.';
+ msg+=' A encomenda será também marcada como eliminada na origem da Loja para não reaparecer.';
  if(!confirm(msg))return;
 
  const u=cloudUser||await ensureCloudSession();
- if(u&&o._rid){
-   try{
+ if(!u||!cloudClient)return toast('Liga a Cloud antes de eliminar uma encomenda online de teste');
+
+ // A fonte do pullOnlineOrders() é a RPC donart_get_online_orders_v1.
+ // Primeiro tombstone na própria origem via RPC segura; só depois removemos a cópia relacional/local.
+ try{
+   const {error:sourceError}=await cloudClient.rpc('donart_delete_online_test_order_v1',{p_order_id:o._rid,p_public_id:o.id});
+   if(sourceError)throw sourceError;
+
+   if(o._rid){
      const {error:itemsError}=await cloudClient.from('donart_v10_order_items').delete().eq('user_id',u.id).eq('order_id',o._rid);
      if(itemsError)throw itemsError;
-     const {error}=await cloudClient.from(REL_TABLES.orders).delete().eq('user_id',u.id).eq('id',o._rid);
-     if(error)throw error;
-   }catch(e){
-     cloudLogMsg('Falha ao limpar encomenda de teste na Cloud: '+cloudErrText(e));
-     toast('Não foi possível limpar a encomenda de teste na Cloud. Nada foi apagado.');
-     return;
+     const {error:orderError}=await cloudClient.from(REL_TABLES.orders).delete().eq('user_id',u.id).eq('id',o._rid);
+     if(orderError)throw orderError;
    }
+ }catch(e){
+   cloudLogMsg('Falha ao eliminar teste na origem da Loja: '+cloudErrText(e));
+   toast('Falta instalar a função de limpeza no Supabase ou ocorreu um erro. Nada foi apagado localmente.');
+   return;
  }
 
  for(const run of runs){
@@ -2411,12 +2418,18 @@ async function deleteTestOrder(id){
  if(runs.length)db.productionRuns=(db.productionRuns||[]).filter(r=>!runs.includes(r));
  db.cash=(db.cash||[]).filter(x=>x.orderId!==id);
  db.orders=db.orders.filter(x=>x.id!==id);
- save();
- try{orderDialog?.close()}catch(_){}
- cloudLogMsg('Encomenda de teste eliminada com limpeza associada: '+id);
- toast('Teste eliminado · Caixa limpo'+(produced?' · stock reposto':''));
-}
 
+ // Guardar localmente sem re-enviar imediatamente a encomenda eliminada.
+ cloudApplying=true;
+ try{localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+ finally{cloudApplying=false}
+ localStorage.setItem(REL_DIRTY,'1');
+ scheduleRelationalSync();
+
+ try{orderDialog?.close()}catch(_){}
+ cloudLogMsg('Teste eliminado persistentemente da Loja/Cloud: '+id);
+ toast('Teste eliminado definitivamente'+(produced?' · stock reposto':'')+' · não reaparece ao atualizar');
+}
 let ordersView='cards';
 function setOrdersView(view){
  ordersView=view==='table'?'table':'cards';
