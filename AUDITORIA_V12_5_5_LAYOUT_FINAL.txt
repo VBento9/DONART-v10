@@ -1,0 +1,9 @@
+DONART V12.5.5 — ACABAMENTO VISUAL CUSTOS E MARGEM
+Alteração exclusivamente CSS.
+- Uniformização dos campos da política de preços.
+- Texto explicativo do PVP passa para faixa própria abaixo dos controlos.
+- Alturas de labels e inputs uniformizadas.
+- Indicadores inferiores mantidos sem alteração funcional.
+- Botão Ficha Técnica validado na V12.5.3 permanece inalterado.
+- saveSettings, produção, stock, estados e sincronização Cloud comparados com V12.5.4: idênticos.
+JavaScript node --check: OK.
