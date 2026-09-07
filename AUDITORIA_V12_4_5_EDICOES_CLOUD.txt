@@ -1,0 +1,25 @@
+DONART V12.4.5 — SELETOR DE EDIÇÕES ESPECIAIS LIGADO À CLOUD
+
+Correção:
+- O seletor “Edição Especial” em Produtos deixa de depender apenas de arrays locais.
+- Primeiro tenta usar a RPC autenticada de listagem de Edições Especiais.
+- Depois reutiliza edições já carregadas pelo módulo existente.
+- Como fallback, lê a tabela donart_shop_special_editions autenticada.
+- Incluído botão “Atualizar” para recarregar a lista sem sair do formulário.
+- O Natal 2026 já existente deve surgir sem ser recriado.
+- Halloween, São Valentim, Páscoa, etc. aparecerão automaticamente quando forem criados no módulo Edições Especiais.
+
+Preservado:
+- Módulo Edições Especiais existente.
+- Produtos e Mix V12.4.3/V12.4.4.
+- Cloud relacional / pending / shadow.
+- Produção, stock, encomendas, pagamentos, clientes, relatórios, entregas e backup.
+- Sem PIN.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
+- Funções críticas: OK.
+
+RPCs/identificadores de edições encontrados no código-base:
+donart_delete_shop_special_edition_v1, donart_list_shop_special_editions_admin_v1, donart_save_shop_special_edition_v1
