@@ -1,0 +1,6 @@
+V12.5.0
+Ligação visual Produto -> Ficha Técnica existente.
+Não duplica receitas.
+PVP recomendado só após ingredientes específicos.
+Produção, stock e sync protegidos e inalterados.
+JavaScript OK.

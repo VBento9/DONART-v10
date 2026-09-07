@@ -1190,7 +1190,7 @@
  .dashboard-ops-pill{padding:7px 10px;font-size:8px}
 }
 
-/* DONART V12.4.8 — Gestão do Mix de Sabores */
+/* DONART V12.5.1 — Gestão do Mix de Sabores */
 .mix-toggle{background:#fff5f8;border-color:#f0d3de}
 .mix-help{display:block;margin-top:5px;font-size:8px;line-height:1.35;color:#8b746c}
 .mix-admin-note{
@@ -1211,17 +1211,17 @@
 }
 
 
-/* DONART V12.4.8 — produto regular vs exclusivo de edição */
+/* DONART V12.5.1 — produto regular vs exclusivo de edição */
 #prodEditionField{background:#fff9f2;border-radius:12px;padding:8px 10px}
 #prodAvailability{font-weight:750}
 
 
-/* DONART V12.4.8 — seletor de Edições Especiais ligado à Cloud */
+/* DONART V12.5.1 — seletor de Edições Especiais ligado à Cloud */
 .edition-select-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center}
 .edition-select-row .btn{height:38px;padding:0 12px}
 
 
-/* DONART V12.4.8 — designação visual correta para produtos exclusivos */
+/* DONART V12.5.1 — designação visual correta para produtos exclusivos */
 .edition-product-badge{
  background:#fff7e9!important;
  color:#9a631b!important;
@@ -1229,7 +1229,7 @@
 }
 
 
-/* DONART V12.4.8 — custos específicos de Edição Especial */
+/* DONART V12.5.1 — custos específicos de Edição Especial */
 .edition-cost-field{background:#fffaf3;border:1px solid #f2e3c8;border-radius:12px;padding:9px 10px}
 .edition-cost-input{display:grid;grid-template-columns:minmax(0,1fr) 38px;align-items:center;gap:6px}
 .edition-cost-input span{font-size:9px;font-weight:900;color:#856b5e;text-align:center}
@@ -1238,7 +1238,18 @@
 .edition-cost-note span{font-size:8px;line-height:1.45;color:#725e54}
 .cost-totalbox-v1248 .mini small{display:block;margin-top:3px;font-size:8px;color:#8b746c}
 
-</style>
+
+/* DONART V12.5.1 — PVP recomendado informativo para Edições Especiais */
+.edition-pvp-recommend-v1249{margin-top:10px;padding:11px;border:1px solid #eadbc2;border-radius:14px;background:#fffaf2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.edition-pvp-recommend-v1249>div{padding:8px 9px;border-radius:10px;background:#fff;border:1px solid #eee3d4}
+.edition-pvp-recommend-v1249 span{display:block;font-size:8px;font-weight:800;color:#7b6960}
+.edition-pvp-recommend-v1249 strong{display:block;margin-top:3px;font-size:14px}
+.edition-pvp-recommend-v1249 .recommended{background:#fff3dc;border-color:#efd4a3}
+.edition-pvp-recommend-v1249 .recommended strong{color:#98601b}
+.edition-pvp-recommend-v1249>small{grid-column:1/-1;font-size:8px;line-height:1.4;color:#806f66}
+@media(max-width:650px){.edition-pvp-recommend-v1249{grid-template-columns:1fr}.edition-pvp-recommend-v1249>small{grid-column:1}}
+
+.product-techsheet-v1250{border:1px solid #e7ddd5;border-radius:14px;padding:11px 12px;background:#fff}.product-techsheet-head-v1250{display:flex;align-items:center;justify-content:space-between;gap:10px}.product-techsheet-head-v1250>div{display:flex;flex-direction:column;gap:3px}.product-techsheet-head-v1250 span{font-size:8px;color:#7b6b64}.product-techsheet-stats-v1250{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px}.product-techsheet-stats-v1250>div{border:1px solid #eee5df;border-radius:10px;padding:7px 8px;background:#fcfaf8}.product-techsheet-stats-v1250 span{display:block;font-size:7.5px;color:#806f67}.product-techsheet-stats-v1250 strong{display:block;margin-top:2px;font-size:11px}.edition-pvp-warning-v1250{margin-top:10px;padding:10px;border:1px solid #efd8ad;border-radius:12px;background:#fff8ea;display:flex;flex-direction:column;gap:3px}.edition-pvp-warning-v1250 strong{font-size:9px;color:#96611c}.edition-pvp-warning-v1250 span{font-size:8px;color:#79685f}@media(max-width:650px){.product-techsheet-head-v1250{align-items:flex-start;flex-direction:column}.product-techsheet-stats-v1250{grid-template-columns:1fr}}.pricing-policy-v1251{margin-top:8px;padding:10px;border:1px solid #e8ddd4;border-radius:12px;background:#fcfaf8;display:grid;grid-template-columns:1fr 1fr;gap:8px}.pricing-policy-v1251 label{display:block;font-size:8px;font-weight:800;margin-bottom:4px}.pricing-policy-v1251 small{grid-column:1/-1;font-size:8px;color:#7a6b63}.pricing-decision-v1251{margin-top:10px;padding:10px;border:1px solid #e8ddd4;border-radius:13px;background:#fff;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.pricing-decision-v1251>div{padding:7px;border-radius:9px;background:#fcfaf8}.pricing-decision-v1251 span{display:block;font-size:7.5px;color:#7a6b63}.pricing-decision-v1251 strong{display:block;margin-top:3px;font-size:11px}.pricing-decision-v1251 .recommended{background:#fff3dc}.pricing-decision-v1251>small{grid-column:1/-1;font-size:8px;color:#7a6b63}.price-health-v1251.good{color:#277047}.price-health-v1251.ok{color:#93601d}.price-health-v1251.low{color:#a33f3a}@media(max-width:650px){.pricing-policy-v1251,.pricing-decision-v1251{grid-template-columns:1fr 1fr}}</style>
 </head>
 <body>
 <div id="lockScreen" class="lock">
@@ -1253,9 +1264,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.8 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.5.1 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.8</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.5.1</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -1910,7 +1921,7 @@
           </div>
         </div>
         <div class="form-grid">
-          <div class="field"><label>Margem mínima</label><input id="minMarginInput" type="number" step="0.01"></div>
+          <div class="field"><label>Margem mínima</label><input id="minMarginInput" type="number" step="0.01"></div><div class="pricing-policy-v1251"><div><label>Margem alvo (%)</label><input id="cfgTargetMarginV1251" type="number" min="1" max="95" step="1" value="70"></div><div><label>Arredondamento PVP</label><select id="cfgPriceRoundStepV1251"><option value="0.05">0,05 €</option><option value="0.1" selected>0,10 €</option><option value="0.5">0,50 €</option><option value="1">1,00 €</option></select></div><small>Apenas para recomendação. O PVP continua manual.</small></div>
           <div class="field"><label>Mão de obra €/hora</label><input id="laborRate" type="number" step="0.01"></div>
           <div class="field"><label>Desperdício %</label><input id="wasteRate" type="number" step="0.01"></div>
           <div class="field"><label>Minutos mão de obra/lote</label><input id="laborMinutes" type="number" step="1"></div>
@@ -2150,7 +2161,7 @@
         <div class="field" id="prodEditionField" style="display:none"><label>Edição Especial</label><div class="edition-select-row"><select id="prodEditionId"><option value="">Seleciona uma edição</option></select><button type="button" class="btn ghost" onclick="loadProductEditionsV1245(true).then(list=>{fillProductEditionOptionsV1244();toast(list.length?'Edições atualizadas':'Nenhuma edição disponível')})">Atualizar</button></div><small class="mix-help">Usa as Edições Especiais já criadas na app. Não é criada uma nova edição aqui.</small></div>
         <div class="field edition-cost-field" id="prodEditionLaborField" style="display:none"><label>Tempo extra por unidade</label><div class="edition-cost-input"><input id="prodEditionExtraLaborMinutes" type="number" min="0" step="0.1" value="0"><span>min</span></div><small class="mix-help">Só o tempo adicional desta edição. O custo é calculado com a mão de obra €/hora já definida na app.</small></div>
         <div class="field edition-cost-field" id="prodEditionWasteField" style="display:none"><label>Desperdício extra da edição</label><div class="edition-cost-input"><input id="prodEditionExtraWastePct" type="number" min="0" step="0.1" value="0"><span>%</span></div><small class="mix-help">Acrescenta-se ao desperdício geral apenas neste produto. Usa 0 se não houver diferença.</small></div>
-        <div class="field span2 edition-cost-note" id="prodEditionCostNote" style="display:none"><strong>💶 Custo real da edição</strong><span>Ingredientes e decoração continuam a ser registados na ficha técnica do produto. Aqui só acrescentamos o tempo e desperdício extra específicos desta edição. O PVP continua totalmente manual.</span></div>
+        <div class="field span2 edition-cost-note" id="prodEditionCostNote" style="display:none"><strong>💶 Custo real da edição</strong><span>Ingredientes e decoração continuam a ser registados na ficha técnica do produto. Aqui só acrescentamos o tempo e desperdício extra específicos desta edição. O PVP continua totalmente manual.</span></div><div class="field span2 product-techsheet-v1250" id="prodTechSheetBridge" style="display:none"><div class="product-techsheet-head-v1250"><div><strong>🧾 Ficha Técnica</strong><span id="prodTechSheetStatus">Ficha técnica do produto</span></div><button type="button" class="btn ghost" id="prodTechSheetBtn" onclick="openProductTechSheetV1250()">Abrir Ficha Técnica</button></div><div class="product-techsheet-stats-v1250"><div><span>Ingredientes específicos</span><strong id="prodTechSheetIngredientCount">—</strong></div><div><span>Custo calculado</span><strong id="prodTechSheetCost">—</strong></div><div><span>PVP recomendado</span><strong id="prodTechSheetRecommended">—</strong></div></div></div>
         <div class="field"><label>Código</label><input id="prodCode" placeholder="Ex.: P006"></div>
         <div class="field"><label>Custo/un. automático</label><input id="prodCost" type="number" step="0.0001" readonly style="background:#DDF4D2"></div>
         <div class="field"><label>PVP/un.</label><input id="prodPrice" type="number" step="0.01"></div>
@@ -4248,9 +4259,21 @@ function calculatedProductCost(product){
   return raw*(1+(Number(db.settings.wasteRate)||0)+productEditionExtraWasteRate(product))
 }
 function effectiveProduct(product){return {...product,cost:calculatedProductCost(product)}}
+function donartPricingTargetMarginV1251(){const m=Number(db.settings.minMargin)||.65;return Math.max(m,Number(db.settings.targetMargin)||.70)}
+function donartPricingRoundStepV1251(){return Math.max(.01,Number(db.settings.priceRoundStep)||.10)}
+function donartRecommendedPriceV1251(p){const c=calculatedProductCost(p),m=donartPricingTargetMarginV1251(),raw=c/(1-m),s=donartPricingRoundStepV1251();return raw?Math.ceil((raw-1e-9)/s)*s:0}
+function donartPriceHealthV1251(p){const price=Number(p.price)||0,min=minPriceForMargin(calculatedProductCost(p)),rec=donartRecommendedPriceV1251(p);return price<min?{key:'low',label:'Margem insuficiente'}:price<rec?{key:'ok',label:'Aceitável'}:{key:'good',label:'Saudável'}}
 function minPriceForMargin(cost){
   const m=Number(db.settings.minMargin)||0;
   return m>=1?0:cost/(1-m)
+}
+function roundEditionRecommendedPriceV1249(value){
+ const v=Math.max(0,Number(value)||0);if(!v)return 0;
+ return Math.ceil(v*10-1e-9)/10
+}
+function editionRecommendedPriceV1249(product){
+ if(normalizeProductAvailabilityV1244(product)!=='edition')return 0;
+ return donartRecommendedPriceV1251(product)
 }
 
 function calcOrder(o){
@@ -4411,6 +4434,21 @@ async function fillProductEditionOptionsV1244(selected=''){
  if(current)sel.value=current;
  if(!list.length)sel.innerHTML='<option value="">Nenhuma edição disponível</option>';
 }
+function productTechSheetProductV1250(){const code=(prodCode?.value||'').trim();return db.products.find(p=>p.code===code)||null}
+function refreshProductTechSheetBridgeV1250(){
+ const box=document.getElementById('prodTechSheetBridge');if(!box)return;
+ const p=productTechSheetProductV1250();box.style.display=p?'':'none';if(!p)return;
+ const lines=Array.isArray(db.productRecipes[p.code])?db.productRecipes[p.code]:[],configured=lines.length>0;
+ prodTechSheetStatus.textContent=configured?'Configurada · ligada à ficha técnica existente':'Ainda não configurada · adiciona os ingredientes específicos';
+ prodTechSheetIngredientCount.textContent=String(lines.length);prodTechSheetCost.textContent=euro(calculatedProductCost(p));
+ prodTechSheetRecommended.textContent=configured?euro(donartRecommendedPriceV1251(p)):'Configura a ficha';
+ prodTechSheetBtn.textContent=configured?'Abrir Ficha Técnica':'Criar Ficha Técnica'
+}
+function openProductTechSheetV1250(){
+ const p=productTechSheetProductV1250();if(!p)return toast('Guarda primeiro o produto');
+ closeProduct();go('costs');
+ setTimeout(()=>{if(typeof productCostSelect!=='undefined'&&productCostSelect){productCostSelect.value=p.code;if(typeof renderProductRecipeEditor==='function')renderProductRecipeEditor()}},0)
+}
 function updateProductAvailabilityUI(){
  const mode=document.getElementById('prodAvailability')?.value||'regular';
  const cat=document.getElementById('prodCategoryField');
@@ -4420,7 +4458,8 @@ function updateProductAvailabilityUI(){
  ['prodEditionLaborField','prodEditionWasteField','prodEditionCostNote'].forEach(id=>{
    const el=document.getElementById(id);if(el)el.style.display=mode==='edition'?'':'none'
  });
- if(mode==='edition')fillProductEditionOptionsV1244()
+ if(mode==='edition')fillProductEditionOptionsV1244();
+ refreshProductTechSheetBridgeV1250()
 }
 function normalizeProductAvailabilityV1244(p){
  // Backward compatible: every existing product remains regular unless explicitly marked edition-exclusive.
@@ -4462,6 +4501,7 @@ function editProduct(code){
  const ewp=document.getElementById('prodEditionExtraWastePct');if(ewp)ewp.value=Number(p.editionExtraWastePct)||0;
  updateProductAvailabilityUI();
  if(av&&av.value==='edition')fillProductEditionOptionsV1244(p.editionId||'');
+ refreshProductTechSheetBridgeV1250();
  setProductShopImagePreview(p.shopImageUrl||'');const f=document.getElementById('prodShopImageFile');if(f)f.value='';window.scrollTo({top:0,behavior:'smooth'})
 }
 function renderProducts(){
@@ -4572,7 +4612,8 @@ function renderProductRecipeEditor(){
  const code=costProduct.value,p=db.products.find(x=>x.code===code);
  if(!p){productRecipeEditor.innerHTML='<div class="empty">Selecione um produto</div>';return}
  const lines=db.productRecipes[code]||[],base=baseUnitCost(),top=toppingUnitCost(code),lab=laborUnitCost(),extraLab=productEditionExtraLaborCost(p),raw=base+top+lab+extraLab,waste=raw*((Number(db.settings.wasteRate)||0)+productEditionExtraWasteRate(p)),total=raw+waste;
- productRecipeEditor.innerHTML=`<div class="totalbox cost-totalbox-v1248"><div class="mini"><span>Massa base</span><strong>${euro(base)}</strong></div><div class="mini"><span>Coberturas</span><strong>${euro(top)}</strong></div><div class="mini"><span>Mão obra</span><strong>${euro(lab+extraLab)}</strong>${extraLab>0?`<small>+ ${euro(extraLab)} edição</small>`:''}</div><div class="mini"><span>Custo final</span><strong>${euro(total)}</strong>${productEditionExtraWasteRate(p)>0?`<small>desperdício extra ${Number(p.editionExtraWastePct)||0}%</small>`:''}</div></div>
+ const editionConfigured=lines.length>0,editionRec=editionRecommendedPriceV1249(p),editionMin=minPriceForMargin(total),editionMargin=Number(db.settings.minMargin)||.65;
+ productRecipeEditor.innerHTML=`<div class="totalbox cost-totalbox-v1248"><div class="mini"><span>Massa base</span><strong>${euro(base)}</strong></div><div class="mini"><span>Coberturas</span><strong>${euro(top)}</strong></div><div class="mini"><span>Mão obra</span><strong>${euro(lab+extraLab)}</strong>${extraLab>0?`<small>+ ${euro(extraLab)} edição</small>`:''}</div><div class="mini"><span>Custo final</span><strong>${euro(total)}</strong>${productEditionExtraWasteRate(p)>0?`<small>desperdício extra ${Number(p.editionExtraWastePct)||0}%</small>`:''}</div></div>${normalizeProductAvailabilityV1244(p)==='edition'?(editionConfigured?`<div class="edition-pvp-recommend-v1249"><div><span>PVP mínimo · margem ${pct(editionMargin)}</span><strong>${euro(editionMin)}</strong></div><div class="recommended"><span>⭐ PVP recomendado</span><strong>${euro(editionRec)}</strong></div><div><span>PVP definido</span><strong>${euro(Number(p.price)||0)}</strong></div><small>Recomendação informativa baseada no custo real e na margem mínima DONART. O PVP definido continua manual.</small></div>`:`<div class="edition-pvp-warning-v1250"><strong>⚠️ PVP recomendado ainda indisponível</strong><span>Adiciona os ingredientes específicos deste produto à Ficha Técnica para obter uma recomendação fiável.</span></div>`):''}
  <div style="margin-top:10px">${lines.length?lines.map(l=>`<div class="cart-row" style="grid-template-columns:1fr 100px 110px 80px"><span>${l.item}</span><strong>${Number(l.qty).toLocaleString('pt-PT')} ${stockByName(l.item)?.unit||''}</strong><strong>${euro((Number(l.qty)||0)*materialUnitCost(l.item))}</strong><button class="btn danger" onclick="removeRecipeLine('${code}','${l.item.replace(/'/g,"\\'")}')">Remover</button></div>`).join(''):'<div class="empty">Sem coberturas configuradas</div>'}</div>`
 }
 function renderCosts(){
@@ -4665,7 +4706,10 @@ function renderSettingsThemedBoxesSummary(){
      <div><strong>${escapeHtml(b.name)}</strong><br><small>${escapeHtml(b.basePackaging||'Sem caixa base')} · ${Number(b.capacity)||0} un.</small></div>
      <span>${euro(baseCost+deco)} custo</span>
      <strong>${euro(b.price)} venda</strong>
-   </div>`;
+   </div>`; 
+ const healthV1251=donartPriceHealthV1251(p),recV1251=donartRecommendedPriceV1251(p),minV1251=minPriceForMargin(calculatedProductCost(p));
+ productRecipeEditor.innerHTML+=`<div class="pricing-decision-v1251"><div><span>PVP mínimo</span><strong>${euro(minV1251)}</strong></div><div class="recommended"><span>⭐ PVP recomendado</span><strong>${euro(recV1251)}</strong></div><div><span>PVP definido</span><strong>${euro(Number(p.price)||0)}</strong></div><div><span>Estado</span><strong class="price-health-v1251 ${healthV1251.key}">${healthV1251.label}</strong></div><small>Baseado na margem alvo ${pct(donartPricingTargetMarginV1251())}. O PVP definido continua manual.</small></div>`;
+
  }).join('');
 }
 
@@ -5110,7 +5154,7 @@ function previewThemedBoxesPDF(){return openPdfBlob(buildThemedBoxesPdfBlob)}
 function downloadThemedBoxesPDF(){return downloadPdfBlob(buildThemedBoxesPdfBlob,'DONART_Caixas_Tematicas.pdf')}
 function shareThemedBoxesPDF(){return sharePdfBlob(buildThemedBoxesPdfBlob,'DONART_Caixas_Tematicas.pdf','Caixas temáticas DONART','Olá! Segue o catálogo de caixas temáticas DONART em PDF. 🍩')}
 
-function renderSettings(){
+function renderSettings(){setTimeout(()=>{let a=document.getElementById('cfgTargetMarginV1251'),b=document.getElementById('cfgPriceRoundStepV1251');if(a)a.value=Math.round((Number(db.settings.targetMargin)||.70)*100);if(b)b.value=String(Number(db.settings.priceRoundStep)||.10)},0);
  syncThemedPackagingSelect();renderSettingsThemedBoxesSummary();
  if(!document.getElementById('packList'))return;
  recipeYield.value=db.settings.yield||28;
@@ -5143,7 +5187,7 @@ function renderSettings(){
  ].map(([a,b])=>`<div><small>${a}</small><strong>${b}</strong></div>`).join('');
 }
 
-function saveSettings(){
+function saveSettings(){db.settings.targetMargin=Math.max(Number(db.settings.minMargin)||.65,Math.min(.95,(Number(document.getElementById('cfgTargetMarginV1251')?.value)||70)/100));db.settings.priceRoundStep=Math.max(.01,Number(document.getElementById('cfgPriceRoundStepV1251')?.value)||.10);
  db.settings.yield=+recipeYield.value||28;db.settings.minMargin=+minMarginInput.value||0.65;db.settings.laborRate=+laborRate.value||8;db.settings.wasteRate=+wasteRate.value||0.10;
  if(document.getElementById('laborMinutes'))db.settings.laborMinutes=+laborMinutes.value||0;
  save();toast('Configuração guardada')

@@ -1,0 +1,19 @@
+DONART V12.4.9 — PVP RECOMENDADO EDIÇÕES ESPECIAIS
+
+Novo:
+- Apenas produtos exclusivos de Edição Especial mostram um PVP recomendado na Ficha Técnica.
+- Usa o custo real já calculado e a margem mínima DONART já configurada.
+- PVP mínimo mantém a fórmula existente da app.
+- PVP recomendado arredonda esse mínimo para cima ao próximo 0,10 EUR.
+- Mostra lado a lado: PVP mínimo, PVP recomendado e PVP definido.
+- O PVP definido continua 100% manual e nunca é substituído.
+
+Sem alterações:
+- Classic/Special/Premium.
+- Motor de custo existente.
+- Produção, stock, encomendas, Cloud/sincronização e pagamentos.
+- Funções protegidas comparadas com V12.4.8: idênticas.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
