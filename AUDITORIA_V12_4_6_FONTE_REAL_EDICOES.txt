@@ -1,0 +1,27 @@
+DONART V12.4.6 — PRODUTOS LIGADOS À FONTE REAL DE EDIÇÕES ESPECIAIS
+
+Correção exata:
+- O seletor de Edição Especial em Produtos usa agora exatamente a mesma RPC do módulo Edições Especiais:
+  donart_list_shop_special_editions_admin_v1
+- Usa também o mesmo cliente Cloud:
+  initCloudClient()
+- Usa a mesma sessão:
+  cloudUser || ensureCloudSession()
+- A resposta alimenta também specialEditionsAdmin, a mesma lista em memória do módulo existente.
+- Não existe nova tabela, nova RPC nem estrutura paralela.
+- O botão Atualizar força nova leitura da mesma fonte.
+- As opções mostram também o estado da edição: ativa agora, agendada, ativa ou inativa.
+
+Preservado:
+- Edições Especiais existentes e respetivo CRUD.
+- Natal 2026 já criado.
+- Produtos e Mix.
+- Cloud relacional/pending/shadow.
+- Encomendas, pagamentos, produção, stock, compras, caixa, clientes e relatórios.
+- Entregas/capacidade, backup e ausência de PIN.
+- Nenhuma alteração à lógica de sincronização ou produção.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
+- Funções críticas: presentes.
