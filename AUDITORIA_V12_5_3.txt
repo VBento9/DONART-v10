@@ -1,0 +1,7 @@
+DONART V12.5.3
+Causa real do botão identificada: a V12.5.2 chamava closeProduct(), função que não existe nesta app.
+Isso provocava um ReferenceError antes de go('costs') ser executado.
+Correção: removida exclusivamente essa chamada inexistente.
+O botão usa agora diretamente go('costs') + o seletor real #costProduct.
+Nenhuma lógica de produção, stock, encomendas, Cloud, custos ou PVP foi alterada.
+JavaScript node --check: OK.
