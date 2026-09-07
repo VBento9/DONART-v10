@@ -1,0 +1,21 @@
+DONART V12.5.9 — LAYOUT PROFISSIONAL DO GESTOR DE TEMAS
+
+Alteração apenas estrutural/visual:
+- O Gestor de Temas deixa a coluna estreita do topo.
+- Passa para uma faixa própria a toda a largura.
+- Cartões de tema em 2 colunas quando há espaço.
+- Em larguras menores passa automaticamente para 1 coluna.
+- Nome, família, ativo, ícone e ocasiões ficam legíveis no tablet.
+- Ocasiões, Cores e Personalizações permanecem no topo.
+
+Preservado:
+- Toda a lógica do Gestor de Temas V12.5.8.
+- Cores visuais V12.5.7.
+- Guardar/sincronizar Criador.
+- Ficha Técnica, PVP, custos.
+- Produção, stock, encomendas, estados e Cloud.
+
+Validação:
+- JavaScript node --check OK.
+- Funções do Gestor de Temas, Cores, Produção, Estados, Cloud e saveSettings idênticas à V12.5.8.
+- Sem IDs duplicados.
