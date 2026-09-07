@@ -745,7 +745,7 @@
 .products-tools{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
 .products-tools input,.products-tools select{height:34px;font-size:10px;padding:6px 9px}
 .products-tools input{min-width:190px}
-.products-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:9px}
+.products-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:9px}
 .products-kpi{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
 .products-kpi span{font-size:8px;font-weight:800;text-transform:uppercase;color:#8b746c}
 .products-kpi strong{font-size:19px;color:#503833}
@@ -1189,6 +1189,27 @@
  .dashboard-ops-strip{gap:6px}
  .dashboard-ops-pill{padding:7px 10px;font-size:8px}
 }
+
+/* DONART V12.4.3 — Gestão do Mix de Sabores */
+.mix-toggle{background:#fff5f8;border-color:#f0d3de}
+.mix-help{display:block;margin-top:5px;font-size:8px;line-height:1.35;color:#8b746c}
+.mix-admin-note{
+ display:flex!important;align-items:center;gap:10px;
+ padding:10px 12px;border:1px solid #f0d8e1;border-radius:12px;
+ background:#fff8fa;color:#62443d
+}
+.mix-admin-note strong{font-size:9px;white-space:nowrap;color:#a82d5c}
+.mix-admin-note span{font-size:8px;line-height:1.4}
+.product-mix-badge{background:#fff0f5!important;color:#a82d5c!important;border-color:#f0cad8!important}
+.product-mix-badge.off{background:#f7f4f2!important;color:#8b7a74!important;border-color:#e7dfdc!important}
+.product-card-mixmeta{
+ display:flex;gap:6px;flex-wrap:wrap;margin-top:7px
+}
+.product-card-mixmeta span{
+ font-size:7px;font-weight:800;padding:4px 7px;border-radius:999px;
+ background:#faf6f4;border:1px solid #eee4df;color:#745e56
+}
+
 </style>
 </head>
 <body>
@@ -1204,9 +1225,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.2 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.3 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.2</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.3</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -2077,6 +2098,11 @@
           <option value="published">Publicados</option>
           <option value="hidden">Ocultos</option>
         </select>
+        <select id="productMixFilter" onchange="renderProducts()">
+          <option value="all">Mix: todos</option>
+          <option value="enabled">Mix: disponíveis</option>
+          <option value="disabled">Mix: indisponíveis</option>
+        </select>
       </div>
     </div>
 
@@ -2112,6 +2138,10 @@
           <input id="prodShopImageUrl" type="hidden">
         </div>
         <div class="field"><label>Loja online</label><label class="product-shop-toggle"><input id="prodShopVisible" type="checkbox"> Mostrar este produto na loja</label></div>
+        <div class="field"><label>Mix de Sabores</label><label class="product-shop-toggle mix-toggle"><input id="prodMixVisible" type="checkbox"> Disponível no Mix</label><small class="mix-help">Pode ser Classic, Special, Premium ou de uma Edição Especial.</small></div>
+        <div class="field"><label>Máximo deste sabor por caixa</label><input id="prodMixMaxQty" type="number" min="0" step="1" value="0" placeholder="0 = sem limite"><small class="mix-help">Ex.: 4 impede o cliente de escolher mais de 4 unidades deste sabor no mesmo Mix.</small></div>
+        <div class="field"><label>Caixas permitidas no Mix</label><input id="prodMixBoxCaps" placeholder="Ex.: 6, 12, 24"><small class="mix-help">Deixa vazio para permitir em todas as caixas disponíveis no Mix.</small></div>
+        <div class="field span2 mix-admin-note"><strong>🍩 Controlo do Mix</strong><span>“Publicado na loja” e “Disponível no Mix” são independentes. Um produto de Edição Especial também pode entrar no Mix se ativares esta opção.</span></div>
         <div class="field"><label>&nbsp;</label><button class="btn primary" onclick="saveProduct()">Guardar produto</button></div>
       </div>
     </div>
@@ -4274,22 +4304,41 @@ async function removeProductShopImage(){
  if(existing){existing.shopImageUrl='';save()}
  toast('Fotografia removida')
 }
+
+function parseMixBoxCaps(v){
+ return [...new Set(String(v||'').split(/[,;\s]+/).map(x=>Number(x)).filter(x=>Number.isFinite(x)&&x>0).map(x=>Math.round(x)))].sort((a,b)=>a-b)
+}
+function formatMixBoxCaps(v){
+ return Array.isArray(v)?v.join(', '):''
+}
 function saveProduct(){
  const code=prodCode.value.trim()||('X'+String(db.products.length+1).padStart(3,'0')),name=prodName.value.trim();if(!name)return toast('Indique o nome do produto');
  const existing=db.products.find(x=>x.code===code);
- const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:(document.getElementById('prodShopImageUrl')?.value||existing?.shopImageUrl||'').trim()};
+ const mixVisible=!!document.getElementById('prodMixVisible')?.checked;
+ const mixMaxQty=Math.max(0,Math.round(Number(document.getElementById('prodMixMaxQty')?.value)||0));
+ const mixBoxCapacities=parseMixBoxCaps(document.getElementById('prodMixBoxCaps')?.value||'');
+ const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:(document.getElementById('prodShopImageUrl')?.value||existing?.shopImageUrl||'').trim(),mixVisible,mixMaxQty,mixBoxCapacities};
  existing?Object.assign(existing,obj):db.products.push(obj);
  if(!db.productRecipes[code])db.productRecipes[code]=[];
- save();prodName.value=prodCode.value=prodPrice.value=prodShopDescription.value='';prodShopVisible.checked=false;setProductShopImagePreview('');const f=document.getElementById('prodShopImageFile');if(f)f.value='';toast('Produto guardado')
+ save();prodName.value=prodCode.value=prodPrice.value=prodShopDescription.value='';prodShopVisible.checked=false;
+ const mv=document.getElementById('prodMixVisible');if(mv)mv.checked=false;
+ const mm=document.getElementById('prodMixMaxQty');if(mm)mm.value='0';
+ const mb=document.getElementById('prodMixBoxCaps');if(mb)mb.value='';
+ setProductShopImagePreview('');const f=document.getElementById('prodShopImageFile');if(f)f.value='';toast('Produto guardado')
 }
 function editProduct(code){
  const p=db.products.find(x=>x.code===code);if(!p)return;
- prodCode.value=p.code;prodName.value=p.name;prodCat.value=p.category;prodCost.value=calculatedProductCost(p).toFixed(4);prodPrice.value=p.price;prodShopVisible.checked=!!p.shopVisible;prodShopDescription.value=p.shopDescription||'';setProductShopImagePreview(p.shopImageUrl||'');const f=document.getElementById('prodShopImageFile');if(f)f.value='';window.scrollTo({top:0,behavior:'smooth'})
+ prodCode.value=p.code;prodName.value=p.name;prodCat.value=p.category;prodCost.value=calculatedProductCost(p).toFixed(4);prodPrice.value=p.price;prodShopVisible.checked=!!p.shopVisible;prodShopDescription.value=p.shopDescription||'';
+ const mv=document.getElementById('prodMixVisible');if(mv)mv.checked=!!p.mixVisible;
+ const mm=document.getElementById('prodMixMaxQty');if(mm)mm.value=Number(p.mixMaxQty)||0;
+ const mb=document.getElementById('prodMixBoxCaps');if(mb)mb.value=formatMixBoxCaps(p.mixBoxCapacities);
+ setProductShopImagePreview(p.shopImageUrl||'');const f=document.getElementById('prodShopImageFile');if(f)f.value='';window.scrollTo({top:0,behavior:'smooth'})
 }
 function renderProducts(){
  const all=Array.isArray(db.products)?db.products:[];
  const minMargin=Number(db.settings.minMargin)||.65;
  const published=all.filter(p=>p.shopVisible).length;
+ const mixEnabled=all.filter(p=>p.mixVisible).length;
  const lowMargin=all.filter(p=>{const c=calculatedProductCost(p),m=p.price?(p.price-c)/p.price:0;return m<minMargin}).length;
  const avgMargin=all.length?all.reduce((s,p)=>{const c=calculatedProductCost(p);return s+(p.price?(p.price-c)/p.price:0)},0)/all.length:0;
 
@@ -4297,6 +4346,7 @@ function renderProducts(){
  if(summary)summary.innerHTML=[
    ['Produtos',all.length,'Total registado'],
    ['Publicados',published,'Visíveis na loja'],
+   ['No Mix',mixEnabled,'Disponíveis no Mix de Sabores'],
    ['Margem baixa',lowMargin,'Abaixo da margem mínima'],
    ['Margem média',pct(avgMargin),'Média do catálogo']
  ].map(([label,value,note])=>`<div class="card products-kpi ${label==='Margem baixa'&&lowMargin?'products-kpi-warn':''}">
@@ -4306,12 +4356,14 @@ function renderProducts(){
  const q=(document.getElementById('productSearch')?.value||'').trim().toLowerCase();
  const cat=document.getElementById('productCategoryFilter')?.value||'all';
  const shop=document.getElementById('productShopFilter')?.value||'all';
+ const mix=document.getElementById('productMixFilter')?.value||'all';
 
  const rows=all.filter(p=>{
    const mq=!q||String(p.name||'').toLowerCase().includes(q)||String(p.code||'').toLowerCase().includes(q)||String(p.shopDescription||'').toLowerCase().includes(q);
    const mc=cat==='all'||p.category===cat;
    const ms=shop==='all'||(shop==='published'&&p.shopVisible)||(shop==='hidden'&&!p.shopVisible);
-   return mq&&mc&&ms;
+   const mm=mix==='all'||(mix==='enabled'&&p.mixVisible)||(mix==='disabled'&&!p.mixVisible);
+   return mq&&mc&&ms&&mm;
  });
 
  const count=document.getElementById('productsResultCount');
@@ -4328,9 +4380,17 @@ function renderProducts(){
      <div class="product-card-body">
        <div class="product-card-top">
          <div><span class="badge">${escapeHtml(p.category||'—')}</span><h3>${escapeHtml(p.name||'Sem nome')}</h3><small>${escapeHtml(p.code||'—')}</small></div>
-         <span class="badge ${p.shopVisible?'ok':'warn'}">${p.shopVisible?'Publicado':'Oculto'}</span>
+         <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end">
+           <span class="badge ${p.shopVisible?'ok':'warn'}">${p.shopVisible?'Publicado':'Oculto'}</span>
+           <span class="badge product-mix-badge ${p.mixVisible?'':'off'}">${p.mixVisible?'Mix ✓':'Fora do Mix'}</span>
+         </div>
        </div>
        ${p.shopDescription?`<p>${escapeHtml(p.shopDescription)}</p>`:''}
+       ${p.mixVisible?`<div class="product-card-mixmeta">
+         <span>🍩 Mix ativo</span>
+         <span>${Number(p.mixMaxQty)>0?'Máx. '+Number(p.mixMaxQty)+' / caixa':'Sem limite por sabor'}</span>
+         <span>${Array.isArray(p.mixBoxCapacities)&&p.mixBoxCapacities.length?'Caixas: '+p.mixBoxCapacities.join(', '):'Todas as caixas Mix'}</span>
+       </div>`:''}
        <div class="product-card-metrics">
          <div><small>Custo</small><strong>${euro(c)}</strong></div>
          <div><small>PVP</small><strong>${euro(p.price)}</strong></div>

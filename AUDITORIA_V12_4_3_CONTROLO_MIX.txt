@@ -1,0 +1,35 @@
+DONART V12.4.3 — CONTROLO DO MIX DE SABORES
+
+Base:
+- V12.4.2 — Eliminar Clientes Definitivamente.
+
+Novo em Produtos:
+- “Disponível no Mix” independente de “Mostrar este produto na loja”.
+- Máximo deste sabor por caixa (0 = sem limite).
+- Caixas/capacidades permitidas no Mix (ex.: 6, 12, 24; vazio = todas).
+- Funciona para Classic, Special, Premium e produtos associados a Edições Especiais.
+- Novo filtro: Mix todos / disponíveis / indisponíveis.
+- Novo KPI “No Mix”.
+- Cartões mostram estado Mix e regras aplicáveis.
+
+Cloud:
+- Os campos mixVisible, mixMaxQty e mixBoxCapacities ficam dentro do objeto do produto.
+- O sync relacional já existente envia o objeto completo para donart_v10_products.data.
+- Não foi alterada a arquitetura de sincronização.
+
+Preservado:
+- Produção e dedução de stock.
+- Encomendas / estados / pagamentos.
+- Eliminação permanente de encomendas.
+- Eliminação permanente de clientes.
+- Cloud reconciliation / pending / shadow.
+- Catálogos e Edições Especiais.
+- Entregas / capacidade.
+- Backup.
+- Sem PIN.
+- Versão visível junto ao estado de sincronização.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
+- Funções críticas: presentes.
