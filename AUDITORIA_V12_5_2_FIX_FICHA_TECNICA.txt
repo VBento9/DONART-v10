@@ -1,0 +1,19 @@
+DONART V12.5.2 — CORREÇÃO BOTÃO FICHA TÉCNICA
+
+Problema identificado:
+- O botão criado na V12.5.0/V12.5.1 tentava usar um seletor genérico incorreto.
+- O ecrã Custos já tinha o seu próprio seletor real: costProduct.
+
+Correção:
+- O botão Editar Produto -> Abrir/Criar Ficha Técnica usa agora o seletor real do módulo Custos.
+- Abre Custos, seleciona o produto pelo código, renderiza a ficha existente e desloca o ecrã até à ficha.
+- Não cria nova estrutura de receitas nem duplica dados.
+
+Preservado:
+- PVP manual e política de PVP recomendado V12.5.1.
+- Produção, stock, encomendas, estados e Cloud.
+- Funções protegidas comparadas com V12.5.1: idênticas.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
