@@ -1,0 +1,42 @@
+DONART V12.4.8 — CUSTOS REAIS DE EDIÇÕES ESPECIAIS
+
+Após auditoria ao motor de custos existente:
+- A app JÁ calcula automaticamente:
+  * massa base;
+  * ingredientes/coberturas específicos por produto;
+  * mão de obra geral;
+  * desperdício geral;
+  * custo total;
+  * lucro, margem e PVP recomendado por margem.
+- O PVP continua manual, sem qualquer alteração.
+
+O que faltava para produtos exclusivos de Edição Especial:
+- Tempo extra de trabalho específico por unidade.
+- Desperdício extra específico do produto/edição.
+
+Novo, apenas para produtos Exclusivos de Edição Especial:
+- Tempo extra por unidade (minutos).
+- Desperdício extra da edição (%).
+- Ambos são opcionais e começam em 0.
+- O custo extra de mão de obra usa a mesma taxa €/hora já configurada.
+- O desperdício extra soma-se ao desperdício geral apenas neste produto.
+
+IMPORTANTE:
+- Ingredientes/decoração continuam a ser adicionados na Ficha Técnica, como já existia.
+- Não foi criada taxa de “edição limitada”.
+- Não foi criado segundo sistema de PVP.
+- PVP continua totalmente manual.
+- Produção/stock NÃO foram alterados.
+- consumeProduction() foi comparada com a versão anterior e permanece idêntica.
+
+Preservado:
+- Produtos, Mix, Edições Especiais, Cloud/Supabase.
+- Encomendas, pagamentos, produção, stock, compras, caixa.
+- Clientes, relatórios, entregas, capacidade e backup.
+- Sem PIN.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
+- Funções críticas: presentes.
+- consumeProduction(): idêntica à V12.4.7.

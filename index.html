@@ -1190,7 +1190,7 @@
  .dashboard-ops-pill{padding:7px 10px;font-size:8px}
 }
 
-/* DONART V12.4.7 — Gestão do Mix de Sabores */
+/* DONART V12.4.8 — Gestão do Mix de Sabores */
 .mix-toggle{background:#fff5f8;border-color:#f0d3de}
 .mix-help{display:block;margin-top:5px;font-size:8px;line-height:1.35;color:#8b746c}
 .mix-admin-note{
@@ -1211,22 +1211,32 @@
 }
 
 
-/* DONART V12.4.7 — produto regular vs exclusivo de edição */
+/* DONART V12.4.8 — produto regular vs exclusivo de edição */
 #prodEditionField{background:#fff9f2;border-radius:12px;padding:8px 10px}
 #prodAvailability{font-weight:750}
 
 
-/* DONART V12.4.7 — seletor de Edições Especiais ligado à Cloud */
+/* DONART V12.4.8 — seletor de Edições Especiais ligado à Cloud */
 .edition-select-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center}
 .edition-select-row .btn{height:38px;padding:0 12px}
 
 
-/* DONART V12.4.7 — designação visual correta para produtos exclusivos */
+/* DONART V12.4.8 — designação visual correta para produtos exclusivos */
 .edition-product-badge{
  background:#fff7e9!important;
  color:#9a631b!important;
  border-color:#f0ddb9!important;
 }
+
+
+/* DONART V12.4.8 — custos específicos de Edição Especial */
+.edition-cost-field{background:#fffaf3;border:1px solid #f2e3c8;border-radius:12px;padding:9px 10px}
+.edition-cost-input{display:grid;grid-template-columns:minmax(0,1fr) 38px;align-items:center;gap:6px}
+.edition-cost-input span{font-size:9px;font-weight:900;color:#856b5e;text-align:center}
+.edition-cost-note{align-items:center;grid-template-columns:auto 1fr;gap:10px;background:#fff7e9;border:1px solid #f1ddb9;border-radius:12px;padding:10px 12px}
+.edition-cost-note strong{font-size:9px;color:#95621c;white-space:nowrap}
+.edition-cost-note span{font-size:8px;line-height:1.45;color:#725e54}
+.cost-totalbox-v1248 .mini small{display:block;margin-top:3px;font-size:8px;color:#8b746c}
 
 </style>
 </head>
@@ -1243,9 +1253,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.7 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.8 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.7</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.8</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -2138,6 +2148,9 @@
         <div class="field"><label>Disponibilidade</label><select id="prodAvailability" onchange="updateProductAvailabilityUI()"><option value="regular">Catálogo regular</option><option value="edition">Exclusivo de Edição Especial</option></select></div>
         <div class="field" id="prodCategoryField"><label>Categoria</label><select id="prodCat"><option>Classic</option><option>Special</option><option>Premium</option></select></div>
         <div class="field" id="prodEditionField" style="display:none"><label>Edição Especial</label><div class="edition-select-row"><select id="prodEditionId"><option value="">Seleciona uma edição</option></select><button type="button" class="btn ghost" onclick="loadProductEditionsV1245(true).then(list=>{fillProductEditionOptionsV1244();toast(list.length?'Edições atualizadas':'Nenhuma edição disponível')})">Atualizar</button></div><small class="mix-help">Usa as Edições Especiais já criadas na app. Não é criada uma nova edição aqui.</small></div>
+        <div class="field edition-cost-field" id="prodEditionLaborField" style="display:none"><label>Tempo extra por unidade</label><div class="edition-cost-input"><input id="prodEditionExtraLaborMinutes" type="number" min="0" step="0.1" value="0"><span>min</span></div><small class="mix-help">Só o tempo adicional desta edição. O custo é calculado com a mão de obra €/hora já definida na app.</small></div>
+        <div class="field edition-cost-field" id="prodEditionWasteField" style="display:none"><label>Desperdício extra da edição</label><div class="edition-cost-input"><input id="prodEditionExtraWastePct" type="number" min="0" step="0.1" value="0"><span>%</span></div><small class="mix-help">Acrescenta-se ao desperdício geral apenas neste produto. Usa 0 se não houver diferença.</small></div>
+        <div class="field span2 edition-cost-note" id="prodEditionCostNote" style="display:none"><strong>💶 Custo real da edição</strong><span>Ingredientes e decoração continuam a ser registados na ficha técnica do produto. Aqui só acrescentamos o tempo e desperdício extra específicos desta edição. O PVP continua totalmente manual.</span></div>
         <div class="field"><label>Código</label><input id="prodCode" placeholder="Ex.: P006"></div>
         <div class="field"><label>Custo/un. automático</label><input id="prodCost" type="number" step="0.0001" readonly style="background:#DDF4D2"></div>
         <div class="field"><label>PVP/un.</label><input id="prodPrice" type="number" step="0.01"></div>
@@ -4221,9 +4234,18 @@ function toppingUnitCost(code){
   const lines=(db.productRecipes&&db.productRecipes[code])||[];
   return lines.reduce((sum,l)=>sum+(Number(l.qty)||0)*materialUnitCost(l.item),0)
 }
+function productEditionExtraLaborCost(product){
+  if(normalizeProductAvailabilityV1244(product)!=='edition')return 0;
+  const mins=Math.max(0,Number(product?.editionExtraLaborMinutes)||0);
+  return (Number(db.settings.laborRate)||0)*mins/60
+}
+function productEditionExtraWasteRate(product){
+  if(normalizeProductAvailabilityV1244(product)!=='edition')return 0;
+  return Math.max(0,Number(product?.editionExtraWastePct)||0)/100
+}
 function calculatedProductCost(product){
-  const raw=baseUnitCost()+toppingUnitCost(product.code)+laborUnitCost();
-  return raw*(1+(Number(db.settings.wasteRate)||0))
+  const raw=baseUnitCost()+toppingUnitCost(product.code)+laborUnitCost()+productEditionExtraLaborCost(product);
+  return raw*(1+(Number(db.settings.wasteRate)||0)+productEditionExtraWasteRate(product))
 }
 function effectiveProduct(product){return {...product,cost:calculatedProductCost(product)}}
 function minPriceForMargin(cost){
@@ -4395,6 +4417,9 @@ function updateProductAvailabilityUI(){
  const ed=document.getElementById('prodEditionField');
  if(cat)cat.style.display=mode==='edition'?'none':'';
  if(ed)ed.style.display=mode==='edition'?'':'none';
+ ['prodEditionLaborField','prodEditionWasteField','prodEditionCostNote'].forEach(id=>{
+   const el=document.getElementById(id);if(el)el.style.display=mode==='edition'?'':'none'
+ });
  if(mode==='edition')fillProductEditionOptionsV1244()
 }
 function normalizeProductAvailabilityV1244(p){
@@ -4410,7 +4435,9 @@ function saveProduct(){
  const availabilityType=document.getElementById('prodAvailability')?.value==='edition'?'edition':'regular';
  const editionId=availabilityType==='edition'?String(document.getElementById('prodEditionId')?.value||''):'';
  if(availabilityType==='edition'&&!editionId)return toast('Seleciona a Edição Especial deste produto');
- const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:(document.getElementById('prodShopImageUrl')?.value||existing?.shopImageUrl||'').trim(),mixVisible,mixMaxQty,mixBoxCapacities,availabilityType,editionExclusive:availabilityType==='edition',editionId};
+ const editionExtraLaborMinutes=availabilityType==='edition'?Math.max(0,Number(document.getElementById('prodEditionExtraLaborMinutes')?.value)||0):0;
+ const editionExtraWastePct=availabilityType==='edition'?Math.max(0,Number(document.getElementById('prodEditionExtraWastePct')?.value)||0):0;
+ const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:(document.getElementById('prodShopImageUrl')?.value||existing?.shopImageUrl||'').trim(),mixVisible,mixMaxQty,mixBoxCapacities,availabilityType,editionExclusive:availabilityType==='edition',editionId,editionExtraLaborMinutes,editionExtraWastePct};
  existing?Object.assign(existing,obj):db.products.push(obj);
  if(!db.productRecipes[code])db.productRecipes[code]=[];
  save();prodName.value=prodCode.value=prodPrice.value=prodShopDescription.value='';prodShopVisible.checked=false;
@@ -4419,6 +4446,8 @@ function saveProduct(){
  const mb=document.getElementById('prodMixBoxCaps');if(mb)mb.value='';
  const av=document.getElementById('prodAvailability');if(av)av.value='regular';
  const ei=document.getElementById('prodEditionId');if(ei)ei.value='';
+ const elm=document.getElementById('prodEditionExtraLaborMinutes');if(elm)elm.value='0';
+ const ewp=document.getElementById('prodEditionExtraWastePct');if(ewp)ewp.value='0';
  updateProductAvailabilityUI();
  setProductShopImagePreview('');const f=document.getElementById('prodShopImageFile');if(f)f.value='';toast('Produto guardado')
 }
@@ -4429,6 +4458,8 @@ function editProduct(code){
  const mm=document.getElementById('prodMixMaxQty');if(mm)mm.value=Number(p.mixMaxQty)||0;
  const mb=document.getElementById('prodMixBoxCaps');if(mb)mb.value=formatMixBoxCaps(p.mixBoxCapacities);
  const av=document.getElementById('prodAvailability');if(av)av.value=normalizeProductAvailabilityV1244(p);
+ const elm=document.getElementById('prodEditionExtraLaborMinutes');if(elm)elm.value=Number(p.editionExtraLaborMinutes)||0;
+ const ewp=document.getElementById('prodEditionExtraWastePct');if(ewp)ewp.value=Number(p.editionExtraWastePct)||0;
  updateProductAvailabilityUI();
  if(av&&av.value==='edition')fillProductEditionOptionsV1244(p.editionId||'');
  setProductShopImagePreview(p.shopImageUrl||'');const f=document.getElementById('prodShopImageFile');if(f)f.value='';window.scrollTo({top:0,behavior:'smooth'})
@@ -4540,8 +4571,8 @@ function renderProductRecipeEditor(){
  if(!document.getElementById('productRecipeEditor'))return;
  const code=costProduct.value,p=db.products.find(x=>x.code===code);
  if(!p){productRecipeEditor.innerHTML='<div class="empty">Selecione um produto</div>';return}
- const lines=db.productRecipes[code]||[],base=baseUnitCost(),top=toppingUnitCost(code),lab=laborUnitCost(),raw=base+top+lab,waste=raw*(Number(db.settings.wasteRate)||0),total=raw+waste;
- productRecipeEditor.innerHTML=`<div class="totalbox"><div class="mini"><span>Massa base</span><strong>${euro(base)}</strong></div><div class="mini"><span>Coberturas</span><strong>${euro(top)}</strong></div><div class="mini"><span>Mão obra</span><strong>${euro(lab)}</strong></div><div class="mini"><span>Custo final</span><strong>${euro(total)}</strong></div></div>
+ const lines=db.productRecipes[code]||[],base=baseUnitCost(),top=toppingUnitCost(code),lab=laborUnitCost(),extraLab=productEditionExtraLaborCost(p),raw=base+top+lab+extraLab,waste=raw*((Number(db.settings.wasteRate)||0)+productEditionExtraWasteRate(p)),total=raw+waste;
+ productRecipeEditor.innerHTML=`<div class="totalbox cost-totalbox-v1248"><div class="mini"><span>Massa base</span><strong>${euro(base)}</strong></div><div class="mini"><span>Coberturas</span><strong>${euro(top)}</strong></div><div class="mini"><span>Mão obra</span><strong>${euro(lab+extraLab)}</strong>${extraLab>0?`<small>+ ${euro(extraLab)} edição</small>`:''}</div><div class="mini"><span>Custo final</span><strong>${euro(total)}</strong>${productEditionExtraWasteRate(p)>0?`<small>desperdício extra ${Number(p.editionExtraWastePct)||0}%</small>`:''}</div></div>
  <div style="margin-top:10px">${lines.length?lines.map(l=>`<div class="cart-row" style="grid-template-columns:1fr 100px 110px 80px"><span>${l.item}</span><strong>${Number(l.qty).toLocaleString('pt-PT')} ${stockByName(l.item)?.unit||''}</strong><strong>${euro((Number(l.qty)||0)*materialUnitCost(l.item))}</strong><button class="btn danger" onclick="removeRecipeLine('${code}','${l.item.replace(/'/g,"\\'")}')">Remover</button></div>`).join(''):'<div class="empty">Sem coberturas configuradas</div>'}</div>`
 }
 function renderCosts(){
@@ -4555,8 +4586,9 @@ function renderCosts(){
    return `<tr><td>${x.name}</td><td>${x.unit}</td><td>${Number(x.unitCost||0).toFixed(6)} €/${x.unit}</td><td>${Number(x.qty||0).toLocaleString('pt-PT')} ${x.unit}</td><td>${euro((Number(x.qty)||0)*(Number(x.unitCost)||0))}</td><td>${origin}</td></tr>`
  }).join('');
  costProductsBody.innerHTML=db.products.map(p=>{
-   const base=baseUnitCost(),top=toppingUnitCost(p.code),lab=laborUnitCost(),raw=base+top+lab,waste=raw*(Number(db.settings.wasteRate)||0),c=raw+waste,profit=(Number(p.price)||0)-c,m=p.price?profit/p.price:0,minp=minPriceForMargin(c);
-   return `<tr><td>${p.name}</td><td>${p.category}</td><td>${euro(base)}</td><td>${euro(top)}</td><td>${euro(lab)}</td><td>${euro(waste)}</td><td><strong>${euro(c)}</strong></td><td>${euro(p.price)}</td><td>${euro(profit)}</td><td><span class="badge ${m>=(db.settings.minMargin||.65)?'ok':'warn'}">${pct(m)}</span></td><td>${euro(minp)}</td></tr>`
+   const base=baseUnitCost(),top=toppingUnitCost(p.code),lab=laborUnitCost()+productEditionExtraLaborCost(p),raw=base+top+lab,waste=raw*((Number(db.settings.wasteRate)||0)+productEditionExtraWasteRate(p)),c=calculatedProductCost(p),profit=(Number(p.price)||0)-c,m=p.price?profit/p.price:0,minp=minPriceForMargin(c);
+   const designation=normalizeProductAvailabilityV1244(p)==='edition'?'Edição Especial':p.category;
+   return `<tr><td>${p.name}</td><td>${designation}</td><td>${euro(base)}</td><td>${euro(top)}</td><td>${euro(lab)}</td><td>${euro(waste)}</td><td><strong>${euro(c)}</strong></td><td>${euro(p.price)}</td><td>${euro(profit)}</td><td><span class="badge ${m>=(db.settings.minMargin||.65)?'ok':'warn'}">${pct(m)}</span></td><td>${euro(minp)}</td></tr>`
  }).join('');
  costLaborRate.value=db.settings.laborRate||0;costLaborMinutes.value=db.settings.laborMinutes||0;costWasteRate.value=db.settings.wasteRate||0;costYield.value=db.settings.yield||28;
  costPackagingBody.innerHTML=(db.packaging||[]).map(x=>`<tr><td>${x.name}</td><td>${x.capacity} un.</td><td>${euro(x.cost)}</td><td>${euro(x.capacity?x.cost/x.capacity:0)}</td></tr>`).join('');
