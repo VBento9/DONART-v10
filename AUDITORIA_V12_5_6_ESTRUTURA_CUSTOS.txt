@@ -1,0 +1,19 @@
+DONART V12.5.6 — ESTRUTURA CUSTOS E MARGEM
+
+Alteração exclusivamente visual/estrutural no HTML da caixa Custos e margem:
+- Linha 1: Margem mínima | Margem alvo | Arredondamento PVP.
+- Faixa própria para explicação do PVP recomendado.
+- Linha 2: Mão de obra €/hora | Desperdício % | Minutos mão de obra/lote.
+- Resumo settingsCostPreview mantido e alinhado numa linha própria.
+- Botão Guardar custos mantido.
+
+Preservado:
+- Mesmos IDs de todos os inputs.
+- Mesmas funções e cálculos.
+- saveSettings idêntica à V12.5.5.
+- Botão Ficha Técnica idêntico à V12.5.5.
+- Produção, stock, encomendas, estados e sincronização Cloud idênticos.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs críticos únicos.
