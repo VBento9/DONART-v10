@@ -1,0 +1,27 @@
+DONART V12.4.4 — PRODUTOS EXCLUSIVOS DE EDIÇÕES
+
+Novo:
+- Disponibilidade do produto: Catálogo regular / Exclusivo de Edição Especial.
+- Catálogo regular mantém Classic, Special e Premium.
+- Exclusivo de Edição Especial permite selecionar uma edição já existente.
+- Produtos antigos continuam automaticamente como Catálogo regular.
+- O controlo Disponível no Mix permanece independente.
+- Produto exclusivo pode continuar autorizado no Mix.
+- A edição não é recriada no formulário de Produto.
+- Dados novos: availabilityType, editionExclusive, editionId.
+
+Preservado:
+- Campos e produtos existentes.
+- Associação e módulo Edições Especiais.
+- Mix V12.4.3.
+- Cloud/Supabase relacional.
+- Encomendas, produção, stock, compras, caixa, clientes, relatórios.
+- Eliminações permanentes.
+- Entregas/capacidade.
+- Backup.
+- Sem PIN.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
+- Funções críticas: OK.

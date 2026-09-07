@@ -1190,7 +1190,7 @@
  .dashboard-ops-pill{padding:7px 10px;font-size:8px}
 }
 
-/* DONART V12.4.3 — Gestão do Mix de Sabores */
+/* DONART V12.4.4 — Gestão do Mix de Sabores */
 .mix-toggle{background:#fff5f8;border-color:#f0d3de}
 .mix-help{display:block;margin-top:5px;font-size:8px;line-height:1.35;color:#8b746c}
 .mix-admin-note{
@@ -1210,6 +1210,11 @@
  background:#faf6f4;border:1px solid #eee4df;color:#745e56
 }
 
+
+/* DONART V12.4.4 — produto regular vs exclusivo de edição */
+#prodEditionField{background:#fff9f2;border-radius:12px;padding:8px 10px}
+#prodAvailability{font-weight:750}
+
 </style>
 </head>
 <body>
@@ -1225,9 +1230,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.3 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.4.4 · Eliminação Definitiva de Clientes · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.3</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.4.4</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -2117,7 +2122,9 @@
       </div>
       <div class="form-grid">
         <div class="field span2"><label>Nome</label><input id="prodName" placeholder="Nome do sabor"></div>
-        <div class="field"><label>Categoria</label><select id="prodCat"><option>Classic</option><option>Special</option><option>Premium</option></select></div>
+        <div class="field"><label>Disponibilidade</label><select id="prodAvailability" onchange="updateProductAvailabilityUI()"><option value="regular">Catálogo regular</option><option value="edition">Exclusivo de Edição Especial</option></select></div>
+        <div class="field" id="prodCategoryField"><label>Categoria</label><select id="prodCat"><option>Classic</option><option>Special</option><option>Premium</option></select></div>
+        <div class="field" id="prodEditionField" style="display:none"><label>Edição Especial</label><select id="prodEditionId"><option value="">Seleciona uma edição</option></select><small class="mix-help">Usa as Edições Especiais já criadas na app. Não é criada uma nova edição aqui.</small></div>
         <div class="field"><label>Código</label><input id="prodCode" placeholder="Ex.: P006"></div>
         <div class="field"><label>Custo/un. automático</label><input id="prodCost" type="number" step="0.0001" readonly style="background:#DDF4D2"></div>
         <div class="field"><label>PVP/un.</label><input id="prodPrice" type="number" step="0.01"></div>
@@ -4311,19 +4318,53 @@ function parseMixBoxCaps(v){
 function formatMixBoxCaps(v){
  return Array.isArray(v)?v.join(', '):''
 }
+
+function productEditionListV1244(){
+ const candidates=[
+   db.specialEditions,db.shopSpecialEditions,db.editions,db.special_editions
+ ].find(Array.isArray)||[];
+ return candidates
+}
+function editionIdV1244(e){return String(e?.id??e?.slug??e?.code??e?.name??'')}
+function editionNameV1244(e){return String(e?.name??e?.title??e?.slug??e?.id??'Edição')}
+function fillProductEditionOptionsV1244(selected=''){
+ const sel=document.getElementById('prodEditionId');if(!sel)return;
+ const current=String(selected||sel.value||'');
+ const list=productEditionListV1244();
+ sel.innerHTML='<option value="">Seleciona uma edição</option>'+list.map(e=>`<option value="${escapeHtml(editionIdV1244(e))}">${escapeHtml(editionNameV1244(e))}</option>`).join('');
+ if(current)sel.value=current
+}
+function updateProductAvailabilityUI(){
+ const mode=document.getElementById('prodAvailability')?.value||'regular';
+ const cat=document.getElementById('prodCategoryField');
+ const ed=document.getElementById('prodEditionField');
+ if(cat)cat.style.display=mode==='edition'?'none':'';
+ if(ed)ed.style.display=mode==='edition'?'':'none';
+ if(mode==='edition')fillProductEditionOptionsV1244()
+}
+function normalizeProductAvailabilityV1244(p){
+ // Backward compatible: every existing product remains regular unless explicitly marked edition-exclusive.
+ return p?.availabilityType==='edition'||p?.editionExclusive===true?'edition':'regular'
+}
 function saveProduct(){
  const code=prodCode.value.trim()||('X'+String(db.products.length+1).padStart(3,'0')),name=prodName.value.trim();if(!name)return toast('Indique o nome do produto');
  const existing=db.products.find(x=>x.code===code);
  const mixVisible=!!document.getElementById('prodMixVisible')?.checked;
  const mixMaxQty=Math.max(0,Math.round(Number(document.getElementById('prodMixMaxQty')?.value)||0));
  const mixBoxCapacities=parseMixBoxCaps(document.getElementById('prodMixBoxCaps')?.value||'');
- const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:(document.getElementById('prodShopImageUrl')?.value||existing?.shopImageUrl||'').trim(),mixVisible,mixMaxQty,mixBoxCapacities};
+ const availabilityType=document.getElementById('prodAvailability')?.value==='edition'?'edition':'regular';
+ const editionId=availabilityType==='edition'?String(document.getElementById('prodEditionId')?.value||''):'';
+ if(availabilityType==='edition'&&!editionId)return toast('Seleciona a Edição Especial deste produto');
+ const obj={code,name,category:prodCat.value,cost:0,price:+prodPrice.value||0,shopVisible:!!prodShopVisible.checked,shopDescription:prodShopDescription.value.trim(),shopImageUrl:(document.getElementById('prodShopImageUrl')?.value||existing?.shopImageUrl||'').trim(),mixVisible,mixMaxQty,mixBoxCapacities,availabilityType,editionExclusive:availabilityType==='edition',editionId};
  existing?Object.assign(existing,obj):db.products.push(obj);
  if(!db.productRecipes[code])db.productRecipes[code]=[];
  save();prodName.value=prodCode.value=prodPrice.value=prodShopDescription.value='';prodShopVisible.checked=false;
  const mv=document.getElementById('prodMixVisible');if(mv)mv.checked=false;
  const mm=document.getElementById('prodMixMaxQty');if(mm)mm.value='0';
  const mb=document.getElementById('prodMixBoxCaps');if(mb)mb.value='';
+ const av=document.getElementById('prodAvailability');if(av)av.value='regular';
+ const ei=document.getElementById('prodEditionId');if(ei)ei.value='';
+ updateProductAvailabilityUI();
  setProductShopImagePreview('');const f=document.getElementById('prodShopImageFile');if(f)f.value='';toast('Produto guardado')
 }
 function editProduct(code){
@@ -4332,9 +4373,13 @@ function editProduct(code){
  const mv=document.getElementById('prodMixVisible');if(mv)mv.checked=!!p.mixVisible;
  const mm=document.getElementById('prodMixMaxQty');if(mm)mm.value=Number(p.mixMaxQty)||0;
  const mb=document.getElementById('prodMixBoxCaps');if(mb)mb.value=formatMixBoxCaps(p.mixBoxCapacities);
+ const av=document.getElementById('prodAvailability');if(av)av.value=normalizeProductAvailabilityV1244(p);
+ fillProductEditionOptionsV1244(p.editionId||'');updateProductAvailabilityUI();
+ if(av&&av.value==='edition')fillProductEditionOptionsV1244(p.editionId||'');
  setProductShopImagePreview(p.shopImageUrl||'');const f=document.getElementById('prodShopImageFile');if(f)f.value='';window.scrollTo({top:0,behavior:'smooth'})
 }
 function renderProducts(){
+ fillProductEditionOptionsV1244();updateProductAvailabilityUI();
  const all=Array.isArray(db.products)?db.products:[];
  const minMargin=Number(db.settings.minMargin)||.65;
  const published=all.filter(p=>p.shopVisible).length;
@@ -4383,6 +4428,7 @@ function renderProducts(){
          <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end">
            <span class="badge ${p.shopVisible?'ok':'warn'}">${p.shopVisible?'Publicado':'Oculto'}</span>
            <span class="badge product-mix-badge ${p.mixVisible?'':'off'}">${p.mixVisible?'Mix ✓':'Fora do Mix'}</span>
+           ${normalizeProductAvailabilityV1244(p)==='edition'?`<span class="badge">✨ ${escapeHtml(editionNameV1244(productEditionListV1244().find(e=>editionIdV1244(e)===String(p.editionId))||{name:'Edição Especial'}))}</span>`:''}
          </div>
        </div>
        ${p.shopDescription?`<p>${escapeHtml(p.shopDescription)}</p>`:''}
