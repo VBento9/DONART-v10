@@ -1,0 +1,17 @@
+DONART V12.4.7 — DESIGNACAO VISUAL DE PRODUTOS EXCLUSIVOS
+
+Alteracao:
+- Produtos com Disponibilidade = Exclusivo de Edicao Especial deixam de mostrar Classic/Special/Premium no cartao.
+- Passam a mostrar "Edicao Especial" como designacao principal.
+- A edicao associada (ex.: Natal 2026) continua visivel como badge proprio.
+- Produtos de catalogo regular continuam a mostrar Classic / Special / Premium normalmente.
+
+Preservado:
+- Campo category interno permanece intacto por compatibilidade.
+- Nenhum calculo, preco, margem, stock, producao, encomenda, Cloud, Mix, catalogo, edicoes, clientes, relatorios, entregas ou backup foi alterado.
+- A ligacao ao Natal 2026 e restantes Edicoes Especiais permanece igual a V12.4.6.
+
+Validacao:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
+- Funcoes criticas: presentes.
