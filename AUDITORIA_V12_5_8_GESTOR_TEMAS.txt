@@ -1,0 +1,28 @@
+DONART V12.5.8 — GESTOR DE TEMAS
+
+Novo em Catálogos > Criador de Caixas:
+- Estilos / Temas passa a Gestor de Temas.
+- Nome do tema.
+- Ícone/emoji.
+- Família: Infantil, Floral & Elegante, Desporto, Gaming & Diversão, Animais, Personagens & Inspirações, Celebrações, Outros.
+- Ocasiões sugeridas através de pills.
+- Ativo/inativo.
+- Adicionar e remover tema.
+- Sugestão automática de família/emoji para vários nomes conhecidos.
+
+Compatibilidade:
+- `styles` continua string[] apenas com temas ativos, preservando a loja atual.
+- Novo `themeOptions` contém dados ricos.
+- Formato antigo é convertido no editor sem exigir migração.
+- Se o RPC atual ainda remover `themeOptions`, a app preserva-o localmente; nenhuma RPC/tabela foi substituída.
+
+Preservado:
+- V12.5.7 cores visuais.
+- Criador, preços e personalizações.
+- Ficha Técnica, PVP e custos.
+- Produção, stock, encomendas, estados e sincronização.
+
+Validação técnica:
+- JavaScript node --check OK.
+- Sem IDs duplicados.
+- Funções críticas de produção/status/sync/saveSettings idênticas à V12.5.7.
