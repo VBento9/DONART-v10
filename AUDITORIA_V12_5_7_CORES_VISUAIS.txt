@@ -1,0 +1,28 @@
+DONART V12.5.7 — CORES VISUAIS NO CRIADOR DE CAIXAS
+
+Novo:
+- Cores disponíveis deixa de ser apenas uma caixa de texto visível.
+- Cada cor tem Nome + amostra visual + seletor manual.
+- Botão + Adicionar cor.
+- Botão × para remover.
+- Nomes comuns sugerem automaticamente uma tonalidade:
+  Verde, Rosa, Azul, Vermelho, Dourado, Amarelo, Laranja, Lilás, etc.
+- A tonalidade pode sempre ser alterada manualmente.
+
+Compatibilidade:
+- `colors` continua a ser guardado como array de nomes (string[]) para não quebrar a loja atual.
+- Novo campo paralelo `colorOptions` guarda [{name,hex}].
+- Formato antigo continua suportado e é convertido visualmente na app.
+- A futura versão da loja poderá ler `colorOptions` para mostrar a cor real, com fallback para `colors`.
+
+Preservado:
+- Ocasiões, temas, personalizações e preços do Criador.
+- Produto -> Ficha Técnica.
+- Custos/PVP.
+- Produção, stock, encomendas, estados e Cloud/sincronização.
+- Nenhuma tabela/RPC foi substituída.
+
+Validação:
+- JavaScript node --check: OK.
+- IDs duplicados: nenhum.
+- Funções críticas de produção/status/sync idênticas à V12.5.6.
