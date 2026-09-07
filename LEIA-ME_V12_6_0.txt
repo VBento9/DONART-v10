@@ -1,0 +1,4 @@
+DONART V12.6.0
+Melhoria visual do Criador de Caixas.
+Pacote limpo para publicação: sem auditorias acumuladas.
+Funcionalidade de temas, cores, produção, stock, encomendas e Cloud preservada.
