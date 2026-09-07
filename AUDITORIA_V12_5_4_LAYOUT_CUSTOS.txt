@@ -1,0 +1,6 @@
+DONART V12.5.4 — LAYOUT CUSTOS E MARGEM
+Alteração exclusivamente CSS/visual na secção Configuração > Custos e margem.
+Objetivo: uniformizar alturas, labels, inputs e espaçamentos de Margem mínima, Margem alvo, Arredondamento PVP, Mão de obra, Desperdício e indicadores.
+Nenhuma fórmula, valor, gravação, produção, stock, encomenda, Cloud ou PVP foi alterado.
+Botão Produto -> Ficha Técnica validado na V12.5.3 e função preservada sem alteração.
+JavaScript node --check: OK.
