@@ -1722,7 +1722,7 @@
 }
 
 
-/* V12.6.15 rebuild — surgical creator styles only */
+/* V12.6.16 rebuild — surgical creator styles only */
 /* DONART V12.6.7 — gestor visual de Ocasiões */
 .creator-occasions-v1267{min-width:0!important}
 .creator-occasion-head-v1267{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
@@ -1795,7 +1795,7 @@
 }
 
 
-/* DONART V12.6.15 — associação Tema ↔ Ocasiões explícita */
+/* DONART V12.6.16 — associação Tema ↔ Ocasiões explícita */
 .creator-theme-occasions-v1258{background:#fcfaf9!important;border:1px solid #eadfd9!important;border-top:1px solid #eadfd9!important;border-radius:10px!important;padding:9px 10px!important}
 .creator-theme-occasions-v1258>strong{display:block;font-size:8.5px;color:#40312b;margin-bottom:2px}
 .creator-theme-occasions-v1258>small{display:block;font-size:7px!important;color:#8a7a72;margin-bottom:6px}
@@ -1834,9 +1834,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.15 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.16 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.15</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.16</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -2743,9 +2743,9 @@
       </div>
       <div class="form-grid">
         <div class="field span2"><label>Nome</label><input id="prodName" placeholder="Nome do sabor"></div>
-        <div class="field"><label>Disponibilidade</label><select id="prodAvailability" onchange="updateProductAvailabilityUI()"><option value="regular">Catálogo regular</option><option value="edition">Exclusivo de Edição Especial</option></select></div>
+        <div class="field"><label>Disponibilidade na loja</label><select id="prodAvailability" onchange="updateProductAvailabilityUI()"><option value="regular">Todo o ano</option><option value="edition">Apenas durante uma Edição Especial</option></select><small class="mix-help">“Todo o ano” mantém o produto no catálogo normal. “Apenas durante uma Edição Especial” mostra-o somente quando a edição escolhida estiver ativa e dentro das datas.</small></div>
         <div class="field" id="prodCategoryField"><label>Categoria</label><select id="prodCat"><option>Classic</option><option>Special</option><option>Premium</option></select></div>
-        <div class="field" id="prodEditionField" style="display:none"><label>Edição Especial</label><div class="edition-select-row"><select id="prodEditionId"><option value="">Seleciona uma edição</option></select><button type="button" class="btn ghost" onclick="loadProductEditionsV1245(true).then(list=>{fillProductEditionOptionsV1244();toast(list.length?'Edições atualizadas':'Nenhuma edição disponível')})">Atualizar</button></div><small class="mix-help">Usa as Edições Especiais já criadas na app. Não é criada uma nova edição aqui.</small></div>
+        <div class="field" id="prodEditionField" style="display:none"><label>Edição Especial</label><div class="edition-select-row"><select id="prodEditionId"><option value="">Seleciona uma edição</option></select><button type="button" class="btn ghost" onclick="loadProductEditionsV1245(true).then(list=>{fillProductEditionOptionsV1244();toast(list.length?'Edições atualizadas':'Nenhuma edição disponível')})">Atualizar</button></div><small class="mix-help">Seleciona a edição que controla as datas deste produto. Fora desse período, o produto não deve aparecer na loja.</small></div>
         <div class="field edition-cost-field" id="prodEditionLaborField" style="display:none"><label>Tempo extra por unidade</label><div class="edition-cost-input"><input id="prodEditionExtraLaborMinutes" type="number" min="0" step="0.1" value="0"><span>min</span></div><small class="mix-help">Só o tempo adicional desta edição. O custo é calculado com a mão de obra €/hora já definida na app.</small></div>
         <div class="field edition-cost-field" id="prodEditionWasteField" style="display:none"><label>Desperdício extra da edição</label><div class="edition-cost-input"><input id="prodEditionExtraWastePct" type="number" min="0" step="0.1" value="0"><span>%</span></div><small class="mix-help">Acrescenta-se ao desperdício geral apenas neste produto. Usa 0 se não houver diferença.</small></div>
         <div class="field span2 edition-cost-note" id="prodEditionCostNote" style="display:none"><strong>💶 Custo real da edição</strong><span>Ingredientes e decoração continuam a ser registados na ficha técnica do produto. Aqui só acrescentamos o tempo e desperdício extra específicos desta edição. O PVP continua totalmente manual.</span></div><div class="field span2 product-techsheet-v1250" id="prodTechSheetBridge" style="display:none"><div class="product-techsheet-head-v1250"><div><strong>🧾 Ficha Técnica</strong><span id="prodTechSheetStatus">Ficha técnica do produto</span></div><button type="button" class="btn ghost" id="prodTechSheetBtn" onclick="openProductTechSheetV1250()">Abrir Ficha Técnica</button></div><div class="product-techsheet-stats-v1250"><div><span>Ingredientes específicos</span><strong id="prodTechSheetIngredientCount">—</strong></div><div><span>Custo calculado</span><strong id="prodTechSheetCost">—</strong></div><div><span>PVP recomendado</span><strong id="prodTechSheetRecommended">—</strong></div></div></div>
@@ -5495,7 +5495,7 @@ function addCreatorThemeRowV1258(data={},focus=true){
    if(!familyManual)familySelect.value=creatorThemeDefaultFamilyV1258(nameInput.value);
    const st=row.querySelector('.creator-theme-summary-main-v1264 strong'),sf=row.querySelector('.creator-theme-summary-main-v1264 small'),si=row.querySelector('.creator-theme-summary-main-v1264>span');
    if(st)st.textContent=nameInput.value||'Novo tema'; if(sf)sf.textContent=familySelect.value||'Outros'; if(si)si.textContent=iconInput.value||'✨';
-   // V12.6.15: durante a escrita, apenas atualizar o estado/localStorage.
+   // V12.6.16: durante a escrita, apenas atualizar o estado/localStorage.
    // Não iniciar timers Cloud, porque respostas assíncronas podem retirar o foco no teclado móvel.
    const s=boxCreatorSettings(); s.themeOptions=syncCreatorThemesV1258(); s.styles=s.themeOptions.filter(o=>o.active).map(o=>o.name); localStorage.setItem(KEY,JSON.stringify(db));
  });
@@ -5606,7 +5606,7 @@ function commitCreatorThemesV12612(debounceCloud=true){
  const s=boxCreatorSettings();
  s.themeOptions=syncCreatorThemesV1258();
  s.styles=s.themeOptions.filter(o=>o.active).map(o=>o.name);
- // V12.6.15: persistir sem renderAll(), para não destruir o input em edição
+ // V12.6.16: persistir sem renderAll(), para não destruir o input em edição
  // e assim preservar foco/teclado enquanto o utilizador escreve.
  saveCreatorWithoutRenderV12614();
  if(debounceCloud)scheduleBoxCreatorCloudV12612();
@@ -5830,7 +5830,7 @@ function renderSpecialEditionProductPicker(selected=[]){
      <input data-role="include" type="checkbox" value="${safeId}" ${checked} onchange="syncSpecialExclusiveState('${safeId}')">
      ${img?`<img src="${escapeHtml(img)}" alt="">`:`<div style="width:42px;height:42px;display:grid;place-items:center;background:#f5efeb;border-radius:9px">🍩</div>`}
      <span><b>${escapeHtml(p.name)}</b><small>${escapeHtml(p.category||'DONART')} · ${euro(p.price)}</small></span>
-     <label class="special-product-exclusive"><input data-role="exclusive" data-product-id="${safeId}" type="checkbox" ${exclusive} ${checked?'':'disabled'}> Exclusivo desta edição — não mostrar em “Sabores”</label>
+     <label class="special-product-exclusive"><input data-role="exclusive" data-product-id="${safeId}" type="checkbox" ${exclusive} ${checked?'':'disabled'}> Apenas nesta edição — fora das datas não aparece na loja</label>
    </div>`;
  }).join('');
 }
