@@ -1722,7 +1722,7 @@
 }
 
 
-/* V12.6.10 rebuild — surgical creator styles only */
+/* V12.6.12 rebuild — surgical creator styles only */
 /* DONART V12.6.7 — gestor visual de Ocasiões */
 .creator-occasions-v1267{min-width:0!important}
 .creator-occasion-head-v1267{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
@@ -1826,9 +1826,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.10 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.12 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.10</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.12</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <section id="dashboard" class="screen active">
@@ -2903,7 +2903,8 @@
 </dialog>
 <dialog id="stockDialog" style="border:0;border-radius:20px;padding:0;max-width:820px;width:92%;box-shadow:0 25px 80px rgba(0,0,0,.35)"><div class="card" style="box-shadow:none;border:0"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="stockDialogTitle" style="margin:0">Histórico de stock</h2><button class="btn" onclick="stockDialog.close()">Fechar</button></div><div id="stockHistoryDetail" style="margin-top:12px"></div></div></dialog>
 <div id="toast" class="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 document.addEventListener('input',e=>{
  if(e.target?.id==='creatorColorNameV1261'){
    const h=document.getElementById('creatorColorHexV1261');if(h)h.value=creatorColorHexGuessV1257(e.target.value);
@@ -2912,8 +2913,7 @@ document.addEventListener('input',e=>{
  if(e.target?.id==='creatorColorHexV1261')updateCreatorColorPreviewV1261()
 });
 
-</script>
-<script>
+
 const SEED={"products":[{"code":"C001","name":"Chocolate","category":"Classic","cost":0.27,"price":0.7},{"code":"C002","name":"Chocolate Branco","category":"Classic","cost":0.31,"price":0.7},{"code":"C003","name":"Açúcar & Canela","category":"Classic","cost":0.13,"price":0.7},{"code":"S001","name":"Choco Chips","category":"Special","cost":0.3,"price":1.0},{"code":"S002","name":"Sprinkles","category":"Special","cost":0.33,"price":1.0},{"code":"S003","name":"Mini Pintarolas","category":"Special","cost":0.3,"price":1.0},{"code":"S004","name":"Granulado Chocolate","category":"Special","cost":0.3,"price":1.0},{"code":"P001","name":"Kinder Dream","category":"Premium","cost":0.33,"price":1.1},{"code":"P002","name":"Oreo White","category":"Premium","cost":0.37,"price":1.1},{"code":"P003","name":"Lotus Caramel","category":"Premium","cost":0.37,"price":1.1},{"code":"P004","name":"Pistachio Crunch","category":"Premium","cost":0.37,"price":1.1}],"recipe":[{"name":"Farinha T55","qty":200,"unit":"g"},{"name":"Açúcar","qty":70,"unit":"g"},{"name":"Fermento Royal","qty":8,"unit":"g"},{"name":"Sal","qty":1,"unit":"g"},{"name":"Ovo M","qty":1,"unit":"un"},{"name":"Leite meio-gordo","qty":160,"unit":"ml"},{"name":"Manteiga sem sal","qty":40,"unit":"g"},{"name":"Essência de baunilha","qty":5,"unit":"ml"}],"yield":28,"minMargin":0.65,"businessName":"DONART"};
 const KEY='donart_v9_app_state', SEC='donart_v9_security', LAST='donart_v9_last_backup', BACKUP_META='donart_v9_backup_meta', RESTORE_SAFETY='donart_v9_pre_restore', CLOUD_SAFETY='donart_v9_pre_cloud_apply';
 const CLOUD_V91_MIGRATION='donart_v91_clean_start', CLOUD_CFG='donart_v9_cloud_config', CLOUD_META='donart_v9_cloud_meta', CLOUD_TABLE='donart_v9_state', CLOUD_SHADOW='donart_v9_cloud_shadow', CLOUD_LOG='donart_v9_cloud_log', DEVICE_KEY='donart_v9_device_id';
@@ -5382,11 +5382,11 @@ function saveCreatorColorEditorV1261(){
  const opts=creatorColorOptionsV1257(),item={name,hex:String(h?.value||creatorColorHexGuessV1257(name)).toUpperCase()};
  if(creatorColorEditIndexV1261>=0)opts[creatorColorEditIndexV1261]=item;else opts.push(item);
  const s=boxCreatorSettings();s.colorOptions=opts;s.colors=opts.map(o=>o.name);
- closeCreatorColorEditorV1261();renderCreatorColorsV1257()
+ closeCreatorColorEditorV1261();renderCreatorColorsV1257();save();persistBoxCreatorCloudV12612()
 }
 function removeCreatorColorV1261(index){
  const opts=creatorColorOptionsV1257();opts.splice(index,1);
- const s=boxCreatorSettings();s.colorOptions=opts;s.colors=opts.map(o=>o.name);renderCreatorColorsV1257()
+ const s=boxCreatorSettings();s.colorOptions=opts;s.colors=opts.map(o=>o.name);renderCreatorColorsV1257();save();persistBoxCreatorCloudV12612()
 }
 function syncCreatorColorsV1257(){
  const s=boxCreatorSettings(),opts=creatorColorOptionsV1257(s);
@@ -5474,7 +5474,7 @@ function addCreatorThemeRowV1258(data={},focus=true){
  row.insertBefore(compact,row.firstChild);
  const editBtn=compact.querySelector('button');
  const setEditing=(on)=>{row.classList.toggle('editing-v1264',!!on);editBtn.textContent=on?'Fechar':'Editar'};
- editBtn.addEventListener('click',()=>setEditing(!row.classList.contains('editing-v1264')));
+ editBtn.addEventListener('click',()=>{const closing=row.classList.contains('editing-v1264');setEditing(!closing);if(closing){commitCreatorThemesV12612(false);persistBoxCreatorCloudV12612()}});
 
  const nameInput=row.querySelector('.creator-theme-name-v1258'),iconInput=row.querySelector('.creator-theme-icon-v1258'),familySelect=row.querySelector('.creator-theme-family-v1258');
  let iconManual=!!o.icon, familyManual=!!o.family;
@@ -5483,12 +5483,12 @@ function addCreatorThemeRowV1258(data={},focus=true){
    if(!familyManual)familySelect.value=creatorThemeDefaultFamilyV1258(nameInput.value);
    const st=row.querySelector('.creator-theme-summary-main-v1264 strong'),sf=row.querySelector('.creator-theme-summary-main-v1264 small'),si=row.querySelector('.creator-theme-summary-main-v1264>span');
    if(st)st.textContent=nameInput.value||'Novo tema'; if(sf)sf.textContent=familySelect.value||'Outros'; if(si)si.textContent=iconInput.value||'✨';
-   syncCreatorThemesV1258()
+   commitCreatorThemesV12612(true)
  });
- iconInput.addEventListener('input',()=>{iconManual=true;const si=row.querySelector('.creator-theme-summary-main-v1264>span');if(si)si.textContent=iconInput.value||'✨';syncCreatorThemesV1258()});
- familySelect.addEventListener('change',()=>{familyManual=true;const sf=row.querySelector('.creator-theme-summary-main-v1264 small');if(sf)sf.textContent=familySelect.value||'Outros';syncCreatorThemesV1258()});
- row.querySelectorAll('input[type=checkbox]').forEach(e=>e.addEventListener('change',()=>{const state=row.querySelector('.creator-theme-state-v1264'),active=row.querySelector('.creator-theme-active-v1258 input');if(state&&active)state.textContent=active.checked?'Ativo':'Inativo';syncCreatorThemesV1258()}));
- row.querySelector('.creator-theme-remove-v1258').addEventListener('click',()=>{row.remove();syncCreatorThemesV1258()});
+ iconInput.addEventListener('input',()=>{iconManual=true;const si=row.querySelector('.creator-theme-summary-main-v1264>span');if(si)si.textContent=iconInput.value||'✨';commitCreatorThemesV12612(true)});
+ familySelect.addEventListener('change',()=>{familyManual=true;const sf=row.querySelector('.creator-theme-summary-main-v1264 small');if(sf)sf.textContent=familySelect.value||'Outros';commitCreatorThemesV12612(true)});
+ row.querySelectorAll('input[type=checkbox]').forEach(e=>e.addEventListener('change',()=>{const state=row.querySelector('.creator-theme-state-v1264'),active=row.querySelector('.creator-theme-active-v1258 input');if(state&&active)state.textContent=active.checked?'Ativo':'Inativo';commitCreatorThemesV12612(true)}));
+ row.querySelector('.creator-theme-remove-v1258').addEventListener('click',()=>{row.remove();commitCreatorThemesV12612(false);persistBoxCreatorCloudV12612()});
  root.appendChild(row); if(focus){row.classList.add('editing-v1264');editBtn.textContent='Fechar';nameInput.focus()}
 }
 function syncCreatorThemesV1258(){
@@ -5520,9 +5520,69 @@ function renderCreatorOccasionsV1267(){const root=document.getElementById('creat
 function openCreatorOccasionEditorV1267(index=-1){const opts=creatorOccasionOptionsV1267(),o=index>=0?opts[index]:null;creatorOccasionEditIndexV1267=index;const m=document.getElementById('creatorOccasionModalV1267');if(!m)return;document.getElementById('creatorOccasionDialogTitleV1267').textContent=index>=0?'Editar ocasião':'Adicionar ocasião';document.getElementById('creatorOccasionNameV1267').value=o?.name||'';document.getElementById('creatorOccasionIconV1267').value=o?.icon||'✨';document.getElementById('creatorOccasionActiveV1267').checked=o?.active!==false;document.getElementById('creatorOccasionDeleteV1267').style.display=index>=0?'inline-flex':'none';document.getElementById('creatorOccasionOrderV1267').style.display=index>=0?'flex':'none';updateCreatorOccasionPreviewV1267();m.classList.remove('hidden');setTimeout(()=>document.getElementById('creatorOccasionNameV1267')?.focus(),50)}
 function closeCreatorOccasionEditorV1267(){document.getElementById('creatorOccasionModalV1267')?.classList.add('hidden')}
 function updateCreatorOccasionPreviewV1267(autoIcon=false){const n=document.getElementById('creatorOccasionNameV1267'),i=document.getElementById('creatorOccasionIconV1267');if(autoIcon&&creatorOccasionEditIndexV1267<0)i.value=creatorOccasionIconGuessV1267(n.value);document.getElementById('creatorOccasionPreviewV1267').innerHTML=`<span>${escapeHtml(i.value||'✨')}</span><strong>${escapeHtml(n.value||'Nova ocasião')}</strong>`}
-function saveCreatorOccasionEditorV1267(){const name=String(document.getElementById('creatorOccasionNameV1267')?.value||'').trim(),icon=String(document.getElementById('creatorOccasionIconV1267')?.value||'').trim()||creatorOccasionIconGuessV1267(name),active=!!document.getElementById('creatorOccasionActiveV1267')?.checked;if(!name)return toast('Indica o nome da ocasião');const opts=creatorOccasionOptionsV1267(),duplicate=opts.findIndex((o,i)=>i!==creatorOccasionEditIndexV1267&&creatorOccasionNormalizeV1267(o.name)===creatorOccasionNormalizeV1267(name));if(duplicate>=0)return toast('Essa ocasião já existe');const s=boxCreatorSettings();if(creatorOccasionEditIndexV1267>=0){const oldName=opts[creatorOccasionEditIndexV1267]?.name;opts[creatorOccasionEditIndexV1267]={name,icon,active};if(oldName&&oldName!==name&&Array.isArray(s.themeOptions))s.themeOptions.forEach(t=>{if(Array.isArray(t.occasions))t.occasions=t.occasions.map(x=>x===oldName?name:x)})}else opts.push({name,icon,active});s.occasionOptions=opts;s.occasions=opts.filter(o=>o.active).map(o=>o.name);closeCreatorOccasionEditorV1267();renderCreatorOccasionsV1267();renderCreatorThemesV1258()}
-function deleteCreatorOccasionV1267(){if(creatorOccasionEditIndexV1267<0)return;const opts=creatorOccasionOptionsV1267(),removed=opts[creatorOccasionEditIndexV1267];if(!removed)return;if(!confirm(`Eliminar a ocasião “${removed.name}”?`))return;opts.splice(creatorOccasionEditIndexV1267,1);const s=boxCreatorSettings();s.occasionOptions=opts;s.occasions=opts.filter(o=>o.active).map(o=>o.name);if(Array.isArray(s.themeOptions))s.themeOptions.forEach(t=>{if(Array.isArray(t.occasions))t.occasions=t.occasions.filter(x=>x!==removed.name)});closeCreatorOccasionEditorV1267();renderCreatorOccasionsV1267();renderCreatorThemesV1258()}
-function moveCreatorOccasionV1267(dir){const opts=creatorOccasionOptionsV1267(),i=creatorOccasionEditIndexV1267,j=i+dir;if(i<0||j<0||j>=opts.length)return;[opts[i],opts[j]]=[opts[j],opts[i]];boxCreatorSettings().occasionOptions=opts;creatorOccasionEditIndexV1267=j;renderCreatorOccasionsV1267()}
+function saveCreatorOccasionEditorV1267(){const name=String(document.getElementById('creatorOccasionNameV1267')?.value||'').trim(),icon=String(document.getElementById('creatorOccasionIconV1267')?.value||'').trim()||creatorOccasionIconGuessV1267(name),active=!!document.getElementById('creatorOccasionActiveV1267')?.checked;if(!name)return toast('Indica o nome da ocasião');const opts=creatorOccasionOptionsV1267(),duplicate=opts.findIndex((o,i)=>i!==creatorOccasionEditIndexV1267&&creatorOccasionNormalizeV1267(o.name)===creatorOccasionNormalizeV1267(name));if(duplicate>=0)return toast('Essa ocasião já existe');const s=boxCreatorSettings();if(creatorOccasionEditIndexV1267>=0){const oldName=opts[creatorOccasionEditIndexV1267]?.name;opts[creatorOccasionEditIndexV1267]={name,icon,active};if(oldName&&oldName!==name&&Array.isArray(s.themeOptions))s.themeOptions.forEach(t=>{if(Array.isArray(t.occasions))t.occasions=t.occasions.map(x=>x===oldName?name:x)})}else opts.push({name,icon,active});s.occasionOptions=opts;s.occasions=opts.filter(o=>o.active).map(o=>o.name);closeCreatorOccasionEditorV1267();renderCreatorOccasionsV1267();renderCreatorThemesV1258();save();persistBoxCreatorCloudV12612()}
+function deleteCreatorOccasionV1267(){if(creatorOccasionEditIndexV1267<0)return;const opts=creatorOccasionOptionsV1267(),removed=opts[creatorOccasionEditIndexV1267];if(!removed)return;if(!confirm(`Eliminar a ocasião “${removed.name}”?`))return;opts.splice(creatorOccasionEditIndexV1267,1);const s=boxCreatorSettings();s.occasionOptions=opts;s.occasions=opts.filter(o=>o.active).map(o=>o.name);if(Array.isArray(s.themeOptions))s.themeOptions.forEach(t=>{if(Array.isArray(t.occasions))t.occasions=t.occasions.filter(x=>x!==removed.name)});closeCreatorOccasionEditorV1267();renderCreatorOccasionsV1267();renderCreatorThemesV1258();save();persistBoxCreatorCloudV12612()}
+function moveCreatorOccasionV1267(dir){const opts=creatorOccasionOptionsV1267(),i=creatorOccasionEditIndexV1267,j=i+dir;if(i<0||j<0||j>=opts.length)return;[opts[i],opts[j]]=[opts[j],opts[i]];boxCreatorSettings().occasionOptions=opts;creatorOccasionEditIndexV1267=j;renderCreatorOccasionsV1267();save();persistBoxCreatorCloudV12612()}
+let creatorCloudQueueV12612=Promise.resolve();
+let creatorCloudTimerV12612=null;
+function boxCreatorCloudPayloadV12612(s=boxCreatorSettings()){
+ return {
+  enabled:!!s.enabled,
+  baseExtra:Math.max(0,Number(s.baseExtra)||0),
+  priceName:Math.max(0,Number(s.priceName)||0),
+  priceDate:Math.max(0,Number(s.priceDate)||0),
+  priceMessage:Math.max(0,Number(s.priceMessage)||0),
+  priceRibbon:Math.max(0,Number(s.priceRibbon)||0),
+  ribbonPersonalized:!!s.ribbonPersonalized,
+  priceRibbonPersonalized:Math.max(0,Number(s.priceRibbonPersonalized)||0),
+  ribbonMaxChars:Math.min(100,Math.max(1,Math.round(Number(s.ribbonMaxChars)||25))),
+  priceLabel:Math.max(0,Number(s.priceLabel)||0),
+  priceCard:Math.max(0,Number(s.priceCard)||0),
+  occasions:[...(s.occasions||[])],
+  occasionOptions:(s.occasionOptions||[]).map(o=>({name:String(o.name||'').trim(),icon:String(o.icon||creatorOccasionIconGuessV1267(o.name)).trim()||'✨',active:o.active!==false})).filter(o=>o.name),
+  styles:[...(s.styles||[])],
+  themeOptions:(s.themeOptions||[]).map(o=>({name:String(o.name||'').trim(),family:String(o.family||'Outros').trim(),icon:String(o.icon||'✨').trim()||'✨',occasions:Array.isArray(o.occasions)?o.occasions.map(x=>String(x).trim()).filter(Boolean):[],active:o.active!==false})).filter(o=>o.name),
+  colors:[...(s.colors||[])],
+  colorOptions:(s.colorOptions||[]).map(o=>({name:String(o.name||'').trim(),hex:String(o.hex||creatorColorHexGuessV1257(o.name)).toUpperCase()})).filter(o=>o.name),
+  custom:{...(s.custom||{})}
+ };
+}
+function creatorShopPackagingPayloadV12612(){
+ return (db.packaging||[]).map(p=>({name:String(p.name||'').trim(),capacity:Math.max(0,Number(p.capacity)||0)})).filter(p=>p.name&&p.capacity>0);
+}
+function persistBoxCreatorCloudV12612(showSuccess=false){
+ clearTimeout(creatorCloudTimerV12612);
+ const payload=JSON.parse(JSON.stringify(boxCreatorCloudPayloadV12612()));
+ const packaging=JSON.parse(JSON.stringify(creatorShopPackagingPayloadV12612()));
+ creatorCloudQueueV12612=creatorCloudQueueV12612.catch(()=>{}).then(async()=>{
+  const c=cloudClient;
+  if(!c)throw new Error('Cloud Sync não ligado');
+  const auth=await c.auth.getUser();
+  if(!auth.data?.user)throw new Error('Sessão Cloud não autenticada');
+  const rpc=await c.rpc('donart_save_box_creator_v1',{p_box_creator:payload,p_shop_packaging:packaging});
+  if(rpc.error)throw rpc.error;
+  if(showSuccess)toast('Criador sincronizado com a Cloud');
+  return true;
+ }).catch(e=>{
+  console.error('boxCreator immediate rpc',e);
+  toast('Alteração guardada no dispositivo; falhou sincronização Cloud');
+  return false;
+ });
+ return creatorCloudQueueV12612;
+}
+function scheduleBoxCreatorCloudV12612(){
+ clearTimeout(creatorCloudTimerV12612);
+ creatorCloudTimerV12612=setTimeout(()=>persistBoxCreatorCloudV12612(false),700);
+}
+function commitCreatorThemesV12612(debounceCloud=true){
+ const s=boxCreatorSettings();
+ s.themeOptions=syncCreatorThemesV1258();
+ s.styles=s.themeOptions.filter(o=>o.active).map(o=>o.name);
+ save();
+ if(debounceCloud)scheduleBoxCreatorCloudV12612();
+ return s.themeOptions;
+}
+
 function renderBoxCreatorSettings(){
  const s=boxCreatorSettings(), set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v};
  set('creatorOccasions',(s.occasions||[]).join('\n'));renderCreatorOccasionsV1267();set('creatorStyles',(s.styles||[]).map(v=>typeof v==='string'?v:String(v?.name||'')).filter(Boolean).join('\n'));renderCreatorThemesV1258();set('creatorColors',(s.colors||[]).map(v=>typeof v==='string'?v:String(v?.name||'')).filter(Boolean).join('\n'));renderCreatorColorsV1257();
