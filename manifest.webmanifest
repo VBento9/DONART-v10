@@ -1,10 +1,13 @@
 {
-  "name": "DONART Gestão",
+  "name": "DONART Gestão Privada",
   "short_name": "DONART",
-  "start_url": "./?v=12.4.2",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#FFFDF9",
   "theme_color": "#F12473",
+  "lang": "pt-PT",
+  "id": "donart-gestao",
   "icons": [
     {
       "src": "icon-192.png",

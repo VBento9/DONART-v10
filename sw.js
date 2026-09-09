@@ -1,48 +1,7 @@
-const CACHE_NAME='donart-v12-6-19';
-const STATIC_ASSETS=['./icon-192.png','./icon-512.png','./logo-donart-ui.png','./logo-donart.png'];
-
-self.addEventListener('install',event=>{
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache=>cache.addAll(STATIC_ASSETS).catch(()=>{}))
-  );
-});
-
-self.addEventListener('activate',event=>{
-  event.waitUntil((async()=>{
-    const keys=await caches.keys();
-    await Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)));
-    await self.clients.claim();
-  })());
-});
-
-self.addEventListener('fetch',event=>{
-  const req=event.request;
-  if(req.method!=='GET')return;
-
-  const url=new URL(req.url);
-  const isNavigation=req.mode==='navigate' || req.destination==='document' || url.pathname.endsWith('/index.html');
-
-  if(isNavigation){
-    event.respondWith((async()=>{
-      try{
-        return await fetch(req,{cache:'no-store'});
-      }catch(e){
-        const cached=await caches.match(req);
-        if(cached)return cached;
-        return new Response('DONART offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
-      }
-    })());
-    return;
-  }
-
-  if(STATIC_ASSETS.some(a=>url.pathname.endsWith(a.replace('./','/')))){
-    event.respondWith(
-      caches.match(req).then(cached=>cached||fetch(req).then(resp=>{
-        const copy=resp.clone();
-        caches.open(CACHE_NAME).then(cache=>cache.put(req,copy));
-        return resp;
-      }))
-    );
-  }
-});
+const CACHE='donart-v12-6-25-shell';
+const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./logo-donart-ui.png','./logo-donart.png'];
+self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL).catch(()=>{})).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(url.origin!==location.origin)return;event.respondWith(fetch(event.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(event.request,copy)).catch(()=>{});return r}).catch(()=>caches.match(event.request).then(r=>r||caches.match('./index.html'))))});
+self.addEventListener('push',event=>{let data={};try{data=event.data?event.data.json():{}}catch(e){data={body:event.data?.text?.()||'Nova encomenda online'}};const title=data.title||'🍩 Nova encomenda DONART';const options={body:data.body||'Entrou uma nova encomenda na loja.',icon:'./icon-192.png',badge:'./icon-192.png',tag:data.tag||'donart-new-order',renotify:true,data:{url:data.url||'./'},vibrate:[120,60,120]};event.waitUntil(self.registration.showNotification(title,options))});
+self.addEventListener('notificationclick',event=>{event.notification.close();const target=new URL(event.notification.data?.url||'./',self.location.origin).href;event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const c of list){if('focus'in c){c.navigate(target).catch(()=>{});return c.focus()}}return clients.openWindow?clients.openWindow(target):null}))});
