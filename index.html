@@ -1841,7 +1841,7 @@
 /* DONART V12.6.26 — Campanhas Push Marketing */
 .campaign-hero{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}.campaign-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:12px;margin-top:10px}.campaign-card{border:1px solid var(--line)}.campaign-preview{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fff;box-shadow:0 8px 24px rgba(78,45,40,.08)}.campaign-preview-title{font-weight:900;font-size:16px}.campaign-preview-body{margin-top:6px;color:#6e554e;white-space:pre-wrap}.campaign-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.campaign-kpi{padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff}.campaign-kpi b{display:block;font-size:20px}.campaign-history{display:grid;gap:8px;margin-top:10px}.campaign-row{border:1px solid var(--line);border-radius:14px;padding:11px;background:#fff}.campaign-row .row{align-items:center}.campaign-row small{display:block;margin-top:4px}.campaign-status{font-size:11px;font-weight:900;border-radius:999px;padding:5px 8px;background:#eef9fa}.campaign-status.sent{background:#e9f8ef}.campaign-status.failed{background:#fff0f3}.campaign-note{padding:10px 12px;border-radius:12px;background:#fff8e4;font-size:12px;color:#6f584f;margin-top:9px}@media(max-width:760px){.campaign-grid{grid-template-columns:1fr}.campaign-kpis{grid-template-columns:1fr 1fr}}
 
-/* V12.6.32 — Produção orientada por encomenda e consumo proporcional por donut vendido */
+/* V12.6.33 — Produção orientada por encomenda e consumo proporcional por donut vendido */
 .prod-order-prep-v12632{margin:10px 12px 12px;border:1px solid rgba(88,55,67,.14);border-radius:14px;background:rgba(255,255,255,.62);overflow:hidden}
 .prod-order-prep-v12632 summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;list-style:none;color:#5d3f49}
 .prod-order-prep-v12632 summary::-webkit-details-marker{display:none}
@@ -1850,6 +1850,9 @@
 .prod-order-flavors-v12632 small{opacity:.65}.prod-order-flavors-v12632 strong{font-size:13px;line-height:1.4}
 .prod-order-recipe-v12632{padding:0 14px 12px}.prod-order-recipe-v12632 .prod-line{padding:7px 0}
 @media(max-width:760px){.prod-order-prep-v12632{margin:8px}.prod-order-prep-v12632 summary{padding:10px 12px}.prod-order-recipe-v12632{padding:0 12px 10px}}
+
+/* V12.6.33 — nota operacional discreta; não interfere com cálculo/consumo */
+.prod-operational-hint-v12633{display:block;margin-top:2px;font-size:7.5px!important;line-height:1.25;color:#9a6b55!important;font-weight:600}
 </style>
 </head>
 <body>
@@ -1865,9 +1868,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.32 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.33 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.32</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.33</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -3911,6 +3914,15 @@ function productionFmtQtyV12632(v){
  const n=Number(v)||0;
  return n.toLocaleString('pt-PT',{maximumFractionDigits:2,minimumFractionDigits:Number.isInteger(n)?0:2});
 }
+// V12.6.33 — ajuda operacional sem alterar as quantidades teóricas usadas no stock/custos.
+function productionOperationalHintV12633(name,qty,unit){
+ const n=Number(qty)||0;
+ if(String(name).trim().toLowerCase()==='ovo m' && String(unit||'').trim().toLowerCase()==='un' && n>0 && n<1){
+   const pct=Math.round(n*100);
+   return `<small class="prod-operational-hint-v12633">Sugestão prática: bater 1 ovo e utilizar aproximadamente ${pct}%</small>`;
+ }
+ return '';
+}
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Confirmada','Em produção','Confirmado','Produção'].includes(o.status)&&!done.has(o.id));
@@ -3942,7 +3954,7 @@ function renderProduction(){
  if(po)po.innerHTML=ords.length?ords.map(o=>{
    const c=calcOrder(o),inProd=['Em produção','Produção'].includes(o.status),status=escapeHtml(o.status||'—'),orderNeeds=productionOrderNeedsV12632(o);
    const flavors=(o.items||[]).map(i=>`${escapeHtml(i.name||i.code||'Produto')} × ${Number(i.qty)||0}`).join(' · ');
-   const prep=Object.entries(orderNeeds).filter(([,q])=>Number(q)>0).map(([name,q])=>{const st=stockByName(name);return `<div class="prod-line"><span>${escapeHtml(name)}</span><strong>${productionFmtQtyV12632(q)} ${escapeHtml(st?.unit||'')}</strong></div>`}).join('');
+   const prep=Object.entries(orderNeeds).filter(([,q])=>Number(q)>0).map(([name,q])=>{const st=stockByName(name),unit=st?.unit||'';return `<div class="prod-line"><span>${escapeHtml(name)}${productionOperationalHintV12633(name,q,unit)}</span><strong>${productionFmtQtyV12632(q)} ${escapeHtml(unit)}</strong></div>`}).join('');
    return `<div class="prod-order-card">
      <button class="prod-order-main" onclick="showOrder('${escapeHtml(o.id)}')">
        <span class="prod-order-id"><strong>${escapeHtml(o.id)}</strong><small>${escapeHtml(o.client||'—')}</small></span>
@@ -3956,6 +3968,7 @@ function renderProduction(){
      <details class="prod-order-prep-v12632" open>
        <summary><strong>Preparação desta encomenda</strong><span>${c.qty} donuts</span></summary>
        <div class="prod-order-flavors-v12632"><small>Sabores / produtos</small><strong>${flavors||'—'}</strong></div>
+       <div class="prod-order-flavors-v12632"><small>Massa base</small><strong>Preparar para ${c.qty} donuts · ${productionFmtQtyV12632(c.qty/yieldQty)}× da receita de ${yieldQty}</strong></div>
        <div class="prod-order-recipe-v12632">${prep||'<div class="empty">Sem receita configurada.</div>'}</div>
      </details>
    </div>`;
@@ -3967,7 +3980,7 @@ function renderProduction(){
  const pr=document.getElementById('productionRecipe');
  if(pr)pr.innerHTML=total?`
    <div class="prod-recipe-head"><span>Receita proporcional para ${total} donuts</span><strong>${productionFmtQtyV12632(recipeEquivalent)}× da receita de ${yieldQty}</strong></div>
-   ${SEED.recipe.map(x=>{const q=(Number(x.qty)||0)*(total/yieldQty);return `<div class="prod-line"><span>${escapeHtml(x.name)}</span><strong>${productionFmtQtyV12632(q)} ${escapeHtml(x.unit||'')}</strong></div>`}).join('')}
+   ${SEED.recipe.map(x=>{const q=(Number(x.qty)||0)*(total/yieldQty),unit=x.unit||'';return `<div class="prod-line"><span>${escapeHtml(x.name)}${productionOperationalHintV12633(x.name,q,unit)}</span><strong>${productionFmtQtyV12632(q)} ${escapeHtml(unit)}</strong></div>`}).join('')}
  `:'<div class="empty">Sem preparação necessária.</div>';
 
  const stockBox=document.getElementById('productionStockCheck');
@@ -4438,7 +4451,7 @@ function setOrderStatus(id,status){
  if(!onlineOrderPaymentGuard(o,status)){showOrder(id);return}
  const prev=o.status||'Pedido';
  if(status===prev){showOrder(id);return}
- // V12.6.32 — proteger o consumo de stock: uma encomenda ainda não produzida
+ // V12.6.33 — proteger o consumo de stock: uma encomenda ainda não produzida
  // não pode ser marcada manualmente como Pronta/Entregue. A conclusão deve
  // passar por Produção -> "Concluir produção + descontar stock".
  if(['Pronta','Entregue'].includes(status) && !isOrderProduced(id)){
@@ -4464,7 +4477,7 @@ function setOrderStatus(id,status){
 function focusDeliveryPaymentV12631(id){
  const o=db.orders.find(x=>x.id===id);if(!o)return;
  if(o.status!=='Pronta'){showOrder(id);return}
- // V12.6.32 — o botão superior "Entrega / pagamento" deixou de tentar
+ // V12.6.33 — o botão superior "Entrega / pagamento" deixou de tentar
  // atribuir novamente o estado Pronta (operação sem efeito). Em vez disso,
  // leva diretamente à área real de liquidação/entrega da encomenda.
  showOrder(id);
@@ -5089,7 +5102,7 @@ function ensureCostModel(){
   }
   db.costMeta=db.costMeta||{};
   if(!db.stock.some(x=>x.name==='Canela em pó'))db.stock.push({name:'Canela em pó',qty:0,unit:'g',min:50,unitCost:0});
-  // V12.6.32 — não repor ingredientes apagados pelo utilizador.
+  // V12.6.33 — não repor ingredientes apagados pelo utilizador.
   // A antiga migração forçava Canela em pó em C003 a cada render, tornando impossível removê-la.
   ensureRecordIds();
 }
@@ -5513,7 +5526,7 @@ function renderProducts(){
 
 function populateCostSelectors(){
  if(!document.getElementById('costMaterial'))return;
- // V12.6.32 — preservar seleções ao gravar/recalcular a ficha técnica.
+ // V12.6.33 — preservar seleções ao gravar/recalcular a ficha técnica.
  // save() volta a renderizar a página de Custos; sem esta preservação o produto
  // selecionado regressava a "Selecionar…" após adicionar/atualizar/remover uma linha.
  const prevMaterial=costMaterial.value;
@@ -5595,7 +5608,7 @@ function saveCostSettings(){
 function consumeProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Em produção','Produção'].includes(o.status)&&!done.has(o.id));if(!ords.length)return toast('Sem encomendas em produção para concluir');
- const total=ords.reduce((sum,o)=>sum+calcOrder(o).qty,0),needs=productionBaseNeedsForQtyV12632(total);
+ const total=ords.reduce((sum,o)=>sum+calcOrder(o).qty,0),yieldQty=Math.max(1,Number(db.settings.yield)||28),batches=total/yieldQty,needs=productionBaseNeedsForQtyV12632(total);
  const addNeed=(name,qty)=>needs[name]=(needs[name]||0)+(Number(qty)||0);
  ords.forEach(o=>o.items.forEach(line=>(db.productRecipes[line.code]||[]).forEach(r=>addNeed(r.item,(Number(r.qty)||0)*(Number(line.qty)||0)))));
  const shortages=Object.entries(needs).filter(([name,need])=>{const x=stockByName(name);return !x||(Number(x.qty)||0)+1e-9<need});
