@@ -1820,7 +1820,7 @@
 @media(max-width:650px){.creator-person-row-v1268{grid-template-columns:1fr 1fr}.creator-person-row-v1268>.creator-money{grid-column:1/-1}.creator-ribbon-extra-v1268{grid-template-columns:1fr}.creator-ribbon-extra-v1268>label:last-child{grid-column:auto}.creator-ribbon-extra-v1268>label:last-child input{max-width:none}}
 
 
-/* DONART V12.6.25 — notificações internas de novas encomendas */
+/* DONART V12.6.26 — notificações internas de novas encomendas */
 .order-alert-button-v12624{position:relative;min-width:42px;display:inline-flex;align-items:center;justify-content:center;font-size:17px}
 .order-alert-count-v12624,.nav-order-badge-v12624{position:absolute;display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#F6246D;color:#fff;font-size:10px;font-weight:900;line-height:1;box-shadow:0 2px 8px rgba(246,36,109,.28)}
 .order-alert-count-v12624{top:-6px;right:-6px}.nav-order-badge-v12624{top:5px;right:7px}.hidden.order-alert-count-v12624,.hidden.nav-order-badge-v12624{display:none!important}
@@ -1832,11 +1832,14 @@
 .order-notification-item-v12624:hover{border-color:#F6246D}.order-notification-item-v12624 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}.order-notification-item-v12624 b{font-size:13px}.order-notification-item-v12624 strong{font-size:14px}.order-notification-item-v12624 small{display:block;color:#806e65;margin-top:5px;line-height:1.35}.order-notification-empty-v12624{padding:20px 8px;text-align:center;color:#88766e;font-size:12px}
 @media(max-width:760px){.order-notification-panel-v12624{top:84px;right:8px;width:calc(100vw - 16px);max-height:68vh}.order-alert-button-v12624{min-width:39px;padding:8px 10px}}
 
-/* DONART V12.6.25 — Web Push iPhone/iPad */
+/* DONART V12.6.26 — Web Push iPhone/iPad */
 .push-card-v12625{border:1px solid #eaded8;background:linear-gradient(135deg,#fff,#fff8fb);border-radius:16px;padding:13px;margin-top:10px}
 .push-head-v12625{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.push-head-v12625 strong{display:block;font-size:14px}.push-head-v12625 small{display:block;color:#7f6d65;margin-top:4px;line-height:1.35}
 .push-status-v12625{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:900;background:#f4eee9}.push-status-v12625.ok{background:#dff6ee;color:#176b4f}.push-status-v12625.warn{background:#fff2cc;color:#7f6000}.push-status-v12625.bad{background:#f4cccc;color:#990000}
 .push-actions-v12625{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.push-actions-v12625 .btn{font-size:10px;padding:10px 12px}.push-note-v12625{font-size:10px;color:#806e65;line-height:1.45;margin-top:9px}
+
+/* DONART V12.6.26 — Campanhas Push Marketing */
+.campaign-hero{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}.campaign-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:12px;margin-top:10px}.campaign-card{border:1px solid var(--line)}.campaign-preview{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fff;box-shadow:0 8px 24px rgba(78,45,40,.08)}.campaign-preview-title{font-weight:900;font-size:16px}.campaign-preview-body{margin-top:6px;color:#6e554e;white-space:pre-wrap}.campaign-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.campaign-kpi{padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff}.campaign-kpi b{display:block;font-size:20px}.campaign-history{display:grid;gap:8px;margin-top:10px}.campaign-row{border:1px solid var(--line);border-radius:14px;padding:11px;background:#fff}.campaign-row .row{align-items:center}.campaign-row small{display:block;margin-top:4px}.campaign-status{font-size:11px;font-weight:900;border-radius:999px;padding:5px 8px;background:#eef9fa}.campaign-status.sent{background:#e9f8ef}.campaign-status.failed{background:#fff0f3}.campaign-note{padding:10px 12px;border-radius:12px;background:#fff8e4;font-size:12px;color:#6f584f;margin-top:9px}@media(max-width:760px){.campaign-grid{grid-template-columns:1fr}.campaign-kpis{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -1852,9 +1855,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.25 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.26 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.25</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.26</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -2466,6 +2469,34 @@
       </div>
     </div>
     <div id="specialEditionsGrid" class="special-editions-grid special-editions-grid-pro"></div>
+  </section>
+
+
+  <section id="campaigns" class="screen">
+    <div class="campaign-hero card">
+      <div><div class="section-title" style="margin:0">Notificações & Campanhas</div><p class="muted" style="margin:4px 0 0">Envia promoções, novidades e edições especiais aos clientes que aceitaram receber notificações.</p></div>
+      <div class="btnrow"><button class="btn" onclick="loadCampaignDashboardV12626(true)">Atualizar</button></div>
+    </div>
+    <div id="campaignKpisV12626" class="campaign-kpis"></div>
+    <div class="campaign-grid">
+      <div class="card campaign-card">
+        <div class="section-title">Criar campanha</div>
+        <div class="form-grid">
+          <div class="field span2"><label>Título</label><input id="campaignTitleV12626" maxlength="60" placeholder="Ex.: 🎄 Natal DONART chegou"></div>
+          <div class="field span2"><label>Mensagem</label><textarea id="campaignBodyV12626" maxlength="180" rows="4" placeholder="Ex.: Descobre a nossa edição especial e garante a tua caixa."></textarea></div>
+          <div class="field"><label>Abrir ao tocar</label><select id="campaignDestinationV12626"><option value="home">Início da loja</option><option value="creator">Criador de Caixas</option><option value="special">Edições Especiais</option><option value="catalog">Catálogo</option></select></div>
+          <div class="field"><label>Etiqueta interna</label><input id="campaignLabelV12626" maxlength="40" placeholder="Ex.: Natal 2026"></div>
+        </div>
+        <div class="campaign-note">Marketing e gestão ficam separados: clientes recebem apenas campanhas; os avisos de novas encomendas continuam exclusivos dos dispositivos DONART de administração.</div>
+        <div class="btnrow" style="margin-top:12px"><button class="btn" onclick="sendCampaignTestV12626()">🔔 Testar só nos dispositivos de gestão</button><button class="btn primary" onclick="sendCampaignV12626()">📣 Enviar aos clientes</button></div>
+      </div>
+      <div class="card campaign-card">
+        <div class="section-title">Pré-visualização</div>
+        <div class="campaign-preview"><div id="campaignPreviewTitleV12626" class="campaign-preview-title">🍩 DONART</div><div id="campaignPreviewBodyV12626" class="campaign-preview-body">Escreve uma mensagem para visualizar a notificação.</div></div>
+        <div class="campaign-note">Antes de uma campanha real, usa sempre “Testar só nos dispositivos de gestão”. O envio aos clientes só alcança quem tiver autorizado notificações na loja.</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:10px"><div class="row"><div><div class="section-title" style="margin:0">Histórico</div><small>Últimas campanhas enviadas.</small></div></div><div id="campaignHistoryV12626" class="campaign-history"></div></div>
   </section>
 
   <section id="settings" class="screen">
@@ -3128,10 +3159,10 @@ function installNavKeyboard(){
 
 setTimeout(installNavKeyboard,0);
 
-const pages=[['dashboard','Início'],['sale','Nova venda'],['orders','Encomendas'],['quotes','Orçamentos'],['production','Produção'],['costs','Custos'],['stock','Stock'],['purchases','Compras'],['cash','Caixa'],['clients','Clientes'],['reports','Relatórios'],['products','Produtos'],['catalogs','Catálogos'],['specialEditions','Edições Especiais'],['delivery','Entregas Loja'],['settings','Configuração'],['cloud','Cloud Sync'],['backup','Backup']];
+const pages=[['dashboard','Início'],['sale','Nova venda'],['orders','Encomendas'],['quotes','Orçamentos'],['production','Produção'],['costs','Custos'],['stock','Stock'],['purchases','Compras'],['cash','Caixa'],['clients','Clientes'],['reports','Relatórios'],['products','Produtos'],['catalogs','Catálogos'],['specialEditions','Edições Especiais'],['campaigns','Campanhas'],['delivery','Entregas Loja'],['settings','Configuração'],['cloud','Cloud Sync'],['backup','Backup']];
 const pageIcons={
  dashboard:'🏠',sale:'➕',orders:'🧾',quotes:'📄',production:'🍩',costs:'🧮',stock:'📦',purchases:'🛒',cash:'💶',
- clients:'👥',reports:'📊',products:'🍩',catalogs:'🗂️',specialEditions:'🎉',delivery:'🚚',settings:'⚙️',cloud:'☁️',backup:'💾'
+ clients:'👥',reports:'📊',products:'🍩',catalogs:'🗂️',specialEditions:'🎉',campaigns:'📣',delivery:'🚚',settings:'⚙️',cloud:'☁️',backup:'💾'
 };
 document.getElementById('nav').innerHTML=pages.map(([id,l])=>`<button data-page="${id}" onclick="go('${id}')"><span class="nav-icon">${pageIcons[id]||'•'}</span><span class="nav-label">${l}</span>${id==='orders'?'<span id="navOrderBadgeV12624" class="nav-order-badge-v12624 hidden">0</span>':''}<span class="nav-active-dot"></span></button>`).join('');
 document.getElementById('today').textContent=new Date().toLocaleDateString('pt-PT',{weekday:'short',day:'2-digit',month:'short'});
@@ -3141,7 +3172,7 @@ document.getElementById('dashYear').value=new Date().getFullYear();
 document.getElementById('dashMonth').value=String(new Date().getMonth()+1);
 const $=id=>document.getElementById(id);function euro(v){return(Number(v)||0).toLocaleString('pt-PT',{style:'currency',currency:'EUR'})}function pct(v){return((Number(v)||0)*100).toFixed(1).replace('.',',')+'%'}function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
 
-// DONART V12.6.25 — notificações internas de novas encomendas online.
+// DONART V12.6.26 — notificações internas de novas encomendas online.
 const ORDER_NOTIF_KEY_V12624='donart_order_notifications_v12624';
 let orderNotifPollTimerV12624=null;
 function orderNotifStateV12624(){
@@ -3202,7 +3233,7 @@ function startOrderNotificationPollingV12624(){clearInterval(orderNotifPollTimer
 document.addEventListener('click',e=>{const p=document.getElementById('orderNotificationPanelV12624'),b=document.getElementById('orderAlertButtonV12624');if(p&&!p.classList.contains('hidden')&&!p.contains(e.target)&&!b?.contains(e.target))p.classList.add('hidden')});
 
 
-// DONART V12.6.25 — Web Push standard (iOS/iPadOS Home Screen + browsers compatíveis).
+// DONART V12.6.26 — Web Push standard (iOS/iPadOS Home Screen + browsers compatíveis).
 function pushIsStandaloneV12625(){return !!(window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true)}
 function pushIsIOSV12625(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1)}
 function pushSupportedV12625(){return 'serviceWorker'in navigator&&'PushManager'in window&&'Notification'in window}
@@ -3236,6 +3267,17 @@ async function disablePushV12625(){
 function openPushOrderFromUrlV12625(){const u=new URL(location.href),id=u.searchParams.get('pushOrder');if(!id)return;u.searchParams.delete('pushOrder');history.replaceState({},'',u.pathname+u.search+u.hash);setTimeout(async()=>{try{await pullOnlineOrders(false)}catch(e){}go('orders');setTimeout(()=>{const o=(db.orders||[]).find(x=>String(x.id)===String(id));if(o)showOrder(o.id);else toast('Encomenda recebida · abre Encomendas para consultar')},350)},1200)}
 window.addEventListener('pageshow',()=>setTimeout(renderPushStatusV12625,350));
 
+
+// DONART V12.6.26 — Campanhas Push Marketing (separadas do Push de Administração).
+let campaignBusyV12626=false;
+function campaignFormV12626(){return {title:($('campaignTitleV12626')?.value||'').trim(),body:($('campaignBodyV12626')?.value||'').trim(),destination:$('campaignDestinationV12626')?.value||'home',label:($('campaignLabelV12626')?.value||'').trim()}}
+function updateCampaignPreviewV12626(){const x=campaignFormV12626();const t=$('campaignPreviewTitleV12626'),b=$('campaignPreviewBodyV12626');if(t)t.textContent=x.title||'🍩 DONART';if(b)b.textContent=x.body||'Escreve uma mensagem para visualizar a notificação.'}
+['campaignTitleV12626','campaignBodyV12626','campaignDestinationV12626'].forEach(id=>setTimeout(()=>$ (id)?.addEventListener('input',updateCampaignPreviewV12626),0));
+async function campaignInvokeV12626(action,payload={}){const u=cloudUser||await ensureCloudSession();if(!u||!cloudClient)throw new Error('Liga primeiro a DONART Cloud');const {data,error}=await cloudClient.functions.invoke('donart-push-campaign-admin',{body:{action,...payload}});if(error)throw error;if(!data?.ok)throw new Error(data?.error||'Falha na campanha');return data}
+async function loadCampaignDashboardV12626(showToast=false){try{const d=await campaignInvokeV12626('dashboard');const k=$('campaignKpisV12626');if(k)k.innerHTML=`<div class="campaign-kpi"><small>Clientes com Push</small><b>${Number(d.marketingActive||0)}</b></div><div class="campaign-kpi"><small>Dispositivos gestão</small><b>${Number(d.adminActive||0)}</b></div><div class="campaign-kpi"><small>Campanhas enviadas</small><b>${Number(d.sentCount||0)}</b></div>`;const h=$('campaignHistoryV12626'),rows=Array.isArray(d.campaigns)?d.campaigns:[];if(h)h.innerHTML=rows.length?rows.map(x=>`<div class="campaign-row"><div class="row"><b>${escapeHtml(x.title||'Campanha')}</b><span class="campaign-status ${x.status==='sent'?'sent':x.status==='failed'?'failed':''}">${escapeHtml(x.status||'')}</span></div><small>${escapeHtml(x.body||'')}</small><small>${new Date(x.created_at).toLocaleString('pt-PT')} · enviados ${Number(x.sent||0)} · falhas ${Number(x.failed||0)}</small></div>`).join(''):'<div class="muted">Ainda não existem campanhas.</div>';if(showToast)toast('Campanhas atualizadas')}catch(e){if(showToast)toast('Campanhas: '+String(e?.message||e))}}
+async function sendCampaignTestV12626(){if(campaignBusyV12626)return;const x=campaignFormV12626();if(!x.title||!x.body)return toast('Preenche título e mensagem');campaignBusyV12626=true;try{const d=await campaignInvokeV12626('test_admin',{campaign:x});toast(`🔔 Teste enviado · ${Number(d.sent||0)} dispositivo(s)`)}catch(e){toast('Teste: '+String(e?.message||e))}finally{campaignBusyV12626=false}}
+async function sendCampaignV12626(){if(campaignBusyV12626)return;const x=campaignFormV12626();if(!x.title||!x.body)return toast('Preenche título e mensagem');if(!confirm('Enviar esta campanha aos clientes que aceitaram notificações?'))return;campaignBusyV12626=true;try{const d=await campaignInvokeV12626('send_marketing',{campaign:x});toast(`📣 Campanha enviada · ${Number(d.sent||0)} dispositivo(s)`);await loadCampaignDashboardV12626(false)}catch(e){toast('Campanha: '+String(e?.message||e))}finally{campaignBusyV12626=false}}
+
 function uid(prefix){return prefix+'-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7)}
 function ensureRecordIds(){
  db.purchases=db.purchases||[];db.cash=db.cash||[];db.productionRuns=db.productionRuns||[];
@@ -3255,9 +3297,9 @@ function go(id){
  requestAnimationFrame(()=>target.classList.add('screen-enter'));
  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
  document.getElementById('pageTitle').textContent=pages.find(x=>x[0]===id)?.[1]||'';
- const contextMap={dashboard:'VISÃO GERAL',sale:'ENCOMENDAS',orders:'ENCOMENDAS',quotes:'ORÇAMENTOS',production:'PRODUÇÃO',costs:'GESTÃO',stock:'GESTÃO',purchases:'GESTÃO',cash:'FINANCEIRO',clients:'CLIENTES',reports:'RELATÓRIOS',products:'LOJA ONLINE',catalogs:'LOJA ONLINE',specialEditions:'LOJA ONLINE',delivery:'LOJA ONLINE',settings:'SISTEMA',cloud:'SISTEMA',backup:'SISTEMA'};
+ const contextMap={dashboard:'VISÃO GERAL',sale:'ENCOMENDAS',orders:'ENCOMENDAS',quotes:'ORÇAMENTOS',production:'PRODUÇÃO',costs:'GESTÃO',stock:'GESTÃO',purchases:'GESTÃO',cash:'FINANCEIRO',clients:'CLIENTES',reports:'RELATÓRIOS',products:'LOJA ONLINE',catalogs:'LOJA ONLINE',specialEditions:'LOJA ONLINE',campaigns:'MARKETING',delivery:'LOJA ONLINE',settings:'SISTEMA',cloud:'SISTEMA',backup:'SISTEMA'};
  const pc=document.getElementById('pageContext');if(pc)pc.textContent=contextMap[id]||'GESTÃO DONART';
- renderAll();
+ renderAll();if(id==='campaigns')setTimeout(()=>loadCampaignDashboardV12626(false),50);
  if(id==='delivery'){renderShopDeliverySettings();renderShopCapacityAgenda();}
  if(id==='specialEditions'){renderSpecialEditionProductPicker([]);loadSpecialEditionsAdmin(false);}
  const active=document.querySelector(`.nav button[data-page="${id}"]`);active?.scrollIntoView({block:'nearest',behavior:'smooth'});
