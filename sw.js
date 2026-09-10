@@ -1,3 +1,4 @@
+const CACHE_SUFFIX='v12631';
 const CACHE='donart-v12-6-29-shell';
 const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./logo-donart-ui.png','./logo-donart.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL).catch(()=>{})).then(()=>self.skipWaiting()))});
