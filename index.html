@@ -1855,9 +1855,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.29 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.30 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.29</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.30</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -4425,6 +4425,16 @@ function setOrderStatus(id,status){
  if(!onlineOrderPaymentGuard(o,status)){showOrder(id);return}
  const prev=o.status||'Pedido';
  if(status===prev){showOrder(id);return}
+ // V12.6.30 — proteger o consumo de stock: uma encomenda ainda não produzida
+ // não pode ser marcada manualmente como Pronta/Entregue. A conclusão deve
+ // passar por Produção -> "Concluir produção + descontar stock".
+ if(['Pronta','Entregue'].includes(status) && !isOrderProduced(id)){
+   toast('Conclui esta encomenda na Produção para descontar o stock corretamente');
+   try{orderDialog?.close()}catch(e){}
+   setTimeout(()=>{try{go('production');if(typeof prodDate!=='undefined'){prodDate.value=o.delivery||todayISO();renderProduction()}}catch(e){}},120);
+   renderOrders();
+   return;
+ }
  o.status=status;
  o.statusHistory=Array.isArray(o.statusHistory)?o.statusHistory:[];
  o.statusHistory.push({from:prev,to:status,date:new Date().toISOString(),source:o.source==='online_store'?'online_store':'manual'});
@@ -4444,7 +4454,7 @@ function statusActionButtons(o){
  let out='';
  if(s==='Pedido')out+=btn('Confirmar encomenda','Confirmada');
  if(s==='Confirmada')out+=btn('Iniciar produção','Em produção');
- if(s==='Em produção')out+=btn('Marcar como pronta','Pronta');
+ if(s==='Em produção')out+=`<button class="btn primary" onclick="try{orderDialog.close()}catch(e){};go('production');if(typeof prodDate!=='undefined'){prodDate.value='${o.delivery||''}';renderProduction()}">Concluir na Produção</button>`;
  if(s==='Pronta')out+=btn('Entrega / pagamento','Pronta');
  if(!['Entregue','Cancelado'].includes(s))out+=btn('Cancelar','Cancelado','danger');
  if(s==='Entregue')out+=btn('Reabrir encomenda','Pedido');
@@ -5045,7 +5055,7 @@ function ensureCostModel(){
   }
   db.costMeta=db.costMeta||{};
   if(!db.stock.some(x=>x.name==='Canela em pó'))db.stock.push({name:'Canela em pó',qty:0,unit:'g',min:50,unitCost:0});
-  // V12.6.29 — não repor ingredientes apagados pelo utilizador.
+  // V12.6.30 — não repor ingredientes apagados pelo utilizador.
   // A antiga migração forçava Canela em pó em C003 a cada render, tornando impossível removê-la.
   ensureRecordIds();
 }
@@ -5469,7 +5479,7 @@ function renderProducts(){
 
 function populateCostSelectors(){
  if(!document.getElementById('costMaterial'))return;
- // V12.6.29 — preservar seleções ao gravar/recalcular a ficha técnica.
+ // V12.6.30 — preservar seleções ao gravar/recalcular a ficha técnica.
  // save() volta a renderizar a página de Custos; sem esta preservação o produto
  // selecionado regressava a "Selecionar…" após adicionar/atualizar/remover uma linha.
  const prevMaterial=costMaterial.value;
