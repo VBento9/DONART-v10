@@ -1855,9 +1855,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.26 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.27 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.26</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.27</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -5468,9 +5468,18 @@ function renderProducts(){
 
 function populateCostSelectors(){
  if(!document.getElementById('costMaterial'))return;
+ // V12.6.27 — preservar seleções ao gravar/recalcular a ficha técnica.
+ // save() volta a renderizar a página de Custos; sem esta preservação o produto
+ // selecionado regressava a "Selecionar…" após adicionar/atualizar/remover uma linha.
+ const prevMaterial=costMaterial.value;
+ const prevIngredient=costIngredient.value;
+ const prevProduct=costProduct.value;
  const mat='<option value="">Selecionar…</option>'+db.stock.map(x=>`<option value="${x.name}">${x.name}</option>`).join('');
  costMaterial.innerHTML=mat;costIngredient.innerHTML=mat;
- costProduct.innerHTML='<option value="">Selecionar…</option>'+db.products.map(p=>`<option value="${p.code}">${p.name}</option>`).join('')
+ costProduct.innerHTML='<option value="">Selecionar…</option>'+db.products.map(p=>`<option value="${p.code}">${p.name}</option>`).join('');
+ if(prevMaterial&&[...costMaterial.options].some(o=>o.value===prevMaterial))costMaterial.value=prevMaterial;
+ if(prevIngredient&&[...costIngredient.options].some(o=>o.value===prevIngredient))costIngredient.value=prevIngredient;
+ if(prevProduct&&[...costProduct.options].some(o=>o.value===prevProduct))costProduct.value=prevProduct;
 }
 function updateCostPreview(){
  if(!document.getElementById('costUnitPreview'))return;
