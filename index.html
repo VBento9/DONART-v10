@@ -1840,6 +1840,16 @@
 
 /* DONART V12.6.26 — Campanhas Push Marketing */
 .campaign-hero{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}.campaign-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:12px;margin-top:10px}.campaign-card{border:1px solid var(--line)}.campaign-preview{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fff;box-shadow:0 8px 24px rgba(78,45,40,.08)}.campaign-preview-title{font-weight:900;font-size:16px}.campaign-preview-body{margin-top:6px;color:#6e554e;white-space:pre-wrap}.campaign-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.campaign-kpi{padding:10px;border:1px solid var(--line);border-radius:14px;background:#fff}.campaign-kpi b{display:block;font-size:20px}.campaign-history{display:grid;gap:8px;margin-top:10px}.campaign-row{border:1px solid var(--line);border-radius:14px;padding:11px;background:#fff}.campaign-row .row{align-items:center}.campaign-row small{display:block;margin-top:4px}.campaign-status{font-size:11px;font-weight:900;border-radius:999px;padding:5px 8px;background:#eef9fa}.campaign-status.sent{background:#e9f8ef}.campaign-status.failed{background:#fff0f3}.campaign-note{padding:10px 12px;border-radius:12px;background:#fff8e4;font-size:12px;color:#6f584f;margin-top:9px}@media(max-width:760px){.campaign-grid{grid-template-columns:1fr}.campaign-kpis{grid-template-columns:1fr 1fr}}
+
+/* V12.6.32 — Produção orientada por encomenda e consumo proporcional por donut vendido */
+.prod-order-prep-v12632{margin:10px 12px 12px;border:1px solid rgba(88,55,67,.14);border-radius:14px;background:rgba(255,255,255,.62);overflow:hidden}
+.prod-order-prep-v12632 summary{cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;list-style:none;color:#5d3f49}
+.prod-order-prep-v12632 summary::-webkit-details-marker{display:none}
+.prod-order-prep-v12632 summary span{font-size:12px;font-weight:800;background:#f7e7b1;padding:5px 9px;border-radius:999px}
+.prod-order-flavors-v12632{padding:0 14px 10px;display:flex;flex-direction:column;gap:3px}
+.prod-order-flavors-v12632 small{opacity:.65}.prod-order-flavors-v12632 strong{font-size:13px;line-height:1.4}
+.prod-order-recipe-v12632{padding:0 14px 12px}.prod-order-recipe-v12632 .prod-line{padding:7px 0}
+@media(max-width:760px){.prod-order-prep-v12632{margin:8px}.prod-order-prep-v12632 summary{padding:10px 12px}.prod-order-recipe-v12632{padding:0 12px 10px}}
 </style>
 </head>
 <body>
@@ -1855,9 +1865,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.31 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.32 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.31</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.32</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -3886,30 +3896,43 @@ async function deleteOrder(id){
    alert('Não foi possível eliminar da Cloud.\n\n'+detail+'\n\nNada foi apagado localmente.');
  }
 }
+function productionBaseNeedsForQtyV12632(qty){
+ const y=Math.max(1,Number(db.settings.yield)||28),factor=(Number(qty)||0)/y,needs={};
+ SEED.recipe.forEach(r=>needs[r.name]=(Number(r.qty)||0)*factor);
+ return needs;
+}
+function productionOrderNeedsV12632(o){
+ const qty=calcOrder(o).qty,needs=productionBaseNeedsForQtyV12632(qty);
+ const add=(name,v)=>needs[name]=(needs[name]||0)+(Number(v)||0);
+ (o.items||[]).forEach(line=>(db.productRecipes[line.code]||[]).forEach(r=>add(r.item,(Number(r.qty)||0)*(Number(line.qty)||0))));
+ return needs;
+}
+function productionFmtQtyV12632(v){
+ const n=Number(v)||0;
+ return n.toLocaleString('pt-PT',{maximumFractionDigits:2,minimumFractionDigits:Number.isInteger(n)?0:2});
+}
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Confirmada','Em produção','Confirmado','Produção'].includes(o.status)&&!done.has(o.id));
  const counts={};
  ords.forEach(o=>(o.items||[]).forEach(i=>counts[i.name]=(counts[i.name]||0)+(Number(i.qty)||0)));
  const total=Object.values(counts).reduce((a,b)=>a+b,0);
- const batches=Math.ceil(total/(db.settings.yield||28));
+ const yieldQty=Math.max(1,Number(db.settings.yield)||28),recipeEquivalent=total/yieldQty;
  const packs={};
  ords.forEach(o=>{const n=o.box||'Sem embalagem';packs[n]=(packs[n]||0)+(Number(o.boxes)||1)});
  const packTotal=Object.values(packs).reduce((a,b)=>a+b,0);
 
- const needs={};
+ const needs=productionBaseNeedsForQtyV12632(total);
  const addNeed=(name,qty)=>needs[name]=(needs[name]||0)+(Number(qty)||0);
- SEED.recipe.forEach(r=>addNeed(r.name,(Number(r.qty)||0)*batches));
  ords.forEach(o=>(o.items||[]).forEach(line=>(db.productRecipes[line.code]||[]).forEach(r=>addNeed(r.item,(Number(r.qty)||0)*(Number(line.qty)||0)))));
  const needEntries=Object.entries(needs).filter(([,need])=>(Number(need)||0)>0);
  const shortages=needEntries.filter(([name,need])=>{const x=stockByName(name),have=x?(Number(x.qty)||0):0;return !x||have<=0||have+1e-9<(Number(need)||0)});
- const active=ords.filter(o=>['Em produção','Produção'].includes(o.status)).length;
 
  const sum=document.getElementById('productionSummary');
  if(sum)sum.innerHTML=[
    ['Encomendas',ords.length,'Para produzir'],
    ['Donuts',total,'Total do dia'],
-   ['Receitas',batches,'Massa base'],
+   ['Receita base',recipeEquivalent?productionFmtQtyV12632(recipeEquivalent)+'×':'0×','Proporcional a '+yieldQty+' donuts'],
    ['Stock',!ords.length?'—':(!needEntries.length?'VERIFICAR':(shortages.length?shortages.length+' falta(s)':'OK')),!ords.length?'Sem produção para verificar':(!needEntries.length?'Não foi possível calcular necessidades':(shortages.length?'Rever antes de concluir':'Sem faltas detetadas'))]
  ].map(([label,value,note])=>`<div class="card prod-kpi ${label==='Stock'&&ords.length&&(!needEntries.length||shortages.length)?'prod-kpi-alert':''}">
    <span>${label}</span><strong>${value}</strong><small>${note}</small>
@@ -3917,8 +3940,9 @@ function renderProduction(){
 
  const po=document.getElementById('productionOrders');
  if(po)po.innerHTML=ords.length?ords.map(o=>{
-   const c=calcOrder(o),inProd=['Em produção','Produção'].includes(o.status);
-   const status=escapeHtml(o.status||'—');
+   const c=calcOrder(o),inProd=['Em produção','Produção'].includes(o.status),status=escapeHtml(o.status||'—'),orderNeeds=productionOrderNeedsV12632(o);
+   const flavors=(o.items||[]).map(i=>`${escapeHtml(i.name||i.code||'Produto')} × ${Number(i.qty)||0}`).join(' · ');
+   const prep=Object.entries(orderNeeds).filter(([,q])=>Number(q)>0).map(([name,q])=>{const st=stockByName(name);return `<div class="prod-line"><span>${escapeHtml(name)}</span><strong>${productionFmtQtyV12632(q)} ${escapeHtml(st?.unit||'')}</strong></div>`}).join('');
    return `<div class="prod-order-card">
      <button class="prod-order-main" onclick="showOrder('${escapeHtml(o.id)}')">
        <span class="prod-order-id"><strong>${escapeHtml(o.id)}</strong><small>${escapeHtml(o.client||'—')}</small></span>
@@ -3927,49 +3951,38 @@ function renderProduction(){
      </button>
      <div class="prod-order-foot">
        <span class="badge ${inProd?'warn':'ok'}">${status}</span>
-       <div class="prod-order-actions">
-         <button class="btn" onclick="showOrder('${escapeHtml(o.id)}')">Ver detalhe</button>
-         ${inProd?'':`<button class="btn primary" onclick="setStatus('${escapeHtml(o.id)}','Em produção')">Iniciar produção</button>`}
-       </div>
+       <div class="prod-order-actions"><button class="btn" onclick="showOrder('${escapeHtml(o.id)}')">Ver detalhe</button>${inProd?'':`<button class="btn primary" onclick="setStatus('${escapeHtml(o.id)}','Em produção')">Iniciar produção</button>`}</div>
      </div>
+     <details class="prod-order-prep-v12632" open>
+       <summary><strong>Preparação desta encomenda</strong><span>${c.qty} donuts</span></summary>
+       <div class="prod-order-flavors-v12632"><small>Sabores / produtos</small><strong>${flavors||'—'}</strong></div>
+       <div class="prod-order-recipe-v12632">${prep||'<div class="empty">Sem receita configurada.</div>'}</div>
+     </details>
    </div>`;
  }).join(''):'<div class="empty">Sem encomendas para esta data.</div>';
 
  const ppd=document.getElementById('productionProducts');
- if(ppd)ppd.innerHTML=Object.keys(counts).length?Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([n,q])=>`
-   <div class="prod-line"><span>${escapeHtml(n)}</span><strong>${q} un.</strong></div>
- `).join(''):'<div class="empty">Sem produção pendente para esta data.</div>';
+ if(ppd)ppd.innerHTML=Object.keys(counts).length?Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([n,q])=>`<div class="prod-line"><span>${escapeHtml(n)}</span><strong>${q} un.</strong></div>`).join(''):'<div class="empty">Sem produção pendente para esta data.</div>';
 
  const pr=document.getElementById('productionRecipe');
  if(pr)pr.innerHTML=total?`
-   <div class="prod-recipe-head"><span>Receitas necessárias</span><strong>${batches}</strong></div>
-   ${SEED.recipe.map(x=>`<div class="prod-line"><span>${escapeHtml(x.name)}</span><strong>${((Number(x.qty)||0)*batches).toLocaleString('pt-PT')} ${escapeHtml(x.unit||'')}</strong></div>`).join('')}
+   <div class="prod-recipe-head"><span>Receita proporcional para ${total} donuts</span><strong>${productionFmtQtyV12632(recipeEquivalent)}× da receita de ${yieldQty}</strong></div>
+   ${SEED.recipe.map(x=>{const q=(Number(x.qty)||0)*(total/yieldQty);return `<div class="prod-line"><span>${escapeHtml(x.name)}</span><strong>${productionFmtQtyV12632(q)} ${escapeHtml(x.unit||'')}</strong></div>`}).join('')}
  `:'<div class="empty">Sem preparação necessária.</div>';
 
  const stockBox=document.getElementById('productionStockCheck');
  if(stockBox)stockBox.innerHTML=needEntries.length?needEntries.map(([name,need])=>{
    const x=stockByName(name),have=x?Number(x.qty)||0:0,unit=x?x.unit:'';
    const ok=!!x&&have+1e-9>=need;
-   return `<div class="prod-stock-line ${ok?'':'prod-stock-missing'}">
-     <div><strong>${escapeHtml(name)}</strong><small>Precisa ${need.toLocaleString('pt-PT')} ${escapeHtml(unit||'')}</small></div>
-     <div class="prod-stock-right"><strong>${have.toLocaleString('pt-PT')} ${escapeHtml(unit||'')}</strong><span class="badge ${ok?'ok':'bad'}">${ok?'OK':'FALTA'}</span></div>
-   </div>`;
+   return `<div class="prod-stock-line ${ok?'':'prod-stock-missing'}"><div><strong>${escapeHtml(name)}</strong><small>Precisa ${productionFmtQtyV12632(need)} ${escapeHtml(unit||'')}</small></div><div class="prod-stock-right"><strong>${productionFmtQtyV12632(have)} ${escapeHtml(unit||'')}</strong><span class="badge ${ok?'ok':'bad'}">${ok?'OK':'FALTA'}</span></div></div>`;
  }).join(''):(ords.length?'<div class="empty prod-warning">Não foi possível calcular as necessidades desta produção. Não considerar o stock como OK.</div>':'<div class="empty">Sem necessidades de stock para esta data.</div>');
 
  const pk=document.getElementById('productionPackaging');
- if(pk)pk.innerHTML=Object.keys(packs).length?`
-   <div class="prod-recipe-head"><span>Total de embalagens</span><strong>${packTotal}</strong></div>
-   ${Object.entries(packs).map(([n,q])=>`<div class="prod-line"><span>${escapeHtml(n)}</span><strong>${q} un.</strong></div>`).join('')}
- `:'<div class="empty">Sem embalagens previstas.</div>';
+ if(pk)pk.innerHTML=Object.keys(packs).length?`<div class="prod-recipe-head"><span>Total de embalagens</span><strong>${packTotal}</strong></div>${Object.entries(packs).map(([n,q])=>`<div class="prod-line"><span>${escapeHtml(n)}</span><strong>${q} un.</strong></div>`).join('')}`:'<div class="empty">Sem embalagens previstas.</div>';
 
  const runs=(db.productionRuns||[]).filter(r=>r.date===d);
  const hist=document.getElementById('productionHistory');
- if(hist)hist.innerHTML=runs.length?runs.map((r,i)=>`
-   <div class="prod-history">
-     <div><strong>Sessão ${i+1}</strong><small>${(r.orders||[]).map(escapeHtml).join(', ')}</small></div>
-     <div><strong>${r.total||0} un.</strong><small>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</small></div>
-   </div>
- `).join(''):'<div class="empty">Ainda não há sessões concluídas neste dia.</div>';
+ if(hist)hist.innerHTML=runs.length?runs.map((r,i)=>`<div class="prod-history"><div><strong>Sessão ${i+1}</strong><small>${(r.orders||[]).map(escapeHtml).join(', ')}</small></div><div><strong>${r.total||0} un.</strong><small>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</small></div></div>`).join(''):'<div class="empty">Ainda não há sessões concluídas neste dia.</div>';
 }
 function addStock(){
  const n=stockName.value.trim();if(!n)return toast('Indique o produto');
@@ -4425,7 +4438,7 @@ function setOrderStatus(id,status){
  if(!onlineOrderPaymentGuard(o,status)){showOrder(id);return}
  const prev=o.status||'Pedido';
  if(status===prev){showOrder(id);return}
- // V12.6.31 — proteger o consumo de stock: uma encomenda ainda não produzida
+ // V12.6.32 — proteger o consumo de stock: uma encomenda ainda não produzida
  // não pode ser marcada manualmente como Pronta/Entregue. A conclusão deve
  // passar por Produção -> "Concluir produção + descontar stock".
  if(['Pronta','Entregue'].includes(status) && !isOrderProduced(id)){
@@ -4451,7 +4464,7 @@ function setOrderStatus(id,status){
 function focusDeliveryPaymentV12631(id){
  const o=db.orders.find(x=>x.id===id);if(!o)return;
  if(o.status!=='Pronta'){showOrder(id);return}
- // V12.6.31 — o botão superior "Entrega / pagamento" deixou de tentar
+ // V12.6.32 — o botão superior "Entrega / pagamento" deixou de tentar
  // atribuir novamente o estado Pronta (operação sem efeito). Em vez disso,
  // leva diretamente à área real de liquidação/entrega da encomenda.
  showOrder(id);
@@ -5076,7 +5089,7 @@ function ensureCostModel(){
   }
   db.costMeta=db.costMeta||{};
   if(!db.stock.some(x=>x.name==='Canela em pó'))db.stock.push({name:'Canela em pó',qty:0,unit:'g',min:50,unitCost:0});
-  // V12.6.31 — não repor ingredientes apagados pelo utilizador.
+  // V12.6.32 — não repor ingredientes apagados pelo utilizador.
   // A antiga migração forçava Canela em pó em C003 a cada render, tornando impossível removê-la.
   ensureRecordIds();
 }
@@ -5500,7 +5513,7 @@ function renderProducts(){
 
 function populateCostSelectors(){
  if(!document.getElementById('costMaterial'))return;
- // V12.6.31 — preservar seleções ao gravar/recalcular a ficha técnica.
+ // V12.6.32 — preservar seleções ao gravar/recalcular a ficha técnica.
  // save() volta a renderizar a página de Custos; sem esta preservação o produto
  // selecionado regressava a "Selecionar…" após adicionar/atualizar/remover uma linha.
  const prevMaterial=costMaterial.value;
@@ -5582,9 +5595,8 @@ function saveCostSettings(){
 function consumeProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Em produção','Produção'].includes(o.status)&&!done.has(o.id));if(!ords.length)return toast('Sem encomendas em produção para concluir');
- const total=ords.reduce((sum,o)=>sum+calcOrder(o).qty,0),batches=Math.ceil(total/(db.settings.yield||28)),needs={};
+ const total=ords.reduce((sum,o)=>sum+calcOrder(o).qty,0),needs=productionBaseNeedsForQtyV12632(total);
  const addNeed=(name,qty)=>needs[name]=(needs[name]||0)+(Number(qty)||0);
- SEED.recipe.forEach(r=>addNeed(r.name,(Number(r.qty)||0)*batches));
  ords.forEach(o=>o.items.forEach(line=>(db.productRecipes[line.code]||[]).forEach(r=>addNeed(r.item,(Number(r.qty)||0)*(Number(line.qty)||0)))));
  const shortages=Object.entries(needs).filter(([name,need])=>{const x=stockByName(name);return !x||(Number(x.qty)||0)+1e-9<need});
  if(shortages.length){const msg=shortages.slice(0,5).map(([name,need])=>{const x=stockByName(name),have=x?Number(x.qty)||0:0,unit=x?x.unit:'';return `${name}: precisa ${need.toLocaleString('pt-PT')} ${unit}, tem ${have.toLocaleString('pt-PT')} ${unit}`}).join(' · ');return toast('Produção bloqueada — stock insuficiente. '+msg)}
