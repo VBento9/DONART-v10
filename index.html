@@ -1873,7 +1873,7 @@
 <div class="app">
 <aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.39 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.45</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.46</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -3291,6 +3291,7 @@ async function checkNewOnlineOrdersV12624(){
  }catch(e){cloudLogMsg('Avisos de encomendas: '+cloudErrText(e));return false}
 }
 function startOrderNotificationPollingV12624(){clearInterval(orderNotifPollTimerV12624);orderNotifPollTimerV12624=setInterval(()=>checkNewOnlineOrdersV12624(),45000)}
+if('serviceWorker'in navigator){navigator.serviceWorker.addEventListener('message',async e=>{if(e?.data?.type!=='DONART_PUSH_ORDER')return;try{await checkNewOnlineOrdersV12624();}catch(err){};try{navigator.vibrate?.(120)}catch(err){}})}
 document.addEventListener('click',e=>{const p=document.getElementById('orderNotificationPanelV12624'),b=document.getElementById('orderAlertButtonV12624');if(p&&!p.classList.contains('hidden')&&!p.contains(e.target)&&!b?.contains(e.target))p.classList.add('hidden')});
 
 
