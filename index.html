@@ -3417,9 +3417,9 @@ function orderMessage(id){
 }
 function sendWhatsApp(id){const o=db.orders.find(x=>x.id===id);if(!o)return;let phone=normalizePhone(o.contact);if(phone.startsWith('9')&&phone.length===9)phone='351'+phone;if(!phone)return toast('Cliente sem número de telemóvel');window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(orderMessage(id)),'_blank')}
 function sendSMS(id){const o=db.orders.find(x=>x.id===id);if(!o)return;const phone=normalizePhone(o.contact);if(!phone)return toast('Cliente sem número de telemóvel');location.href='sms:'+phone+'?body='+encodeURIComponent(orderMessage(id))}
-function renderTrend(){const el=document.getElementById('trendChart');if(!el)return;const now=new Date(),vals=[];for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1),y=d.getFullYear(),m=d.getMonth();const os=db.orders.filter(o=>completed(o)&&(()=>{const x=new Date((o.delivery||o.created)+'T12:00:00');return x.getFullYear()===y&&x.getMonth()===m})());const sales=os.reduce((a,o)=>a+calcOrder(o).total,0),profit=os.reduce((a,o)=>a+calcOrder(o).profit,0);vals.push({label:d.toLocaleDateString('pt-PT',{month:'short'}),sales,profit})}const max=Math.max(1,...vals.map(x=>x.sales));el.innerHTML=vals.map(x=>`<div class="trend-col"><div class="trend-value">${x.sales?euro(x.sales):''}</div><div style="display:flex;align-items:flex-end;gap:3px;height:150px;width:100%;justify-content:center"><div class="trend-bar" title="Faturação ${euro(x.sales)}" style="height:${Math.max(2,x.sales/max*145)}px"></div><div class="trend-bar profit" title="Lucro ${euro(x.profit)}" style="height:${Math.max(2,x.profit/max*145)}px"></div></div><div class="trend-label">${x.label}</div></div>`).join('')}
+function renderTrend(){const el=document.getElementById('trendChart');if(!el)return;const now=new Date(),vals=[];for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1),y=d.getFullYear(),m=d.getMonth();const os=db.orders.filter(o=>completed(o)&&o.status==='Entregue'&&(()=>{const x=new Date((o.delivery||o.created)+'T12:00:00');return x.getFullYear()===y&&x.getMonth()===m})());const sales=os.reduce((a,o)=>a+calcOrder(o).total,0),profit=os.reduce((a,o)=>a+calcOrder(o).profit,0);vals.push({label:d.toLocaleDateString('pt-PT',{month:'short'}),sales,profit})}const max=Math.max(1,...vals.map(x=>x.sales));el.innerHTML=vals.map(x=>`<div class="trend-col"><div class="trend-value">${x.sales?euro(x.sales):''}</div><div style="display:flex;align-items:flex-end;gap:3px;height:150px;width:100%;justify-content:center"><div class="trend-bar" title="Faturação ${euro(x.sales)}" style="height:${Math.max(2,x.sales/max*145)}px"></div><div class="trend-bar profit" title="Lucro ${euro(x.profit)}" style="height:${Math.max(2,x.profit/max*145)}px"></div></div><div class="trend-label">${x.label}</div></div>`).join('')}
 function dashboardKpiGo(label){
- const map={'Faturação':'reports','Recebido':'cash','Por receber':'orders','Encomendas':'orders','Lucro':'reports','Margem':'reports','Pendentes':'orders','Stock baixo':'stock'};
+ const map={'Encomendado':'reports','Recebido':'cash','Por receber':'orders','Encomendas':'orders','Lucro previsto':'reports','Margem prevista':'reports','Pendentes':'orders','Stock baixo':'stock'};
  go(map[label]||'dashboard');
 }
 function dashboardDailyOpen(id){
@@ -3509,12 +3509,12 @@ function renderDashboard(){
  if(notice&&lb){notice.querySelectorAll('.backupwarn').forEach(x=>x.remove());const days=(Date.now()-new Date(lb).getTime())/86400000;if(days>7)notice.insertAdjacentHTML('beforeend','<div class="badge bad backupwarn" style="margin-top:8px">Backup com mais de 7 dias</div>')}
  const d=dash();
  const kpiData=[
-  ['💰','Faturação',euro(d.total),'total'],
+  ['💰','Encomendado',euro(d.total),'total'],
   ['✅','Recebido',euro(d.paid),'good'],
   ['⏳','Por receber',euro(d.due),d.due>0?'warn':'good'],
   ['🧾','Encomendas',d.orders,'neutral'],
-  ['📈','Lucro',euro(d.profit),d.profit>=0?'good':'bad'],
-  ['％','Margem',pct(d.margin),d.margin>=.5?'good':'neutral'],
+  ['📈','Lucro previsto',euro(d.profit),d.profit>=0?'good':'bad'],
+  ['％','Margem prevista',pct(d.margin),d.margin>=.5?'good':'neutral'],
   ['⚠️','Pendentes',d.pending,d.pending>0?'warn':'good'],
   ['📦','Stock baixo',d.stockLow,d.stockLow>0?'bad':'good']
  ];
@@ -4446,7 +4446,7 @@ async function shareBackup(){const file=new File([backupBlob()],backupFileName()
 function validateBackupPayload(x){const d=x&&x.data?x.data:x;if(!d||typeof d!=='object'||Array.isArray(d))return{ok:false,msg:'Estrutura inválida'};const required=['orders','stock','products'];for(const k of required)if(!Array.isArray(d[k]))return{ok:false,msg:'Falta a área '+k};const optionalArrays=['quotes','clients','purchases','cash','stockMoves','productionRuns','packaging','themedBoxes'];for(const k of optionalArrays)if(d[k]!=null&&!Array.isArray(d[k]))return{ok:false,msg:'Área '+k+' com formato inválido'};if(d.settings!=null&&(typeof d.settings!=='object'||Array.isArray(d.settings)))return{ok:false,msg:'Configurações inválidas'};if(d.orders.some(o=>!o||typeof o!=='object'||!o.id||!Array.isArray(o.items)||o.items.some(i=>!i||typeof i!=='object'||!Number.isFinite(Number(i.qty))||!Number.isFinite(Number(i.price)))))return{ok:false,msg:'Existem encomendas com estrutura inválida'};if(d.stock.some(i=>!i||typeof i!=='object'||!i.name||!Number.isFinite(Number(i.qty))))return{ok:false,msg:'Existem artigos de stock inválidos'};if(d.products.some(p=>!p||typeof p!=='object'||!p.code||!p.name||!Number.isFinite(Number(p.price))))return{ok:false,msg:'Existem produtos inválidos'};if((d.quotes||[]).some(q=>!q||typeof q!=='object'||!q.id||!Array.isArray(q.items)))return{ok:false,msg:'Existem orçamentos inválidos'};if(x&&x.data&&x.checksum&&simpleHash(JSON.stringify(d))!==x.checksum)return{ok:false,msg:'Falha de integridade: o conteúdo do backup foi alterado ou está corrompido'};const schema=Number(x?.schema||1);if(schema>5)return{ok:false,msg:'Backup criado por uma versão mais recente da app'};return{ok:true,data:d,version:x?.version||'antiga',schema,exportedAt:x?.exportedAt||'',summary:{orders:d.orders.length,quotes:(d.quotes||[]).length,clients:(d.clients||[]).length,purchases:(d.purchases||[]).length,stock:d.stock.length,production:(d.productionRuns||[]).length,cash:(d.cash||[]).length}}}
 function inspectBackupFile(){const f=backupFile.files[0],el=document.getElementById('backupPreview');if(!f){el.textContent='Escolha um backup para o verificar antes da reposição.';return}const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result),v=validateBackupPayload(x);if(!v.ok){el.innerHTML='<strong style="color:#990000">Ficheiro inválido:</strong> '+v.msg;backupFile.dataset.valid='';return}backupFile.dataset.valid='1';backupFile.dataset.summary=JSON.stringify(v.summary);el.innerHTML=`<strong>Backup válido</strong><br>Versão: ${v.version} · schema ${v.schema}${v.exportedAt?' · '+new Date(v.exportedAt).toLocaleString('pt-PT'):''}<br>${v.summary.orders} encomendas · ${v.summary.quotes} orçamentos · ${v.summary.clients} clientes · ${v.summary.purchases} compras · ${v.summary.stock} artigos de stock.`}catch(e){backupFile.dataset.valid='';el.innerHTML='<strong style="color:#990000">Ficheiro JSON inválido.</strong>'}};r.readAsText(f)}
 function safetyBackupBeforeRestore(){const payload=backupPayload();localStorage.setItem(RESTORE_SAFETY,JSON.stringify(payload));try{downloadBlob(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}),backupFileName('DONART_ANTES_RESTAURAR'))}catch(e){}recordBackup('Segurança pré-restauro');return true}
-function normalizeImportedDb(d){d=d&&typeof d==='object'?d:{};d.settings=d.settings&&typeof d.settings==='object'&&!Array.isArray(d.settings)?d.settings:{};if(d.settings.yield==null)d.settings.yield=28;if(d.settings.minMargin==null)d.settings.minMargin=.65;if(d.settings.laborRate==null)d.settings.laborRate=8;if(d.settings.wasteRate==null)d.settings.wasteRate=.10;d.settings.businessName=d.settings.businessName||SEED.businessName;d.settings.businessPhone=d.settings.businessPhone||'';d.settings.iban=d.settings.iban||'';d.settings.paymentNote=d.settings.paymentNote||'';for(const k of ['orders','clients','quotes','purchases','cash','stockMoves','productionRuns','themedBoxes'])if(!Array.isArray(d[k]))d[k]=[];if(!Array.isArray(d.products)||!d.products.length)d.products=JSON.parse(JSON.stringify(SEED.products));if(!Array.isArray(d.stock))d.stock=[];if(!Array.isArray(d.packaging)||!d.packaging.length)d.packaging=[{name:'Caixa 6',capacity:6,cost:0},{name:'Caixa 12',capacity:12,cost:0},{name:'Caixa 24',capacity:24,cost:0},{name:'Caixa Evento 50',capacity:50,cost:0}];d.orders.forEach(o=>{o.items=Array.isArray(o.items)?o.items:[];o.paymentHistory=Array.isArray(o.paymentHistory)?o.paymentHistory:[];if(o.status==='Confirmado')o.status='Confirmada';});d.quotes.forEach(q=>{q.items=Array.isArray(q.items)?q.items:[];q.paymentHistory=Array.isArray(q.paymentHistory)?q.paymentHistory:[];if(!q.box)q.box='Caixa 6';if(!q.boxes)q.boxes=1});ensureOrderPaymentCashLedger(d);return d}
+function normalizeImportedDb(d){d=d&&typeof d==='object'?d:{};d.settings=d.settings&&typeof d.settings==='object'&&!Array.isArray(d.settings)?d.settings:{};if(d.settings.yield==null)d.settings.yield=28;if(d.settings.minMargin==null)d.settings.minMargin=.65;if(d.settings.laborRate==null)d.settings.laborRate=8;if(d.settings.wasteRate==null)d.settings.wasteRate=.10;d.settings.businessName=d.settings.businessName||SEED.businessName;d.settings.businessPhone=d.settings.businessPhone||'';d.settings.iban=d.settings.iban||'';d.settings.paymentNote=d.settings.paymentNote||'';for(const k of ['orders','clients','quotes','purchases','cash','stockMoves','productionRuns','themedBoxes'])if(!Array.isArray(d[k]))d[k]=[];if(!Array.isArray(d.products)||!d.products.length)d.products=JSON.parse(JSON.stringify(SEED.products));if(!Array.isArray(d.stock))d.stock=[];if(!Array.isArray(d.packaging)||!d.packaging.length)d.packaging=[{name:'Caixa 6',capacity:6,cost:0},{name:'Caixa 12',capacity:12,cost:0},{name:'Caixa 24',capacity:24,cost:0},{name:'Caixa Evento 50',capacity:50,cost:0}];d.orders.forEach(o=>{o.items=Array.isArray(o.items)?o.items:[];o.paymentHistory=Array.isArray(o.paymentHistory)?o.paymentHistory:[];if(o.status==='Confirmado')o.status='Confirmada';if(o.source==='online_store')ensureOnlineOrderCostSnapshotV12644(o);});d.quotes.forEach(q=>{q.items=Array.isArray(q.items)?q.items:[];q.paymentHistory=Array.isArray(q.paymentHistory)?q.paymentHistory:[];if(!q.box)q.box='Caixa 6';if(!q.boxes)q.boxes=1});ensureOrderPaymentCashLedger(d);return d}
 function restorePreRestoreSnapshot(){const raw=localStorage.getItem(RESTORE_SAFETY);if(!raw)return toast('Não existe cópia pré-restauro neste dispositivo');try{const x=JSON.parse(raw),v=validateBackupPayload(x);if(!v.ok)return toast('Cópia interna inválida');if(!confirm('Recuperar a cópia interna criada antes do último restauro?'))return;db=normalizeImportedDb(v.data);ensureQuotePaymentModel();ensureCostModel();ensureRecordIds();ensureClientsFromOrders();save();toast('Cópia pré-restauro recuperada')}catch(e){toast('Não foi possível recuperar a cópia')}}
 function importBackup(){const f=backupFile.files[0];if(!f)return toast('Escolha um ficheiro');const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result),v=validateBackupPayload(x);if(!v.ok)return toast('Backup inválido: '+v.msg);const msg=`Restaurar este backup?\n\n${v.summary.orders} encomendas · ${v.summary.quotes} orçamentos · ${v.summary.clients} clientes.\n\nSerá criada primeiro uma cópia dos dados atuais.`;if(!confirm(msg))return;safetyBackupBeforeRestore();db=normalizeImportedDb(v.data);ensureQuotePaymentModel();ensureCostModel();ensureRecordIds();ensureClientsFromOrders();save();backupFile.value='';backupFile.dataset.valid='';document.getElementById('backupPreview').textContent='Backup restaurado com sucesso.';toast('Backup restaurado')}catch(e){toast('Ficheiro inválido')}};r.readAsText(f)}
 function renderBackupInfo(){
@@ -5312,6 +5312,21 @@ function roundEditionRecommendedPriceV1249(value){
 function editionRecommendedPriceV1249(product){
  if(normalizeProductAvailabilityV1244(product)!=='edition')return 0;
  return donartRecommendedPriceV1251(product)
+}
+
+function ensureOnlineOrderCostSnapshotV12644(o){
+ if(!o||o.source!=='online_store'||!Array.isArray(o.items))return o;
+ o.items=o.items.map(i=>{
+   if(i&&i.cost!=null&&Number.isFinite(Number(i.cost)))return i;
+   if(!i||['quote_extra','quote_discount'].includes(i.type))return {...i,cost:0};
+   const pid=String(i.product_id||i.productId||i._rid||'');
+   const code=String(i.code||'');
+   const name=normText(i.name||'');
+   const p=(db.products||[]).find(x=>(pid&&String(x._rid||'')===pid)||(code&&String(x.code||'')===code)||(name&&normText(x.name||'')===name));
+   return {...i,cost:p?calculatedProductCost(p):0,costSnapshotAt:new Date().toISOString(),costSnapshotSource:p?'catalog':'unknown'};
+ });
+ if(o.boxCostSnapshot==null){const pack=(db.packaging||[]).find(p=>p.name===o.box);if(pack)o.boxCostSnapshot=Number(pack.cost)||0}
+ return o
 }
 
 function calcOrder(o){
@@ -6700,13 +6715,16 @@ function reportPeriodData(){
   const y=Number(document.getElementById('dashYear')?.value)||new Date().getFullYear(),m=Number(document.getElementById('dashMonth')?.value??0);
   const matchDate=v=>{if(!v)return false;const d=new Date(String(v).slice(0,10)+'T12:00:00');return d.getFullYear()===y&&(m===0||d.getMonth()+1===m)};
   const pref=m===0?String(y):y+'-'+String(m).padStart(2,'0');
-  const orders=db.orders.filter(o=>completed(o)&&matchDate(o.delivery||o.created));
+  const validOrders=db.orders.filter(o=>completed(o)&&matchDate(o.delivery||o.created));
+  const orders=validOrders.filter(o=>o.status==='Entregue');
+  const openOrders=validOrders.filter(o=>o.status!=='Entregue');
   const purchases=db.purchases.filter(p=>matchDate(p.date));
   const cash=db.cash.filter(c=>matchDate(c.date));
-  const d=dash();
+  const summarize=list=>{const total=list.reduce((s,o)=>s+calcOrder(o).total,0),paid=list.reduce((s,o)=>s+Math.min(Math.max(Number(o.paid)||0,0),calcOrder(o).total),0),cost=list.reduce((s,o)=>s+calcOrder(o).cost,0),profit=total-cost;return{total,paid,due:Math.max(total-paid,0),cost,profit,margin:total?profit/total:0,orders:list.length}};
+  const d=summarize(orders),booked=summarize(validOrders);
   const qty=orders.reduce((a,o)=>a+calcOrder(o).qty,0),pending=orders.reduce((a,o)=>a+Math.max(0,calcOrder(o).total-Math.min(Math.max(Number(o.paid)||0,0),calcOrder(o).total)),0);
   const byMethod={};orders.forEach(o=>{const paid=Math.min(Math.max(Number(o.paid)||0,0),calcOrder(o).total);if(paid<=0)return;const hist=Array.isArray(o.paymentHistory)?o.paymentHistory:[],positive=hist.filter(h=>Number(h.amount)>0),histSum=positive.reduce((a,h)=>a+Number(h.amount||0),0);positive.forEach(h=>{const method=h.method||o.payment||'Outro';byMethod[method]=(byMethod[method]||0)+Number(h.amount||0)});const legacy=Math.max(0,paid-histSum);if(legacy>0.005){const method=o.payment||'Outro';byMethod[method]=(byMethod[method]||0)+legacy}});
-  return {y,m,pref,orders,purchases,cash,d,qty,pending,byMethod};
+  return {y,m,pref,orders,validOrders,openOrders,purchases,cash,d,booked,qty,pending,byMethod};
 }
 function pdfAscii(s){return String(s??'').replace(/[\u00A0\u202F]/g,' ').replace(/€/g,'EUR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,'?').replace(/([\\()])/g,'\\$1')}
 function pdfAscii(s){return String(s??'').replace(/[\u00A0\u202F]/g,' ').replace(/€/g,'EUR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,'?').replace(/([\\()])/g,'\\$1')}
@@ -6803,7 +6821,7 @@ function makeManagementPDF(){
  out+=`trailer\n<< /Size ${objs.length} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF`;
  return new Blob([out],{type:'application/pdf'});
 }
-function managementReportLines(){const r=reportPeriodData(),title='DONART MINI DONUTS - RELATORIO DE GESTAO '+r.pref;const lines=[title,'Gerado em: '+new Date().toLocaleString('pt-PT'),'','RESUMO','Faturacao: '+euro(r.d.total),'Recebido: '+euro(r.d.paid),'Por receber: '+euro(r.pending),'Custo estimado: '+euro(r.d.cost),'Lucro estimado: '+euro(r.d.profit),'Margem: '+pct(r.d.margin),'Encomendas: '+r.orders.length,'Donuts: '+r.qty,'','MEIOS DE PAGAMENTO'];Object.entries(r.byMethod).forEach(([k,v])=>lines.push(k+': '+euro(v)));lines.push('','ENCOMENDAS');r.orders.forEach(o=>{const c=calcOrder(o);lines.push(`${o.id} | ${o.client||'-'} | ${o.delivery||o.created||'-'} | ${c.qty} un | ${euro(c.total)} | ${o.status||'-'}`)});lines.push('','COMPRAS');r.purchases.forEach(p=>lines.push(`${p.date||'-'} | ${p.supplier||'-'} | ${p.item||'-'} | ${euro(Number(p.total)||0)}`));return lines}
+function managementReportLines(){const r=reportPeriodData(),title='DONART MINI DONUTS - RELATORIO DE GESTAO '+r.pref;const lines=[title,'Gerado em: '+new Date().toLocaleString('pt-PT'),'','RESUMO','Faturacao realizada: '+euro(r.d.total),'Recebido nas entregues: '+euro(r.d.paid),'Por receber das entregues: '+euro(r.pending),'Carteira total do periodo: '+euro(r.booked.total),'Encomendas em aberto: '+r.openOrders.length,'Custo realizado estimado: '+euro(r.d.cost),'Lucro realizado estimado: '+euro(r.d.profit),'Margem realizada: '+pct(r.d.margin),'Encomendas entregues: '+r.orders.length,'Donuts entregues: '+r.qty,'','MEIOS DE PAGAMENTO'];Object.entries(r.byMethod).forEach(([k,v])=>lines.push(k+': '+euro(v)));lines.push('','ENCOMENDAS');r.orders.forEach(o=>{const c=calcOrder(o);lines.push(`${o.id} | ${o.client||'-'} | ${o.delivery||o.created||'-'} | ${c.qty} un | ${euro(c.total)} | ${o.status||'-'}`)});lines.push('','COMPRAS');r.purchases.forEach(p=>lines.push(`${p.date||'-'} | ${p.supplier||'-'} | ${p.item||'-'} | ${euro(Number(p.total)||0)}`));return lines}
 function exportManagementPDF(){const r=reportPeriodData(),blob=makeManagementPDF(),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='DONART_Relatorio_'+r.pref+'.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
 function previewManagementReport(){const blob=makeManagementPDF(),u=URL.createObjectURL(blob);window.open(u,'_blank');setTimeout(()=>URL.revokeObjectURL(u),60000)}
 
@@ -6900,23 +6918,25 @@ function renderReports(){
 
  const kpis=document.getElementById('reportKpis');
  if(kpis)kpis.innerHTML=[
-   ['Faturação',euro(d.total),'Total vendido'],
-   ['Recebido',euro(d.paid),'Valor recebido'],
-   ['Lucro',euro(d.profit),'Estimativa'],
-   ['Margem',pct(d.margin),'Margem estimada'],
-   ['Encomendas',r.orders.length,'Concluídas'],
-   ['Donuts',r.qty,'Unidades vendidas']
+   ['Faturação realizada',euro(d.total),'Apenas encomendas entregues'],
+   ['Recebido',euro(d.paid),'Nas encomendas entregues'],
+   ['Lucro realizado',euro(d.profit),'Estimativa das entregues'],
+   ['Margem realizada',pct(d.margin),'Margem das entregues'],
+   ['Entregues',r.orders.length,'Encomendas concluídas'],
+   ['Donuts',r.qty,'Unidades entregues']
  ].map(([label,value,note])=>`<div class="card report-kpi">
    <span>${label}</span><strong>${value}</strong><small>${note}</small>
  </div>`).join('');
 
  const financial=document.getElementById('reportFinancial');
  if(financial)financial.innerHTML=[
-   ['Faturação',euro(d.total)],
-   ['Recebido',euro(d.paid)],
-   ['Por receber',euro(r.pending)],
-   ['Custo estimado',euro(d.cost)],
-   ['Lucro estimado',euro(d.profit)],
+   ['Faturação realizada',euro(d.total)],
+   ['Recebido nas entregues',euro(d.paid)],
+   ['Por receber das entregues',euro(r.pending)],
+   ['Carteira total do período',euro(r.booked.total)],
+   ['Encomendas ainda em aberto',r.openOrders.length],
+   ['Custo realizado estimado',euro(d.cost)],
+   ['Lucro realizado estimado',euro(d.profit)],
    ['Compras do período',euro(purchasesTotal)],
    ['Entradas em caixa',euro(cashIn)],
    ['Saídas em caixa',euro(cashOut)]
@@ -7561,6 +7581,7 @@ async function pullOnlineOrders(showToast=false){
        source:'online_store',
        clientDeleted:false
      };
+     ensureOnlineOrderCostSnapshotV12644(base);
      let target=(db.orders||[]).find(x=>x?._rid===r.id);
      if(!target&&base.id)target=(db.orders||[]).find(x=>String(x?.id)===String(base.id));
 
