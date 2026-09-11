@@ -2464,7 +2464,7 @@
             </div>
             <div style="height:1px;background:#eadfd9;margin:12px 0"></div>
             <input id="specialEditionVideoFile" type="file" accept="video/mp4,video/webm" onchange="previewSpecialEditionVideoFile()">
-            <small class="mix-help" style="display:block;margin-top:6px">Recomendado: MP4, 4–8 segundos, até 15 MB. Sem áudio.</small>
+            <small class="mix-help" style="display:block;margin-top:6px">Recomendado: MP4, 4–8 segundos, até 15 MB. Sem áudio.</small><small class="mix-help" style="display:block;margin-top:4px;color:#a52d5b">Se existir vídeo, a loja usa-o como capa em movimento. A imagem fica como poster/fallback.</small>
             <div class="btnrow" style="margin-top:7px">
               <button class="btn" onclick="uploadSpecialEditionVideo()">Carregar vídeo</button>
               <button class="btn danger" onclick="removeSpecialEditionVideo()">Remover vídeo</button>
@@ -6262,7 +6262,7 @@ async function uploadSpecialEditionVideo(){
  try{
   const {error}=await c.storage.from('donart-shop').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});if(error)throw error;
   const {data}=c.storage.from('donart-shop').getPublicUrl(path);const url=data?.publicUrl||'';if(!url)throw new Error('URL pública indisponível');
-  setSpecialEditionVideoPreview(url);toast('Vídeo carregado — guarda a edição');
+  setSpecialEditionVideoPreview(url);refreshSpecialEditionEditorVisual();toast('Vídeo carregado — guarda a edição');
  }catch(e){cloudLogMsg('Erro vídeo edição especial: '+cloudErrText(e));toast('Erro ao carregar vídeo')}
 }
 async function removeSpecialEditionVideo(){
@@ -6270,7 +6270,7 @@ async function removeSpecialEditionVideo(){
  if(!url)return setSpecialEditionVideoPreview('');
  if(!confirm('Remover o vídeo desta edição?'))return;
  try{const c=initCloudClient(),user=await ensureCloudSession();if(c&&user){const marker='/storage/v1/object/public/donart-shop/';const i=url.indexOf(marker);if(i>=0){const path=decodeURIComponent(url.slice(i+marker.length));await c.storage.from('donart-shop').remove([path])}}}catch(e){console.warn(e)}
- setSpecialEditionVideoPreview('');toast('Vídeo removido — guarda a edição');
+ setSpecialEditionVideoPreview('');refreshSpecialEditionEditorVisual();toast('Vídeo removido — guarda a edição');
 }
 function specialEditionSafeSlug(v){
  return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
@@ -6294,7 +6294,7 @@ async function uploadSpecialEditionImage(){
    const {data}=c.storage.from('donart-shop').getPublicUrl(path);
    const url=data?.publicUrl||'';
    if(!url)throw new Error('URL pública indisponível');
-   setSpecialEditionPreview(url);
+   setSpecialEditionPreview(url);refreshSpecialEditionEditorVisual();
    toast('Imagem carregada')
  }catch(e){cloudLogMsg('Erro imagem edição especial: '+cloudErrText(e));toast('Erro ao carregar imagem')}
 }
@@ -6313,8 +6313,9 @@ async function removeSpecialEditionImage(){
      }
    }catch(e){cloudLogMsg('Aviso ao remover imagem da edição: '+cloudErrText(e))}
  }
- setSpecialEditionPreview('');setSpecialEditionVideoPreview('');
+ setSpecialEditionPreview('');
  const f=document.getElementById('specialEditionImageFile');if(f)f.value='';
+ refreshSpecialEditionEditorVisual();
 }
 
 function refreshSpecialEditionEditorVisual(){
@@ -6322,8 +6323,9 @@ function refreshSpecialEditionEditorVisual(){
  const badge=document.getElementById('specialEditorMode');
  if(badge){badge.textContent=editing?'A editar':'Nova edição';badge.className='badge '+(editing?'warn':'')}
  const img=document.getElementById('specialEditionPreview');
+ const vid=document.getElementById('specialEditionVideoPreview');
  const fallback=document.getElementById('specialEditionImageFallback');
- if(img&&fallback)fallback.style.display=img.classList.contains('hidden')?'grid':'none';
+ if(fallback){const hasImage=img&&!img.classList.contains('hidden');const hasVideo=vid&&!vid.classList.contains('hidden');fallback.style.display=(hasImage||hasVideo)?'none':'grid'}
 }
 function clearSpecialEditionForm(){
  for(const id of ['specialEditionId','specialEditionName','specialEditionSlug','specialEditionStarts','specialEditionEnds','specialEditionEmoji','specialEditionSubtitle','specialEditionBadge','specialEditionNote']){
@@ -6331,7 +6333,7 @@ function clearSpecialEditionForm(){
  }
  const a=document.getElementById('specialEditionActive');if(a)a.value='1';const ft=document.getElementById('specialEditionFeatured');if(ft)ft.value='0';
  const o=document.getElementById('specialEditionOrder');if(o)o.value='0';
- const f=document.getElementById('specialEditionImageFile');if(f)f.value='';
+ const f=document.getElementById('specialEditionImageFile');if(f)f.value='';const vf=document.getElementById('specialEditionVideoFile');if(vf)vf.value='';
  setSpecialEditionPreview('');setSpecialEditionVideoPreview('');
  renderSpecialEditionProductPicker([]);
  refreshSpecialEditionEditorVisual();
