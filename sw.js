@@ -1,8 +1,31 @@
-const CACHE_SUFFIX='v12631';
-const CACHE='donart-v12-6-29-shell';
-const SHELL=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./logo-donart-ui.png','./logo-donart.png'];
-self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL).catch(()=>{})).then(()=>self.skipWaiting()))});
-self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
-self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);if(url.origin!==location.origin)return;event.respondWith(fetch(event.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(event.request,copy)).catch(()=>{});return r}).catch(()=>caches.match(event.request).then(r=>r||caches.match('./index.html'))))});
-self.addEventListener('push',event=>{let data={};try{data=event.data?event.data.json():{}}catch(e){data={body:event.data?.text?.()||'Nova encomenda online'}};const title=data.title||'🍩 Nova encomenda DONART';const options={body:data.body||'Entrou uma nova encomenda na loja.',icon:'./icon-192.png',badge:'./icon-192.png',tag:data.tag||'donart-new-order',renotify:true,data:{url:data.url||'./'},vibrate:[120,60,120]};event.waitUntil(self.registration.showNotification(title,options))});
-self.addEventListener('notificationclick',event=>{event.notification.close();const target=new URL(event.notification.data?.url||'./',self.location.origin).href;event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const c of list){if('focus'in c){c.navigate(target).catch(()=>{});return c.focus()}}return clients.openWindow?clients.openWindow(target):null}))});
+self.addEventListener('push',event=>{
+  let data={};
+  try{data=event.data?event.data.json():{};}catch{data={body:event.data?event.data.text():'Nova encomenda DONART'};}
+  const title=data.title||'DONART · Nova encomenda';
+  const options={
+    body:data.body||'Recebeste uma nova encomenda.',
+    icon:data.icon||'./icon-192.png',
+    badge:data.badge||'./icon-192.png',
+    tag:data.tag||'donart-order',
+    renotify:Boolean(data.renotify),
+    data:data.data||{url:'./'}
+  };
+  event.waitUntil(self.registration.showNotification(title,options));
+});
+self.addEventListener('notificationclick',event=>{
+  event.notification.close();
+  const target=event.notification?.data?.url||'./';
+  event.waitUntil((async()=>{
+    const list=await clients.matchAll({type:'window',includeUncontrolled:true});
+    for(const client of list){
+      try{
+        if('focus' in client){
+          await client.focus();
+          if('navigate' in client)await client.navigate(target);
+          return;
+        }
+      }catch{}
+    }
+    if(clients.openWindow)return clients.openWindow(target);
+  })());
+});

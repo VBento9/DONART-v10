@@ -4521,6 +4521,11 @@ function setOrderStatus(id,status){
    renderOrders();
    return;
  }
+ if(prev==='Cancelado'&&status!=='Cancelado'){
+   o.lastVoidedAt=o.voidedAt||null;
+   o.reopenedAt=new Date().toISOString();
+   o.voidedAt=null;
+ }
  o.status=status;
  o.statusHistory=Array.isArray(o.statusHistory)?o.statusHistory:[];
  o.statusHistory.push({from:prev,to:status,date:new Date().toISOString(),source:o.source==='online_store'?'online_store':'manual'});

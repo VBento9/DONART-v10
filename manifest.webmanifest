@@ -1,23 +1,13 @@
 {
-  "name": "DONART Gestão Privada",
+  "name": "DONART · Gestão",
   "short_name": "DONART",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#FFFDF9",
-  "theme_color": "#F12473",
-  "lang": "pt-PT",
-  "id": "donart-gestao",
+  "background_color": "#fffaf6",
+  "theme_color": "#fffaf6",
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    {"src":"./icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"./icon-512.png","sizes":"512x512","type":"image/png"}
   ]
 }
