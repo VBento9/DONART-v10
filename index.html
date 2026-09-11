@@ -5001,7 +5001,9 @@ async function saveShopDeliverySettings(){
  s.pickupEnd=document.getElementById('setPickupEnd')?.value||'19:00';
  s.localStart=document.getElementById('setLocalStart')?.value||'11:00';
  s.localEnd=document.getElementById('setLocalEnd')?.value||'19:00';
- s.postalPrefixes=String(document.getElementById('setPostalPrefixes')?.value||'').split(',').map(x=>x.trim()).filter(Boolean);
+ if(s.pickupEnabled&&s.pickupStart>=s.pickupEnd){toast('No levantamento, a hora final tem de ser posterior à hora inicial');return;}
+ if(s.localDeliveryEnabled&&s.localStart>=s.localEnd){toast('Na entrega local, a hora final tem de ser posterior à hora inicial');return;}
+ s.postalPrefixes=[...new Set(String(document.getElementById('setPostalPrefixes')?.value||'').split(',').map(x=>x.replace(/\D/g,'').slice(0,4)).filter(x=>x.length===4))];
  s.maxOrdersPerDay=Math.max(0,Number(document.getElementById('setMaxOrdersDay')?.value)||0);
  s.maxUnitsPerDay=Math.max(0,Number(document.getElementById('setMaxUnitsDay')?.value)||0);
  s.orderApprovalMode=document.getElementById('setOrderApprovalMode')?.value==='production'?'production':'testing';
