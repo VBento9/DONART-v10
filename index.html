@@ -1871,9 +1871,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.39 · Estrutura V12.6.4 + Criador atualizado · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.48 · Estrutura auditada · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.46</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.48</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -5039,14 +5039,57 @@ function ensureShopDeliverySettings(){
    maxOrdersPerDay:0,
    maxUnitsPerDay:0,
    orderApprovalMode:'testing',
-   note:''
+   note:'',
+   dateExceptions:[]
  };
  const s=db.settings.shopDelivery;
  if(!Array.isArray(s.allowedWeekdays))s.allowedWeekdays=[1,2,3,4,5,6];
  if(!Array.isArray(s.postalPrefixes))s.postalPrefixes=[];
+ if(!Array.isArray(s.dateExceptions))s.dateExceptions=[];
  if(!['testing','production'].includes(s.orderApprovalMode))s.orderApprovalMode='testing';
 }
 function shopDeliverySettings(){ensureShopDeliverySettings();return db.settings.shopDelivery}
+function deliveryExceptionByDate(iso){
+ const s=shopDeliverySettings();return (s.dateExceptions||[]).find(x=>x&&x.date===iso)||null
+}
+function addDeliveryException(){
+ const s=shopDeliverySettings(),date=document.getElementById('deliveryExceptionDate')?.value;
+ if(!date)return toast('Escolhe a data da exceção');
+ if(deliveryExceptionByDate(date))return toast('Já existe uma exceção para esta data');
+ s.dateExceptions.push({date,closed:true,pickupEnabled:false,localDeliveryEnabled:false,pickupStart:'',pickupEnd:'',localStart:'',localEnd:'',note:''});
+ s.dateExceptions.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+ save();renderShopDeliverySettings();renderShopCapacityAgenda();
+}
+function updateDeliveryException(date,key,value){
+ const ex=deliveryExceptionByDate(date);if(!ex)return;
+ if(['closed','pickupEnabled','localDeliveryEnabled'].includes(key))ex[key]=!!value;else ex[key]=String(value||'');
+ if(key==='closed'&&ex.closed){ex.pickupEnabled=false;ex.localDeliveryEnabled=false}
+ if((key==='pickupEnabled'||key==='localDeliveryEnabled')&&value)ex.closed=false;
+ save();renderShopDeliverySettings();renderShopCapacityAgenda();
+}
+function removeDeliveryException(date){
+ const s=shopDeliverySettings();s.dateExceptions=(s.dateExceptions||[]).filter(x=>x?.date!==date);save();renderShopDeliverySettings();renderShopCapacityAgenda();
+}
+function deliveryExceptionRows(){
+ const s=shopDeliverySettings(),rows=(s.dateExceptions||[]).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+ if(!rows.length)return '<div class="empty" style="padding:16px">Sem exceções. A loja segue os dias e horários semanais acima.</div>';
+ return rows.map(ex=>{
+   const date=escapeHtml(ex.date||''),closed=ex.closed===true;
+   return `<div style="border:1px solid #eadfdb;border-radius:14px;padding:12px;background:#fff;display:grid;gap:10px">
+    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b>${date}</b><small style="display:block;color:#88766f">${closed?'Fechado':'Horário especial'}</small></div><button type="button" class="btn" onclick="removeDeliveryException('${date}')">Eliminar</button></div>
+    <div class="delivery-v33-fields three">
+      <div class="field"><label>Estado</label><select onchange="updateDeliveryException('${date}','closed',this.value==='closed')"><option value="closed" ${closed?'selected':''}>Fechado</option><option value="special" ${!closed?'selected':''}>Horário especial</option></select></div>
+      <div class="field"><label>Levantamento</label><select ${closed?'disabled':''} onchange="updateDeliveryException('${date}','pickupEnabled',this.value==='1')"><option value="1" ${ex.pickupEnabled?'selected':''}>Permitido</option><option value="0" ${!ex.pickupEnabled?'selected':''}>Indisponível</option></select></div>
+      <div class="field"><label>Entrega local</label><select ${closed?'disabled':''} onchange="updateDeliveryException('${date}','localDeliveryEnabled',this.value==='1')"><option value="1" ${ex.localDeliveryEnabled?'selected':''}>Permitida</option><option value="0" ${!ex.localDeliveryEnabled?'selected':''}>Indisponível</option></select></div>
+      <div class="field"><label>Levantamento desde</label><input type="time" value="${escapeHtml(ex.pickupStart||'')}" ${closed||!ex.pickupEnabled?'disabled':''} onchange="updateDeliveryException('${date}','pickupStart',this.value)"></div>
+      <div class="field"><label>Levantamento até</label><input type="time" value="${escapeHtml(ex.pickupEnd||'')}" ${closed||!ex.pickupEnabled?'disabled':''} onchange="updateDeliveryException('${date}','pickupEnd',this.value)"></div>
+      <div class="field"><label>Nota</label><input value="${escapeHtml(ex.note||'')}" placeholder="Ex.: só até às 15h" onchange="updateDeliveryException('${date}','note',this.value)"></div>
+      <div class="field"><label>Entrega desde</label><input type="time" value="${escapeHtml(ex.localStart||'')}" ${closed||!ex.localDeliveryEnabled?'disabled':''} onchange="updateDeliveryException('${date}','localStart',this.value)"></div>
+      <div class="field"><label>Entrega até</label><input type="time" value="${escapeHtml(ex.localEnd||'')}" ${closed||!ex.localDeliveryEnabled?'disabled':''} onchange="updateDeliveryException('${date}','localEnd',this.value)"></div>
+    </div>
+   </div>`
+ }).join('')
+}
 
 function renderDeliveryOverview(){
  const s=shopDeliverySettings(),summary=document.getElementById('deliverySummary'),mode=document.getElementById('deliveryModeHero'),days=(s.allowedWeekdays||[]).length;
@@ -5151,6 +5194,17 @@ function renderShopDeliverySettings(){
    </div>
   </section>
 
+  <section class="delivery-v33-card delivery-v33-wide">
+   <div class="delivery-v33-cardhead">
+    <div><strong>🗓️ Exceções por data</strong><small>Fecha um dia específico ou define métodos e horários diferentes sem alterar a semana normal.</small></div>
+   </div>
+   <div class="delivery-v33-fields two" style="margin-bottom:12px">
+    <div class="field"><label>Nova data especial</label><input id="deliveryExceptionDate" type="date"></div>
+    <div class="field" style="display:flex;align-items:flex-end"><button type="button" class="btn" style="width:100%;min-height:42px" onclick="addDeliveryException()">+ Adicionar exceção</button></div>
+   </div>
+   <div style="display:grid;gap:10px">${deliveryExceptionRows()}</div>
+  </section>
+
   <section class="delivery-v33-card delivery-v33-mode ${s.orderApprovalMode==='production'?'production':'testing'}">
    <div class="delivery-v33-cardhead">
     <div><strong>${s.orderApprovalMode==='production'?'🟢':'🧪'} Modo da loja</strong><small>Define quando uma encomenda online pode ser confirmada.</small></div>
@@ -5187,7 +5241,8 @@ function capacityDayUnits(os){
  return (os||[]).reduce((a,o)=>a+(o.items||[]).reduce((b,x)=>b+(Number(x.qty)||0),0),0);
 }
 function capacityDayState(d,os,units,s){
- const weekday=d.getDay(),allowed=(s.allowedWeekdays||[]).includes(weekday);
+ const weekday=d.getDay(),iso=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,ex=(s.dateExceptions||[]).find(x=>x&&x.date===iso);
+ const allowed=ex?(ex.closed!==true&&(ex.pickupEnabled===true||ex.localDeliveryEnabled===true)):(s.allowedWeekdays||[]).includes(weekday);
  const maxO=Number(s.maxOrdersPerDay)||0,maxU=Number(s.maxUnitsPerDay)||0;
  if(!allowed)return {key:'closed',label:'FECHADO'};
  const orderRatio=maxO>0?os.length/maxO:0,unitRatio=maxU>0?units/maxU:0,ratio=Math.max(orderRatio,unitRatio);
