@@ -514,7 +514,7 @@
 #production .prod-warning{font-size:9px!important;font-weight:700;color:#8a3f32;background:#fff6f3;border:1px solid #efc7bd;border-radius:8px}
 
 
-/* DONART V12.6.57 RC — clarificação UX caixas temáticas */
+/* DONART V12.6.58 RC — clarificação UX caixas temáticas */
 .prod-day-alerts-v12653{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .prod-alert-v12653{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 10px;border:1px solid #eadfdb;border-radius:10px;background:#fff}
 .prod-alert-v12653.warn{background:#fff9ec;border-color:#ecd29a}.prod-alert-v12653.bad{background:#fff4f2;border-color:#efb8ad}.prod-alert-v12653.ok{background:#f1faf4;border-color:#bfe2ca}
@@ -1869,7 +1869,7 @@
 /* V12.6.37 — nota operacional discreta; não interfere com cálculo/consumo */
 .prod-operational-hint-v12633{display:block;margin-top:2px;font-size:7.5px!important;line-height:1.25;color:#9a6b55!important;font-weight:600}
 
-/* DONART V12.6.57 — Personalizações adicionais dinâmicas */
+/* DONART V12.6.58 — Personalizações adicionais dinâmicas */
 .creator-custom-person-v12657{margin-top:10px;border:1px solid #eadfdb;border-radius:14px;background:#fbf8f6;padding:11px}
 .creator-custom-person-head-v12657{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
 .creator-custom-person-head-v12657 strong{font-size:10px;color:#43332d}.creator-custom-person-head-v12657 small{font-size:7.5px;color:#887971}
@@ -1895,9 +1895,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.57 RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.58 RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.57 RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.58 RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -4096,6 +4096,22 @@ function productionOperationalHintV12633(name,qty,unit){
  return '';
 }
 
+// DONART V12.6.58 RC — apresentação das personalizações adicionais já validadas pelo servidor.
+function dynamicPersonalizationLabelsV12658(p){
+ const arr=Array.isArray(p?.additional)?p.additional:[];
+ return arr.map(x=>{
+  const name=String(x?.name||'Personalização').trim()||'Personalização';
+  let value=x?.value;
+  if(typeof value==='boolean')value=value?'Sim':'Não';
+  else if(value===null||value===undefined)value='';
+  else if(typeof value==='object'){try{value=JSON.stringify(value)}catch(e){value=String(value)}}
+  else value=String(value);
+  value=value.trim();
+  const price=Math.max(0,Number(x?.price)||0);
+  return name+(value?': '+value:'')+(price>0?' (+'+euro(price)+')':'');
+ }).filter(Boolean);
+}
+
 // DONART V12.6.55 RC — Centro de Produção Diário; apenas projeta dados já existentes.
 function productionDayOrdersV12653(date){
  return (db.orders||[]).filter(o=>o.delivery===date&&o.status!=='Cancelado').slice().sort((a,b)=>String(a.deliveryTime||'99:99').localeCompare(String(b.deliveryTime||'99:99'))||String(a.id||'').localeCompare(String(b.id||'')));
@@ -4114,6 +4130,7 @@ function productionOrderPersonalizationV12653(o){
   if(p.ribbon)parts.push(p.ribbonText?'Fita: '+p.ribbonText:'Fita');
   if(p.label)parts.push('Etiqueta');
   if(p.card)parts.push('Cartão');
+  parts.push(...dynamicPersonalizationLabelsV12658(p));
   if(parts.length)arr.push((b.box||b.name||('Caixa '+(idx+1)))+' — '+parts.join(' · '));
  });
  return arr;
@@ -4895,7 +4912,7 @@ function printOrderCompleteV12634(id){
  const totalNeedsRows=Object.entries(totalNeeds).filter(([,v])=>Number(v)>0).map(([name,v])=>`<tr><td>${h(name)}</td><td class="num">${h(fmt(v))} ${h(stockByName(name)?.unit||'')}</td></tr>`).join('');
  const themeRows=Array.isArray(o.thematicBoxes)&&o.thematicBoxes.length?o.thematicBoxes.map((b,idx)=>{
    const pz=b.personalization||{}, donuts=(b.donuts||[]).map(d=>`${d.qty}× ${d.name}`).join(', ')||'—';
-   const pers=[pz.name?`Nome: ${pz.name}`:'',pz.date?`Data: ${pz.date}`:'',pz.message?`Mensagem: ${pz.message}`:'',pz.ribbon?(pz.ribbonText?`Fita: ${pz.ribbonText}`:'Fita'):'',pz.label?'Etiqueta':'',pz.card?'Cartão':''].filter(Boolean).join(' · ')||'Sem extras';
+   const pers=[pz.name?`Nome: ${pz.name}`:'',pz.date?`Data: ${pz.date}`:'',pz.message?`Mensagem: ${pz.message}`:'',pz.ribbon?(pz.ribbonText?`Fita: ${pz.ribbonText}`:'Fita'):'',pz.label?'Etiqueta':'',pz.card?'Cartão':'',...dynamicPersonalizationLabelsV12658(pz)].filter(Boolean).join(' · ')||'Sem extras';
    const kind=String(b.mode||'').toLowerCase()==='mix'?'Caixa Mix':'Caixa personalizada';
    return `<div class="boxline"><strong>${kind} ${idx+1}</strong> · ${h(b.qty||1)}× ${h(b.box||'—')}<br><span>Donuts: ${h(donuts)}</span>${String(b.mode||'').toLowerCase()==='mix'?'':`<br><span>Ocasião: ${h(b.occasion||'—')} · Tema: ${h(b.style||'—')} · Cor: ${h(b.color||'—')}</span>`}<br><span>Personalização: ${h(pers)}</span></div>`;
  }).join(''):'';
@@ -5096,7 +5113,7 @@ function showOrder(id){
  <div class="soft-note" style="line-height:1.7">${o.thematicBoxes.map((b,idx)=>{
    const p=b.personalization||{};
    const donuts=(b.donuts||[]).map(d=>`${Number(d.qty)||0}× ${escapeHtml(d.name||'')}`).join(', ');
-   const pers=[p.name?`Nome: ${escapeHtml(p.name)}`:'',p.date?`Data: ${escapeHtml(p.date)}`:'',p.message?`Mensagem: ${escapeHtml(p.message)}`:'',p.ribbon?(p.ribbonText?`Fita: ${escapeHtml(p.ribbonText)}`:'Fita'):'',p.label?'Etiqueta':'',p.card?'Cartão':''].filter(Boolean).join(' · ')||'Sem extras';
+   const pers=[p.name?`Nome: ${escapeHtml(p.name)}`:'',p.date?`Data: ${escapeHtml(p.date)}`:'',p.message?`Mensagem: ${escapeHtml(p.message)}`:'',p.ribbon?(p.ribbonText?`Fita: ${escapeHtml(p.ribbonText)}`:'Fita'):'',p.label?'Etiqueta':'',p.card?'Cartão':'',...dynamicPersonalizationLabelsV12658(p).map(escapeHtml)].filter(Boolean).join(' · ')||'Sem extras';
    return `<strong>Caixa ${idx+1}:</strong> ${Number(b.qty)||1}× ${escapeHtml(b.box||'—')} · ${escapeHtml(b.occasion||'—')} · ${escapeHtml(b.style||'—')} · ${escapeHtml(b.color||'—')}<br><strong>Donuts:</strong> ${donuts||'—'}<br><strong>Personalização:</strong> ${pers}<br><strong>Acréscimo temático:</strong> ${euro(b.thematicExtra||0)}`;
  }).join('<hr style="border:0;border-top:1px solid #eaded8;margin:10px 0">')}</div>`:''}
  ${isOnline&&(Number(o.thematicExtra)>0||Number(o.deliveryFee)>0)?`<div class="soft-note" style="margin-top:8px;line-height:1.65"><strong>Composição do total:</strong> Produtos ${euro(c.productsTotal)}${c.thematicExtra>0?' + Personalização '+euro(c.thematicExtra):''}${c.deliveryFee>0?' + Entrega '+euro(c.deliveryFee):''} = <strong>${euro(c.total)}</strong></div>`:''}
@@ -6686,7 +6703,7 @@ async function saveBoxCreatorSettings(){
 
 
 
-// DONART V12.6.57 — CRUD de personalizações adicionais
+// DONART V12.6.58 — CRUD de personalizações adicionais
 let creatorPersonalizationEditIndexV12657=-1;
 function creatorPersonalizationUidV12657(){return 'pers_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
 function normalizeCreatorPersonalizationsV12657(arr){
