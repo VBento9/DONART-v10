@@ -1,0 +1,12 @@
+DONART V12.7.2 UX RC
+Correção isolada: persistência da disponibilidade das Cores no Criador de Caixas.
+
+Mantido:
+- estrutura V12.7.1
+- Supabase/RPC/RLS/tabelas sem alterações
+- Criador, personalizações, preços, encomendas, produção, stock e restantes módulos sem alterações funcionais
+
+Corrigido:
+- colorOptions passa a enviar e preservar active=true/false na sincronização Cloud
+- lista legacy colors passa a conter apenas cores ativas
+- ao guardar o Criador, o estado inativo já não é reativado pelo retorno da Cloud
