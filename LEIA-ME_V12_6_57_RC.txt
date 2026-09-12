@@ -1,0 +1,13 @@
+DONART V12.6.57 RC — PERSONALIZAÇÕES DINÂMICAS
+
+Base: V12.6.56 RC.
+
+Alteração funcional isolada:
+- Mantém todas as personalizações base existentes.
+- Adiciona Personalizações adicionais com Criar / Editar / Ativar / Desativar / Eliminar.
+- Tipos: Sim/Não, Texto curto, Texto longo, Lista de opções e Escolha de cor.
+- Permite preço extra, obrigatório/opcional e limite de caracteres em texto.
+- Guarda no objeto boxCreator e sincroniza pelo RPC já existente donart_save_box_creator_v1.
+- Não altera tabelas, RLS, Storage, triggers ou arquitetura de segurança.
+
+Nesta fase valida-se primeiro o CRUD no backoffice. A apresentação e validação das novas personalizações na loja será ligada numa versão seguinte, depois de confirmar persistência Cloud sem regressões.

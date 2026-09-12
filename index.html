@@ -514,7 +514,7 @@
 #production .prod-warning{font-size:9px!important;font-weight:700;color:#8a3f32;background:#fff6f3;border:1px solid #efc7bd;border-radius:8px}
 
 
-/* DONART V12.6.56 RC — clarificação UX caixas temáticas */
+/* DONART V12.6.57 RC — clarificação UX caixas temáticas */
 .prod-day-alerts-v12653{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .prod-alert-v12653{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 10px;border:1px solid #eadfdb;border-radius:10px;background:#fff}
 .prod-alert-v12653.warn{background:#fff9ec;border-color:#ecd29a}.prod-alert-v12653.bad{background:#fff4f2;border-color:#efb8ad}.prod-alert-v12653.ok{background:#f1faf4;border-color:#bfe2ca}
@@ -1868,6 +1868,18 @@
 
 /* V12.6.37 — nota operacional discreta; não interfere com cálculo/consumo */
 .prod-operational-hint-v12633{display:block;margin-top:2px;font-size:7.5px!important;line-height:1.25;color:#9a6b55!important;font-weight:600}
+
+/* DONART V12.6.57 — Personalizações adicionais dinâmicas */
+.creator-custom-person-v12657{margin-top:10px;border:1px solid #eadfdb;border-radius:14px;background:#fbf8f6;padding:11px}
+.creator-custom-person-head-v12657{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.creator-custom-person-head-v12657 strong{font-size:10px;color:#43332d}.creator-custom-person-head-v12657 small{font-size:7.5px;color:#887971}
+.creator-custom-person-list-v12657{display:flex;flex-direction:column;gap:7px}
+.creator-custom-person-item-v12657{display:grid;grid-template-columns:minmax(0,1fr) 110px 80px 70px;gap:8px;align-items:center;background:#fff;border:1px solid #e8ddd7;border-radius:11px;padding:8px}
+.creator-custom-person-item-v12657 b{font-size:9px;color:#43332d}.creator-custom-person-item-v12657 small{font-size:7px;color:#8d7d75}.creator-custom-person-item-v12657 .status{font-size:7.5px;font-weight:800}.creator-custom-person-item-v12657 .price{font-size:8.5px;font-weight:800;text-align:right}
+.creator-custom-person-empty-v12657{padding:12px;border:1px dashed #ddcec7;border-radius:10px;font-size:8px;color:#8d7d75;background:#fff}
+.creator-custom-person-form-v12657{display:grid;grid-template-columns:1.4fr 1fr 100px 100px;gap:8px}.creator-custom-person-form-v12657 .span2{grid-column:span 2}.creator-custom-person-form-v12657 .span4{grid-column:1/-1}
+.creator-custom-person-checks-v12657{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:8px 0}.creator-custom-person-checks-v12657 label{display:flex;align-items:center;gap:6px;font-size:8px}.creator-custom-person-checks-v12657 input[type=checkbox]{width:17px;height:17px}
+@media(max-width:760px){.creator-custom-person-item-v12657{grid-template-columns:1fr auto}.creator-custom-person-item-v12657 .price{grid-column:1}.creator-custom-person-form-v12657{grid-template-columns:1fr 1fr}.creator-custom-person-form-v12657 .span4{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -1883,9 +1895,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.56 RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.57 RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.56 RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.57 RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -2409,6 +2421,15 @@
         <div class="creator-person-row-v1268"><strong>🏷️ Etiqueta</strong><label class="creator-switch-v1268"><input id="creatorLabel" type="checkbox"><span>Ativo</span></label><div class="creator-money"><span>€</span><input id="creatorPriceLabel" type="number" min="0" step="0.01"></div></div>
         <div class="creator-person-row-v1268"><strong>💌 Cartão</strong><label class="creator-switch-v1268"><input id="creatorCard" type="checkbox"><span>Ativo</span></label><div class="creator-money"><span>€</span><input id="creatorPriceCard" type="number" min="0" step="0.01"></div></div>
       </div>
+
+      <div class="creator-custom-person-v12657">
+        <div class="creator-custom-person-head-v12657">
+          <div><strong>Personalizações adicionais</strong><br><small>Cria novos extras sem alterar o código da app.</small></div>
+          <button type="button" class="btn primary" onclick="openCreatorPersonalizationEditorV12657(-1)">+ Nova personalização</button>
+        </div>
+        <div id="creatorCustomPersonalizationsV12657" class="creator-custom-person-list-v12657"></div>
+      </div>
+
       <div class="creator-pricing-grid creator-master-pricing-v1268">
         <div class="creator-price-field"><label>Acréscimo base temático</label><div class="creator-money"><span>€</span><input id="creatorBaseExtra" type="number" min="0" step="0.01"></div></div>
         <div class="creator-price-field creator-availability-field"><label>Criador disponível na loja</label><select id="creatorEnabled"><option value="1">Sim</option><option value="0">Não</option></select></div>
@@ -6260,7 +6281,7 @@ function renderSettingsThemedBoxesSummary(){
 }
 
 
-function boxCreatorDefaults(){return {enabled:false,baseExtra:0,priceName:0,priceDate:0,priceMessage:0,priceRibbon:0,priceRibbonPersonalized:0,ribbonPersonalized:false,ribbonMaxChars:25,priceLabel:0,priceCard:0,occasions:['Aniversário','Batizado','Comunhão','Natal'],occasionOptions:[],styles:['Dinossauro','Princesa','Futebol'],themeOptions:[],colors:['Rosa','Azul','Dourado'],colorOptions:[],custom:{name:true,date:true,message:true,ribbon:true,label:true,card:true}}}
+function boxCreatorDefaults(){return {enabled:false,baseExtra:0,priceName:0,priceDate:0,priceMessage:0,priceRibbon:0,priceRibbonPersonalized:0,ribbonPersonalized:false,ribbonMaxChars:25,priceLabel:0,priceCard:0,occasions:['Aniversário','Batizado','Comunhão','Natal'],occasionOptions:[],styles:['Dinossauro','Princesa','Futebol'],themeOptions:[],colors:['Rosa','Azul','Dourado'],colorOptions:[],personalizationOptions:[],custom:{name:true,date:true,message:true,ribbon:true,label:true,card:true}}}
 function boxCreatorSettings(){db.settings=db.settings||{};const d=boxCreatorDefaults();db.settings.boxCreator=Object.assign(d,db.settings.boxCreator||{});db.settings.boxCreator.custom=Object.assign(d.custom,db.settings.boxCreator.custom||{});return db.settings.boxCreator}
 function creatorLines(id){return String(document.getElementById(id)?.value||'').split('\n').map(x=>x.trim()).filter(Boolean)}
 function creatorColorNormalizeV1257(v){
@@ -6504,6 +6525,7 @@ function boxCreatorCloudPayloadV12612(s=boxCreatorSettings()){
   themeOptions:(s.themeOptions||[]).map(o=>({name:String(o.name||'').trim(),family:String(o.family||'Outros').trim(),icon:String(o.icon||'✨').trim()||'✨',occasions:Array.isArray(o.occasions)?o.occasions.map(x=>String(x).trim()).filter(Boolean):[],active:o.active!==false})).filter(o=>o.name),
   colors:[...(s.colors||[])],
   colorOptions:(s.colorOptions||[]).map(o=>({name:String(o.name||'').trim(),hex:String(o.hex||creatorColorHexGuessV1257(o.name)).toUpperCase()})).filter(o=>o.name),
+  personalizationOptions:normalizeCreatorPersonalizationsV12657(s.personalizationOptions),
   custom:{...(s.custom||{})}
  };
 }
@@ -6564,6 +6586,7 @@ function renderBoxCreatorSettings(){
  set('creatorPriceRibbonPersonalized',Number(s.priceRibbonPersonalized||0).toFixed(2));set('creatorRibbonMaxChars',Math.max(1,Number(s.ribbonMaxChars)||25));const rp=document.getElementById('creatorRibbonPersonalized');if(rp)rp.checked=!!s.ribbonPersonalized;
  const map={creatorName:'name',creatorDate:'date',creatorMessage:'message',creatorRibbon:'ribbon',creatorLabel:'label',creatorCard:'card'};
  Object.entries(map).forEach(([id,k])=>{const e=document.getElementById(id);if(e)e.checked=s.custom?.[k]!==false});
+ renderCreatorPersonalizationsV12657();
 }
 async function saveBoxCreatorSettings(){
  const s=boxCreatorSettings();
@@ -6627,6 +6650,7 @@ async function saveBoxCreatorSettings(){
     themeOptions:(s.themeOptions||[]).map(o=>({name:String(o.name||'').trim(),family:String(o.family||'Outros').trim(),icon:String(o.icon||'✨').trim()||'✨',occasions:Array.isArray(o.occasions)?o.occasions.map(x=>String(x).trim()).filter(Boolean):[],active:o.active!==false})).filter(o=>o.name),
     colors:[...(s.colors||[])],
     colorOptions:(s.colorOptions||[]).map(o=>({name:String(o.name||'').trim(),hex:String(o.hex||creatorColorHexGuessV1257(o.name)).toUpperCase()})).filter(o=>o.name),
+    personalizationOptions:normalizeCreatorPersonalizationsV12657(s.personalizationOptions),
     custom:{...s.custom}
   };
 
@@ -6642,6 +6666,7 @@ async function saveBoxCreatorSettings(){
   const savedColorOptions=(s.colorOptions||[]).map(o=>({...o}));
   const savedOccasionOptions=(s.occasionOptions||[]).map(o=>({...o}));
   const savedThemeOptions=(s.themeOptions||[]).map(o=>({...o,occasions:[...(o.occasions||[])]}));
+  const savedPersonalizationOptions=normalizeCreatorPersonalizationsV12657(s.personalizationOptions);
   db.settings.boxCreator=JSON.parse(JSON.stringify(rpc.data.boxCreator));
   if(db.settings.boxCreator.ribbonPersonalized===undefined)db.settings.boxCreator.ribbonPersonalized=savedRibbonPersonalized;
   if(db.settings.boxCreator.priceRibbonPersonalized===undefined)db.settings.boxCreator.priceRibbonPersonalized=savedPriceRibbonPersonalized;
@@ -6649,6 +6674,7 @@ async function saveBoxCreatorSettings(){
   if(!Array.isArray(db.settings.boxCreator.themeOptions)||!db.settings.boxCreator.themeOptions.length)db.settings.boxCreator.themeOptions=savedThemeOptions;
   if(!Array.isArray(db.settings.boxCreator.occasionOptions)||!db.settings.boxCreator.occasionOptions.length)db.settings.boxCreator.occasionOptions=savedOccasionOptions;
   if(!Array.isArray(db.settings.boxCreator.colorOptions)||!db.settings.boxCreator.colorOptions.length)db.settings.boxCreator.colorOptions=savedColorOptions;
+  if(!Array.isArray(db.settings.boxCreator.personalizationOptions))db.settings.boxCreator.personalizationOptions=savedPersonalizationOptions;
   save();
   renderBoxCreatorSettings();
   toast('Criador de Caixas guardado e sincronizado');
@@ -6658,6 +6684,57 @@ async function saveBoxCreatorSettings(){
  }
 }
 
+
+
+// DONART V12.6.57 — CRUD de personalizações adicionais
+let creatorPersonalizationEditIndexV12657=-1;
+function creatorPersonalizationUidV12657(){return 'pers_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function normalizeCreatorPersonalizationsV12657(arr){
+ return (Array.isArray(arr)?arr:[]).map((o,i)=>{
+  const type=['toggle','text','textarea','select','color'].includes(String(o?.type||''))?String(o.type):'toggle';
+  const options=Array.isArray(o?.options)?o.options.map(x=>String(x||'').trim()).filter(Boolean):[];
+  return {id:String(o?.id||creatorPersonalizationUidV12657()),name:String(o?.name||'').trim(),type,price:Math.max(0,Number(o?.price)||0),active:o?.active!==false,required:!!o?.required,maxChars:Math.min(250,Math.max(1,Math.round(Number(o?.maxChars)||40))),options};
+ }).filter(o=>o.name)
+}
+function creatorPersonalizationTypeLabelV12657(type){return ({toggle:'Sim / Não',text:'Texto curto',textarea:'Texto longo',select:'Lista',color:'Cor'})[type]||'Sim / Não'}
+function renderCreatorPersonalizationsV12657(){
+ const root=document.getElementById('creatorCustomPersonalizationsV12657');if(!root)return;
+ const s=boxCreatorSettings();s.personalizationOptions=normalizeCreatorPersonalizationsV12657(s.personalizationOptions);
+ if(!s.personalizationOptions.length){root.innerHTML='<div class="creator-custom-person-empty-v12657">Ainda não existem personalizações adicionais. As opções base acima continuam disponíveis normalmente.</div>';return}
+ root.innerHTML=s.personalizationOptions.map((o,i)=>`<button type="button" class="creator-custom-person-item-v12657" onclick="openCreatorPersonalizationEditorV12657(${i})"><span><b>${escapeHtml(o.name)}</b><br><small>${escapeHtml(creatorPersonalizationTypeLabelV12657(o.type))}${o.required?' · Obrigatória':''}${(o.type==='text'||o.type==='textarea')?' · '+o.maxChars+' car.':''}</small></span><span class="status">${o.active?'● Ativa':'○ Inativa'}</span><span class="price">${euro(o.price)}</span><small>Editar</small></button>`).join('');
+}
+function openCreatorPersonalizationEditorV12657(index=-1){
+ const s=boxCreatorSettings(),arr=normalizeCreatorPersonalizationsV12657(s.personalizationOptions),o=index>=0?arr[index]:null;creatorPersonalizationEditIndexV12657=index;
+ const m=document.getElementById('creatorPersonalizationModalV12657');if(!m)return;
+ document.getElementById('creatorPersonalizationDialogTitleV12657').textContent=o?'Editar personalização':'Nova personalização';
+ document.getElementById('creatorPersonalizationNameV12657').value=o?.name||'';
+ document.getElementById('creatorPersonalizationTypeV12657').value=o?.type||'toggle';
+ document.getElementById('creatorPersonalizationPriceV12657').value=Number(o?.price||0).toFixed(2);
+ document.getElementById('creatorPersonalizationMaxV12657').value=o?.maxChars||40;
+ document.getElementById('creatorPersonalizationOptionsV12657').value=(o?.options||[]).join('\n');
+ document.getElementById('creatorPersonalizationActiveV12657').checked=o?.active!==false;
+ document.getElementById('creatorPersonalizationRequiredV12657').checked=!!o?.required;
+ document.getElementById('creatorPersonalizationDeleteV12657').style.display=o?'inline-flex':'none';
+ updateCreatorPersonalizationTypeV12657();m.classList.remove('hidden');setTimeout(()=>document.getElementById('creatorPersonalizationNameV12657')?.focus(),50)
+}
+function closeCreatorPersonalizationEditorV12657(){document.getElementById('creatorPersonalizationModalV12657')?.classList.add('hidden')}
+function updateCreatorPersonalizationTypeV12657(){
+ const t=document.getElementById('creatorPersonalizationTypeV12657')?.value||'toggle';
+ const max=document.getElementById('creatorPersonalizationMaxWrapV12657'),opts=document.getElementById('creatorPersonalizationOptionsWrapV12657');
+ if(max)max.style.display=(t==='text'||t==='textarea')?'block':'none';if(opts)opts.style.display=t==='select'?'block':'none';
+}
+function saveCreatorPersonalizationV12657(){
+ const name=String(document.getElementById('creatorPersonalizationNameV12657')?.value||'').trim();if(!name)return toast('Indica o nome da personalização');
+ const type=document.getElementById('creatorPersonalizationTypeV12657')?.value||'toggle',price=Math.max(0,Number(document.getElementById('creatorPersonalizationPriceV12657')?.value)||0),active=!!document.getElementById('creatorPersonalizationActiveV12657')?.checked,required=!!document.getElementById('creatorPersonalizationRequiredV12657')?.checked,maxChars=Math.min(250,Math.max(1,Math.round(Number(document.getElementById('creatorPersonalizationMaxV12657')?.value)||40))),options=String(document.getElementById('creatorPersonalizationOptionsV12657')?.value||'').split('\n').map(x=>x.trim()).filter(Boolean);
+ if(type==='select'&&!options.length)return toast('Adiciona pelo menos uma opção à lista');
+ const s=boxCreatorSettings(),arr=normalizeCreatorPersonalizationsV12657(s.personalizationOptions),dup=arr.findIndex((o,i)=>i!==creatorPersonalizationEditIndexV12657&&creatorColorNormalizeV1257(o.name)===creatorColorNormalizeV1257(name));if(dup>=0)return toast('Já existe uma personalização com esse nome');
+ const existing=creatorPersonalizationEditIndexV12657>=0?arr[creatorPersonalizationEditIndexV12657]:null,item={id:existing?.id||creatorPersonalizationUidV12657(),name,type,price,active,required,maxChars,options:type==='select'?options:[]};
+ if(creatorPersonalizationEditIndexV12657>=0)arr[creatorPersonalizationEditIndexV12657]=item;else arr.push(item);s.personalizationOptions=arr;
+ closeCreatorPersonalizationEditorV12657();renderCreatorPersonalizationsV12657();save();persistBoxCreatorCloudV12612(true)
+}
+function deleteCreatorPersonalizationV12657(){
+ if(creatorPersonalizationEditIndexV12657<0)return;const s=boxCreatorSettings(),arr=normalizeCreatorPersonalizationsV12657(s.personalizationOptions),o=arr[creatorPersonalizationEditIndexV12657];if(!o)return;if(!confirm(`Eliminar a personalização “${o.name}”?`))return;arr.splice(creatorPersonalizationEditIndexV12657,1);s.personalizationOptions=arr;closeCreatorPersonalizationEditorV12657();renderCreatorPersonalizationsV12657();save();persistBoxCreatorCloudV12612(true)
+}
 
 let specialEditionsAdmin=[];
 
@@ -8389,4 +8466,19 @@ ensureCostModel();syncPackagingSelect();go('dashboard');configureLock();setTimeo
   </div>
 </div>
 
+
+<div id="creatorPersonalizationModalV12657" class="modal hidden">
+  <div class="dialog" style="max-width:760px">
+    <div class="dialog-head"><div><strong id="creatorPersonalizationDialogTitleV12657">Nova personalização</strong><small>Configuração dinâmica do Criador de Caixas</small></div><button class="icon-btn" type="button" onclick="closeCreatorPersonalizationEditorV12657()">×</button></div>
+    <div class="creator-custom-person-form-v12657">
+      <div class="field span2"><label>Nome</label><input id="creatorPersonalizationNameV12657" maxlength="60" placeholder="Ex.: Topper personalizado"></div>
+      <div class="field"><label>Tipo de campo</label><select id="creatorPersonalizationTypeV12657" onchange="updateCreatorPersonalizationTypeV12657()"><option value="toggle">Sim / Não</option><option value="text">Texto curto</option><option value="textarea">Mensagem / texto longo</option><option value="select">Lista de opções</option><option value="color">Escolha de cor</option></select></div>
+      <div class="field"><label>Preço extra</label><input id="creatorPersonalizationPriceV12657" type="number" min="0" step="0.01" value="0.00"></div>
+      <div id="creatorPersonalizationMaxWrapV12657" class="field"><label>Máx. caracteres</label><input id="creatorPersonalizationMaxV12657" type="number" min="1" max="250" step="1" value="40"></div>
+      <div id="creatorPersonalizationOptionsWrapV12657" class="field span2" style="display:none"><label>Opções</label><textarea id="creatorPersonalizationOptionsV12657" rows="4" placeholder="Uma opção por linha"></textarea></div>
+      <div class="creator-custom-person-checks-v12657 span4"><label><input id="creatorPersonalizationActiveV12657" type="checkbox" checked> Ativa na loja</label><label><input id="creatorPersonalizationRequiredV12657" type="checkbox"> Obrigatória</label></div>
+    </div>
+    <div class="dialog-actions"><button id="creatorPersonalizationDeleteV12657" class="btn danger" type="button" onclick="deleteCreatorPersonalizationV12657()" style="display:none">Eliminar</button><span style="flex:1"></span><button class="btn ghost" type="button" onclick="closeCreatorPersonalizationEditorV12657()">Cancelar</button><button class="btn primary" type="button" onclick="saveCreatorPersonalizationV12657()">Guardar</button></div>
+  </div>
+</div>
 </body></html>
