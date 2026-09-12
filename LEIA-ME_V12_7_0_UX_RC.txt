@@ -1,0 +1,21 @@
+DONART V12.7.0 UX RC
+Base funcional protegida: V12.6.59 RC.
+
+Alteração desta versão:
+- Renovação visual isolada de Catálogos > Criador de Caixas > Personalizações e preços.
+- Separação visual entre personalizações padrão e adicionais.
+- Linhas e controlos mais compactos para tablet/mobile.
+- Fita personalizada organizada como subconfiguração.
+- Área de personalizações adicionais mais legível.
+- Área de gravação passa a ficar acessível durante o scroll.
+
+Preservado sem alteração funcional:
+- IDs dos campos e botões.
+- Handlers e funções JavaScript.
+- Estrutura de dados boxCreator.
+- Supabase, RPC, RLS, Storage e Cloud Sync.
+- Cálculos de preços.
+- Personalizações padrão e dinâmicas.
+- Loja, encomendas, produção, stock e restantes módulos.
+
+Esta é a primeira etapa da renovação UX global. A expansão visual aos restantes módulos deve ser feita incrementalmente sobre esta baseline.

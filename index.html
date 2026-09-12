@@ -1896,6 +1896,122 @@
 .creator-custom-person-form-v12657{display:grid;grid-template-columns:1.4fr 1fr 100px 100px;gap:8px}.creator-custom-person-form-v12657 .span2{grid-column:span 2}.creator-custom-person-form-v12657 .span4{grid-column:1/-1}
 .creator-custom-person-checks-v12657{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:8px 0}.creator-custom-person-checks-v12657 label{display:flex;align-items:center;gap:6px;font-size:8px}.creator-custom-person-checks-v12657 input[type=checkbox]{width:17px;height:17px}
 @media(max-width:760px){.creator-custom-person-item-v12657{grid-template-columns:1fr auto}.creator-custom-person-item-v12657 .price{grid-column:1}.creator-custom-person-form-v12657{grid-template-columns:1fr 1fr}.creator-custom-person-form-v12657 .span4{grid-column:1/-1}}
+
+
+/* DONART V12.7.0 UX RC — renovação visual isolada: Catálogos > Personalizações e preços
+   Regra: apenas apresentação. IDs, inputs, handlers, dados e funções permanecem intactos. */
+.creator-section-prices-v1261{
+  margin-top:18px!important;
+  padding:15px 16px!important;
+  border:1px solid #eadbd5!important;
+  border-radius:16px!important;
+  background:linear-gradient(135deg,#fff,#fff8fb)!important;
+}
+.creator-section-prices-v1261>strong{font-size:17px!important;color:#3f2d27!important;display:block;margin-bottom:3px}
+.creator-section-prices-v1261>small{font-size:9px!important;color:#7f6d65!important;line-height:1.45}
+.creator-ux-grouphead-v1270{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin:12px 0 7px;padding:0 2px;
+}
+.creator-ux-grouphead-v1270>div:first-child{display:grid;gap:2px}
+.creator-ux-grouphead-v1270 span,.creator-ux-eyebrow-v1270{
+  font-size:7px;font-weight:950;letter-spacing:.14em;color:#ad1e4b;text-transform:uppercase;
+}
+.creator-ux-grouphead-v1270 strong{font-size:12px;color:#45342e}
+.creator-ux-grouphead-v1270 small{font-size:7.5px!important;color:#88766e;line-height:1.35}
+.creator-ux-groupbadge-v1270{
+  white-space:nowrap;border:1px solid #ecd9e0;background:#fff4f7;color:#9e2046;
+  padding:6px 9px;border-radius:999px;font-size:7px;font-weight:850
+}
+.creator-personalizations-v1270{
+  border:1px solid #e6d7d1!important;border-radius:16px!important;
+  box-shadow:0 5px 18px rgba(69,45,38,.045)!important;overflow:hidden!important
+}
+.creator-personalizations-v1270 .creator-person-head-v1268{
+  min-height:34px;background:#f7f1ee!important;border-bottom:1px solid #eadfd9;
+  grid-template-columns:minmax(170px,1fr) 145px 140px!important;
+  padding:8px 12px!important;font-size:7px!important;letter-spacing:.08em!important
+}
+.creator-personalizations-v1270 .creator-person-row-v1268{
+  grid-template-columns:minmax(170px,1fr) 145px 140px!important;
+  min-height:51px;padding:9px 12px!important;gap:10px!important;
+  background:#fff;transition:background .15s ease,border-color .15s ease
+}
+.creator-personalizations-v1270 .creator-person-row-v1268:hover{background:#fffafb}
+.creator-personalizations-v1270 .creator-person-row-v1268>strong{font-size:10px!important;color:#44332d}
+.creator-personalizations-v1270 .creator-switch-v1268{
+  justify-self:start;background:#f8f4f2;border:1px solid #e8ddd7;border-radius:999px;
+  padding:5px 9px;font-size:8px!important;min-width:84px
+}
+.creator-personalizations-v1270 .creator-switch-v1268 input{width:15px!important;height:15px!important}
+.creator-personalizations-v1270 .creator-money{
+  min-width:104px;border:1px solid #e6d9d3;border-radius:10px;background:#fcfaf9;
+  padding:3px 7px;display:flex;align-items:center;gap:5px
+}
+.creator-personalizations-v1270 .creator-money span{font-size:8px;color:#8b7369;font-weight:800}
+.creator-personalizations-v1270 .creator-money input{
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  min-width:0!important;width:100%!important;padding:5px 2px!important;font-size:9px!important
+}
+.creator-personalizations-v1270 .creator-ribbon-row-v1268{grid-template-rows:auto auto!important}
+.creator-personalizations-v1270 .creator-ribbon-extra-v1268{
+  grid-column:1/-1!important;margin:2px 0 3px!important;padding:10px 11px!important;
+  border:1px solid #ecdbe2!important;border-radius:12px!important;background:#fff7fa!important;
+  grid-template-columns:minmax(200px,1fr) 120px 150px 150px!important
+}
+.creator-personalizations-v1270 .creator-ribbon-extra-v1268>div>strong{font-size:9px!important;color:#5a3542}
+.creator-personalizations-v1270 .creator-ribbon-extra-v1268 small{font-size:7px!important}
+.creator-custom-person-v12657{
+  margin-top:12px!important;border:1px solid #e6d7d1!important;border-radius:16px!important;
+  background:#fbf8f6!important;padding:12px!important;box-shadow:0 5px 18px rgba(69,45,38,.035)
+}
+.creator-custom-person-head-v1270{padding-bottom:9px;border-bottom:1px solid #eadfd9;margin-bottom:9px!important}
+.creator-custom-person-head-v1270>div{display:block}
+.creator-custom-person-head-v1270 strong{display:inline-block;margin-top:2px;font-size:11px!important}
+.creator-custom-person-head-v1270 small{font-size:7.5px!important}
+.creator-custom-person-item-v12657{
+  grid-template-columns:minmax(0,1fr) 92px 72px 70px!important;
+  min-height:46px!important;border-radius:12px!important;padding:8px 10px!important
+}
+.creator-custom-person-item-v12657 b{font-size:9px!important}
+.creator-custom-person-item-v12657 .status{
+  justify-self:start;padding:4px 7px;border-radius:999px;background:#eef8f3;color:#276c52
+}
+.creator-master-pricing-v1268{
+  margin-top:12px!important;border:1px solid #e8ddd7;border-radius:14px;background:#fff;
+  padding:11px!important
+}
+.creator-ui-save{
+  position:sticky!important;bottom:8px!important;z-index:15!important;
+  margin-top:12px!important;padding:10px 12px!important;border:1px solid #e4d6cf!important;
+  border-radius:14px!important;background:rgba(255,255,255,.96)!important;
+  box-shadow:0 10px 28px rgba(58,40,34,.13)!important;backdrop-filter:blur(8px)
+}
+.creator-ui-save .creator-ui-note{font-size:7.5px!important;color:#7b6961}
+.creator-ui-save .creator-save-btn{min-width:190px}
+@media(max-width:900px){
+  .creator-personalizations-v1270 .creator-person-head-v1268{display:none!important}
+  .creator-personalizations-v1270 .creator-person-row-v1268{
+    grid-template-columns:minmax(0,1fr) auto auto!important;gap:8px!important
+  }
+  .creator-personalizations-v1270 .creator-ribbon-extra-v1268{
+    grid-template-columns:1fr 115px 140px!important
+  }
+  .creator-personalizations-v1270 .creator-ribbon-extra-v1268>label:last-child{grid-column:2/4!important}
+}
+@media(max-width:650px){
+  .creator-ux-grouphead-v1270{align-items:flex-start;flex-direction:column;gap:7px}
+  .creator-personalizations-v1270 .creator-person-row-v1268{
+    grid-template-columns:1fr auto!important;padding:10px!important
+  }
+  .creator-personalizations-v1270 .creator-person-row-v1268>.creator-money{grid-column:1/-1!important;width:100%!important}
+  .creator-personalizations-v1270 .creator-ribbon-extra-v1268{grid-template-columns:1fr!important}
+  .creator-personalizations-v1270 .creator-ribbon-extra-v1268>label:last-child{grid-column:auto!important}
+  .creator-custom-person-item-v12657{grid-template-columns:1fr auto!important}
+  .creator-ui-save{bottom:5px!important}
+  .creator-ui-save .creator-save-btn{width:100%;min-width:0}
+}
+
 </style>
 </head>
 <body>
@@ -1911,9 +2027,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.59 RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.7.0 UX RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.59 RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.7.0 UX RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -2421,7 +2537,11 @@
         <strong>3. Personalizações e preços</strong>
         <small>Controla individualmente o que está disponível na loja e o respetivo acréscimo.</small>
       </div>
-      <div class="creator-personalizations-v1268">
+      <div class="creator-ux-grouphead-v1270">
+        <div><span>PADRÃO</span><strong>Personalizações incluídas no Criador</strong><small>Ativa, desativa e define o valor de cada opção disponível ao cliente.</small></div>
+        <div class="creator-ux-groupbadge-v1270">Configuração base</div>
+      </div>
+      <div class="creator-personalizations-v1268 creator-personalizations-v1270">
         <div class="creator-person-head-v1268"><span>Personalização</span><span>Disponível na loja</span><span>Preço extra</span></div>
         <div class="creator-person-row-v1268"><strong>🏷️ Nome</strong><label class="creator-switch-v1268"><input id="creatorName" type="checkbox"><span>Ativo</span></label><div class="creator-money"><span>€</span><input id="creatorPriceName" type="number" min="0" step="0.01"></div></div>
         <div class="creator-person-row-v1268"><strong>📅 Data</strong><label class="creator-switch-v1268"><input id="creatorDate" type="checkbox"><span>Ativo</span></label><div class="creator-money"><span>€</span><input id="creatorPriceDate" type="number" min="0" step="0.01"></div></div>
@@ -2439,8 +2559,8 @@
       </div>
 
       <div class="creator-custom-person-v12657">
-        <div class="creator-custom-person-head-v12657">
-          <div><strong>Personalizações adicionais</strong><br><small>Cria novos extras sem alterar o código da app.</small></div>
+        <div class="creator-custom-person-head-v12657 creator-custom-person-head-v1270">
+          <div><span class="creator-ux-eyebrow-v1270">ADICIONAIS</span><strong>Personalizações adicionais</strong><br><small>Cria novos extras sem alterar o código da app.</small></div>
           <button type="button" class="btn primary" onclick="openCreatorPersonalizationEditorV12657(-1)">+ Nova personalização</button>
         </div>
         <div id="creatorCustomPersonalizationsV12657" class="creator-custom-person-list-v12657"></div>
