@@ -513,6 +513,18 @@
 
 #production .prod-warning{font-size:9px!important;font-weight:700;color:#8a3f32;background:#fff6f3;border:1px solid #efc7bd;border-radius:8px}
 
+
+/* DONART V12.6.55 RC — estabilização pré-final */
+.prod-day-alerts-v12653{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.prod-alert-v12653{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 10px;border:1px solid #eadfdb;border-radius:10px;background:#fff}
+.prod-alert-v12653.warn{background:#fff9ec;border-color:#ecd29a}.prod-alert-v12653.bad{background:#fff4f2;border-color:#efb8ad}.prod-alert-v12653.ok{background:#f1faf4;border-color:#bfe2ca}
+.prod-alert-v12653>span{font-size:15px}.prod-alert-v12653 b{font-size:9px;color:#553e38}.prod-alert-v12653 small{font-size:8px;color:#8b7770}.prod-alert-v12653 strong{font-size:9px;color:#5d3933;white-space:nowrap}
+.prod-day-agenda-v12653{margin-top:8px;padding:10px 11px}.prod-day-agenda-head-v12653{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:7px}.prod-day-agenda-head-v12653 .section-title{font-size:15px;margin:0}.prod-day-agenda-head-v12653 small{font-size:8.5px;color:#8c7971}.prod-day-agenda-meta-v12653{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.prod-day-agenda-meta-v12653 span{font-size:8px;font-weight:900;padding:5px 7px;border-radius:999px;background:#f7efec;color:#725d55}
+.prod-day-list-v12653{display:flex;flex-direction:column;gap:6px}.prod-day-row-v12653{border:1px solid #eadfdb;border-radius:10px;background:#fff;overflow:hidden}.prod-day-row-main-v12653{display:grid;grid-template-columns:minmax(160px,1.35fr) 115px 110px 110px;gap:8px;align-items:center;padding:8px 9px}.prod-day-row-main-v12653>div{min-width:0;display:flex;flex-direction:column;gap:2px}.prod-day-row-main-v12653 small{font-size:8px;color:#8c7971}.prod-day-row-main-v12653 strong{font-size:9.5px;color:#4e3934;overflow:hidden;text-overflow:ellipsis}.prod-day-id-v12653{font-size:10px!important}.prod-day-row-detail-v12653{display:grid;grid-template-columns:1.1fr 1fr auto;gap:8px;align-items:start;padding:7px 9px;border-top:1px solid #f0e8e4;background:#fcfaf9}.prod-day-detail-block-v12653{display:flex;flex-direction:column;gap:2px;min-width:0}.prod-day-detail-block-v12653 small{font-size:8px;color:#927f77}.prod-day-detail-block-v12653 span{font-size:8.5px;color:#604842;line-height:1.3}.prod-day-actions-v12653{display:flex;gap:4px;justify-content:flex-end;flex-wrap:wrap}.prod-day-actions-v12653 .btn{font-size:8px;padding:4px 6px;min-height:24px}
+.prod-payment-v12653.ok{color:#287245}.prod-payment-v12653.warn{color:#9a681d}.prod-payment-v12653.bad{color:#a3423b}.prod-person-v12653{font-weight:700;color:#6b4d62!important}.prod-no-person-v12653{color:#9a8a84!important}
+@media(max-width:900px){.prod-day-row-main-v12653{grid-template-columns:minmax(150px,1fr) 105px 100px}.prod-day-row-main-v12653>div:nth-child(4){grid-column:2/4}.prod-day-row-detail-v12653{grid-template-columns:1fr 1fr}.prod-day-actions-v12653{grid-column:1/-1;justify-content:flex-start}}
+@media(max-width:620px){.prod-day-agenda-head-v12653{flex-direction:column}.prod-day-agenda-meta-v12653{justify-content:flex-start}.prod-day-row-main-v12653{grid-template-columns:1fr 1fr}.prod-day-row-main-v12653>div:first-child{grid-column:1/-1}.prod-day-row-main-v12653>div:nth-child(4){grid-column:auto}.prod-day-row-detail-v12653{grid-template-columns:1fr}.prod-day-actions-v12653{grid-column:auto}.prod-alert-v12653{grid-template-columns:auto 1fr}.prod-alert-v12653>strong{grid-column:2}}
+
 /* DONART V10.4.4 — entrada direta sem PIN */
 #lockScreen{display:none!important}
 
@@ -1871,9 +1883,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.52 · Estrutura auditada · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.6.55 RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.52</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.6.55 RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -1999,6 +2011,11 @@
             <label>Data de produção</label>
             <input id="prodDate" type="date" onchange="renderProduction()">
           </div>
+          <button class="btn" onclick="productionShiftDateV12653(-1)" title="Dia anterior">‹ Dia</button>
+          <button class="btn" onclick="productionTodayV12653()">Hoje</button>
+          <button class="btn" onclick="productionShiftDateV12653(1)" title="Dia seguinte">Dia ›</button>
+          <button class="btn" onclick="previewProductionPDFV12653()">Ver ordem PDF</button>
+          <button class="btn" onclick="downloadProductionPDFV12653()">Guardar PDF</button>
           <button class="btn primary" onclick="renderProduction()">Atualizar</button>
           <button class="btn" onclick="consumeProduction()">Concluir produção + descontar stock</button>
         </div>
@@ -2006,6 +2023,14 @@
     </div>
 
     <div id="productionSummary" class="prod-summary"></div>
+    <div id="productionDayAlertsV12653" class="prod-day-alerts-v12653"></div>
+    <div class="card prod-day-agenda-v12653">
+      <div class="prod-day-agenda-head-v12653">
+        <div><div class="section-title">Agenda operacional do dia</div><small>Todos os pedidos da data, incluindo confirmação, pagamento, personalizações e entrega.</small></div>
+        <div id="productionDayMetaV12653" class="prod-day-agenda-meta-v12653"></div>
+      </div>
+      <div id="productionDayAgendaV12653" class="prod-day-list-v12653"></div>
+    </div>
 
     <div class="grid2 prod-grid" style="margin-top:12px">
       <div class="card">
@@ -3102,6 +3127,7 @@
 </div>
 </dialog>
 <dialog id="stockDialog" style="border:0;border-radius:20px;padding:0;max-width:820px;width:92%;box-shadow:0 25px 80px rgba(0,0,0,.35)"><div class="card" style="box-shadow:none;border:0"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="stockDialogTitle" style="margin:0">Histórico de stock</h2><button class="btn" onclick="stockDialog.close()">Fechar</button></div><div id="stockHistoryDetail" style="margin-top:12px"></div></div></dialog>
+<dialog id="quoteHistoryDialog" style="border:0;border-radius:20px;padding:0;max-width:860px;width:92%;box-shadow:0 25px 80px rgba(0,0,0,.35)"><div class="card" style="box-shadow:none;border:0"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><div><h2 id="quoteHistoryTitle" style="margin:0">Histórico do orçamento</h2><small>Estados, pagamentos e conversão sem alterar os registos anteriores.</small></div><button class="btn" type="button" onclick="quoteHistoryDialog.close()">Fechar</button></div><div id="quoteHistoryDetail" style="margin-top:12px"></div></div></dialog>
 <div id="toast" class="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -4048,6 +4074,86 @@ function productionOperationalHintV12633(name,qty,unit){
  }
  return '';
 }
+
+// DONART V12.6.55 RC — Centro de Produção Diário; apenas projeta dados já existentes.
+function productionDayOrdersV12653(date){
+ return (db.orders||[]).filter(o=>o.delivery===date&&o.status!=='Cancelado').slice().sort((a,b)=>String(a.deliveryTime||'99:99').localeCompare(String(b.deliveryTime||'99:99'))||String(a.id||'').localeCompare(String(b.id||'')));
+}
+function productionOrderBoxesV12653(o){
+ if(Array.isArray(o.thematicBoxes)&&o.thematicBoxes.length)return o.thematicBoxes.length;
+ return Math.max(1,Number(o.boxes)||1);
+}
+function productionOrderPersonalizationV12653(o){
+ const arr=[];
+ (Array.isArray(o.thematicBoxes)?o.thematicBoxes:[]).forEach((b,idx)=>{
+  const p=b?.personalization||{},parts=[];
+  if(p.name)parts.push('Nome: '+p.name);
+  if(p.date)parts.push('Data: '+p.date);
+  if(p.message)parts.push('Mensagem: '+p.message);
+  if(p.ribbon)parts.push(p.ribbonText?'Fita: '+p.ribbonText:'Fita');
+  if(p.label)parts.push('Etiqueta');
+  if(p.card)parts.push('Cartão');
+  if(parts.length)arr.push((b.box||b.name||('Caixa '+(idx+1)))+' — '+parts.join(' · '));
+ });
+ return arr;
+}
+function productionDeliveryLabelV12653(o){
+ const method=String(o.deliveryMethod||'').toLowerCase()==='local_delivery'?'Entrega local':String(o.deliveryMethod||'').toLowerCase()==='pickup'?'Levantamento':(o.deliveryMethod||'A definir');
+ return method+(o.deliveryTime?' · '+o.deliveryTime:'');
+}
+function productionPaymentStateV12653(o){
+ const total=Math.max(0,Number(calcOrder(o).total)||0),paid=Math.max(0,Number(o.paid)||0),remaining=Math.max(0,total-paid);
+ if(total>0&&remaining<=0.005)return{key:'ok',label:'Pago',remaining:0};
+ if(paid>0)return{key:'warn',label:'Falta '+euro(remaining),remaining};
+ return{key:'bad',label:'Pendente '+euro(total),remaining:total};
+}
+function productionStatusClassV12653(status){
+ if(status==='Confirmada')return 'confirmed';if(['Em produção','Produção'].includes(status))return 'production';if(status==='Pronta')return 'ready';if(status==='Entregue')return 'done';if(status==='Cancelado')return 'cancel';return 'request';
+}
+function productionShiftDateV12653(days){
+ const base=new Date((prodDate.value||todayISO())+'T12:00:00');base.setDate(base.getDate()+Number(days||0));prodDate.value=base.toISOString().slice(0,10);renderProduction();
+}
+function productionTodayV12653(){prodDate.value=todayISO();renderProduction()}
+function renderProductionDailyCenterV12653(date){
+ const all=productionDayOrdersV12653(date),pending=all.filter(o=>o.status==='Pedido'),ready=all.filter(o=>o.status==='Pronta'),inProd=all.filter(o=>['Em produção','Produção'].includes(o.status)),total=all.reduce((a,o)=>a+calcOrder(o).qty,0),boxes=all.reduce((a,o)=>a+productionOrderBoxesV12653(o),0),personalized=all.filter(o=>productionOrderPersonalizationV12653(o).length).length,payPending=all.filter(o=>productionPaymentStateV12653(o).remaining>0.005);
+ const meta=document.getElementById('productionDayMetaV12653');if(meta)meta.innerHTML=`<span>${all.length} pedido(s)</span><span>${total} donuts</span><span>${boxes} caixa(s)</span><span>${personalized} personalização(ões)</span>`;
+ const alerts=document.getElementById('productionDayAlertsV12653');if(alerts){const rows=[];
+  if(!all.length)rows.push(['ok','✓','Dia livre','Não existem encomendas ativas para esta data.','—']);
+  if(pending.length)rows.push(['warn','!','Encomendas por confirmar',pending.map(o=>o.id).join(' · '),pending.length]);
+  if(payPending.length)rows.push(['bad','€','Pagamentos pendentes',payPending.map(o=>o.id).join(' · '),payPending.length]);
+  if(inProd.length)rows.push(['warn','🍩','Produção em curso',inProd.map(o=>o.id).join(' · '),inProd.length]);
+  if(ready.length)rows.push(['ok','✓','Prontas para entrega',ready.map(o=>o.id).join(' · '),ready.length]);
+  alerts.innerHTML=rows.map(([cls,icon,title,txt,n])=>`<div class="prod-alert-v12653 ${cls}"><span>${icon}</span><div><b>${escapeHtml(title)}</b><small>${escapeHtml(txt)}</small></div><strong>${escapeHtml(n)}</strong></div>`).join('');
+ }
+ const box=document.getElementById('productionDayAgendaV12653');if(!box)return;
+ box.innerHTML=all.length?all.map(o=>{
+  const c=calcOrder(o),pay=productionPaymentStateV12653(o),pers=productionOrderPersonalizationV12653(o),flavors=(o.items||[]).map(i=>`${Number(i.qty)||0}× ${i.name||i.code||'Produto'}`).join(' · ')||'—',status=o.status||'Pedido',method=productionDeliveryLabelV12653(o),notes=String(o.notes||'').trim();
+  let actions=`<button class="btn" onclick="showOrder('${escapeHtml(o.id)}')">Detalhe</button>`;
+  if(status==='Pedido')actions+=`<button class="btn primary" onclick="setOrderStatus('${escapeHtml(o.id)}','Confirmada')">Confirmar</button>`;
+  if(status==='Confirmada')actions+=`<button class="btn primary" onclick="setOrderStatus('${escapeHtml(o.id)}','Em produção')">Iniciar</button>`;
+  if(['Em produção','Produção'].includes(status))actions+=`<button class="btn primary" onclick="showOrder('${escapeHtml(o.id)}')">Em produção</button>`;
+  if(status==='Pronta')actions+=`<button class="btn primary" onclick="focusDeliveryPaymentV12631('${escapeHtml(o.id)}')">Entrega / pagamento</button>`;
+  return `<div class="prod-day-row-v12653"><div class="prod-day-row-main-v12653"><div><small>Encomenda</small><strong class="prod-day-id-v12653">${escapeHtml(o.id)}</strong><small>${escapeHtml(o.client||'—')}</small></div><div><small>Entrega</small><strong>${escapeHtml(method)}</strong></div><div><small>Produção</small><strong>${c.qty} donuts · ${productionOrderBoxesV12653(o)} caixa(s)</strong></div><div><small>Pagamento</small><strong class="prod-payment-v12653 ${pay.key}">${escapeHtml(pay.label)}</strong><small>${escapeHtml(o.payment||'A definir')}</small></div></div><div class="prod-day-row-detail-v12653"><div class="prod-day-detail-block-v12653"><small>Sabores / produtos</small><span>${escapeHtml(flavors)}</span></div><div class="prod-day-detail-block-v12653"><small>Personalização / notas</small>${pers.length?`<span class="prod-person-v12653">${pers.map(escapeHtml).join('<br>')}</span>`:`<span class="prod-no-person-v12653">Sem personalização</span>`}${notes?`<span>Nota: ${escapeHtml(notes)}</span>`:''}</div><div class="prod-day-actions-v12653"><span class="order-status-pill ${productionStatusClassV12653(status)}">${escapeHtml(status)}</span>${actions}</div></div></div>`;
+ }).join(''):'<div class="empty">Sem encomendas ativas para esta data.</div>';
+}
+async function buildProductionDailyPdfBlobV12653(){
+ const date=prodDate.value||todayISO(),orders=productionDayOrdersV12653(date);if(!orders.length)throw new Error('Sem encomendas para esta data');
+ const rows=[];orders.forEach(o=>{const c=calcOrder(o),pay=productionPaymentStateV12653(o),pers=productionOrderPersonalizationV12653(o),flavors=(o.items||[]).map(i=>`${Number(i.qty)||0}x ${i.name||i.code||'Produto'}`).join(' | ');rows.push({o,c,pay,pers,flavors})});
+ const pages=[],perPage=5,totalPages=Math.ceil(rows.length/perPage);
+ for(let pg=0;pg<totalPages;pg++){
+  const canvas=document.createElement('canvas');canvas.width=1240;canvas.height=1754;const ctx=canvas.getContext('2d');await drawDonartHeader(ctx,'ORDEM DE PRODUÇÃO',`${datePt(date)} · página ${pg+1}/${totalPages}`);let y=225;
+  if(pg===0){const total=orders.reduce((a,o)=>a+calcOrder(o).qty,0),boxes=orders.reduce((a,o)=>a+productionOrderBoxesV12653(o),0);ctx.fillStyle='#f8efec';ctx.fillRect(70,y,1100,72);ctx.fillStyle='#5A240B';ctx.font='700 23px Arial';ctx.fillText(`${orders.length} encomenda(s) · ${total} donuts · ${boxes} caixa(s)`,92,y+31);ctx.font='18px Arial';ctx.fillStyle='#806b62';ctx.fillText('Documento operacional — conferir personalizações e pagamento antes da entrega.',92,y+57);y+=100}
+  for(const r of rows.slice(pg*perPage,pg*perPage+perPage)){
+   const o=r.o;ctx.strokeStyle='#e4d7d1';ctx.lineWidth=2;ctx.strokeRect(70,y,1100,245);ctx.fillStyle='#5A240B';ctx.font='900 24px Arial';ctx.fillText(String(o.id||'—'),92,y+34);ctx.font='700 20px Arial';ctx.fillStyle='#6d5149';ctx.fillText(String(o.client||'—').slice(0,46),92,y+64);ctx.textAlign='right';ctx.fillStyle='#F12473';ctx.font='900 21px Arial';ctx.fillText(`${r.c.qty} donuts · ${productionOrderBoxesV12653(o)} caixa(s)`,1148,y+34);ctx.fillStyle='#6d5149';ctx.font='18px Arial';ctx.fillText(productionDeliveryLabelV12653(o),1148,y+64);ctx.textAlign='left';
+   const lines=[`Estado: ${o.status||'Pedido'} · Pagamento: ${r.pay.label}`,`Produtos: ${r.flavors||'—'}`];if(r.pers.length)lines.push('Personalização: '+r.pers.join(' | '));if(o.notes)lines.push('Notas: '+o.notes);ctx.font='18px Arial';ctx.fillStyle='#5e4a44';let ly=y+104;for(const line of lines){const words=String(line).split(' ');let cur='';for(const w of words){const test=cur?cur+' '+w:w;if(ctx.measureText(test).width>1030&&cur){ctx.fillText(cur,92,ly);ly+=24;cur=w}else cur=test}if(cur){ctx.fillText(cur,92,ly);ly+=24}if(ly>y+222)break}y+=267;
+  }
+  drawCatalogFooter(ctx);pages.push(await new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('PDF')),'image/jpeg',.92)));
+ }
+ return jpegBlobsToPDF(pages,1240,1754);
+}
+function previewProductionPDFV12653(){return openPdfBlob(buildProductionDailyPdfBlobV12653)}
+function downloadProductionPDFV12653(){const d=prodDate.value||todayISO();return downloadPdfBlob(buildProductionDailyPdfBlobV12653,'DONART_Ordem_Producao_'+d+'.pdf')}
+
 function renderProduction(){
  const d=prodDate.value||todayISO(),done=orderAlreadyProducedIds();
  const ords=db.orders.filter(o=>o.delivery===d&&['Confirmada','Em produção','Confirmado','Produção'].includes(o.status)&&!done.has(o.id));
@@ -4121,6 +4227,7 @@ function renderProduction(){
  const runs=(db.productionRuns||[]).filter(r=>r.date===d);
  const hist=document.getElementById('productionHistory');
  if(hist)hist.innerHTML=runs.length?runs.map((r,i)=>`<div class="prod-history"><div><strong>Sessão ${i+1}</strong><small>${(r.orders||[]).map(escapeHtml).join(', ')}</small></div><div><strong>${r.total||0} un.</strong><small>${r.createdAt?new Date(r.createdAt).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}):'Concluída'}</small></div></div>`).join(''):'<div class="empty">Ainda não há sessões concluídas neste dia.</div>';
+ renderProductionDailyCenterV12653(d);
 }
 function addStock(){
  const n=stockName.value.trim();if(!n)return toast('Indique o produto');
@@ -5011,7 +5118,8 @@ function ensureOrderPaymentCashLedger(target){
   o.paymentHistory.forEach(p=>{
    const amount=Number(p.amount)||0;if(p.type==='correction'||amount<=0)return;positive+=amount;
    if(!p.id)p.id=uid('PAY');
-   if(d.cash.some(c=>c.source==='order_payment'&&c.paymentId===p.id))return;
+   const existing=d.cash.find(c=>c.paymentId===p.id&&(c.source==='order_payment'||c.source==='quote_payment'));
+   if(existing){if(p.source==='quote'&&!existing.orderId)existing.orderId=o.id;return;}
    d.cash.push({id:uid('CASH'),date:String(p.date||o.created||todayISO()).slice(0,10),type:'Entrada',desc:'Pagamento encomenda '+o.id+' · '+(o.client||'Cliente'),method:p.method||o.payment||'Outro',value:amount,source:'order_payment',orderId:o.id,paymentId:p.id});added++;
   });
   const current=Math.max(0,Number(o.paid)||0),legacy=Math.max(0,current-positive);
@@ -5019,6 +5127,12 @@ function ensureOrderPaymentCashLedger(target){
  });
  return added;
 }
+function addQuotePaymentCash(q,payment){
+ db.cash=db.cash||[];
+ if(db.cash.some(c=>c.paymentId===payment.id&&(c.source==='quote_payment'||c.source==='order_payment')))return;
+ db.cash.push({id:uid('CASH'),date:String(payment.date||new Date().toISOString()).slice(0,10),type:'Entrada',desc:'Pagamento orçamento '+q.id+' · '+(q.client||'Cliente'),method:payment.method||q.paymentMethod||'Outro',value:Number(payment.amount)||0,source:'quote_payment',quoteId:q.id,paymentId:payment.id});
+}
+
 function addOrderPaymentCash(o,payment){
  db.cash=db.cash||[];
  if(db.cash.some(c=>c.source==='order_payment'&&c.paymentId===payment.id))return;
@@ -7133,8 +7247,8 @@ function quotePaymentLabel(q){if(q.paymentTerms==='100_upfront')return '100% ant
 function quoteStatusOptions(cur){return ['Rascunho','Enviado','Aceite','Recusado','Expirado'].map(x=>`<option ${x===cur?'selected':''}>${x}</option>`).join('')}
 function renderQuotes(){
  const sel=document.getElementById('quoteProduct');if(sel){sel.innerHTML='<option value="">Selecionar...</option>'+db.products.map(p=>`<option value="${p.code}">${p.name} — ${euro(p.price)}</option>`).join('')}
- const body=document.getElementById('quotesBody');if(!body)return; (db.quotes||[]).forEach(q=>{if(q.validUntil&&q.validUntil<todayISO()&&!['Aceite','Recusado'].includes(q.status)&&!q.orderId)q.status='Expirado'});const st=quoteConversion(),k=document.getElementById('quoteKpis');if(k)k.innerHTML=[['Orçamentos',st.total],['Aceites',st.accepted],['Recusados',st.refused],['Conversão',pct(st.rate)]].map(([a,b])=>`<div class="card kpi"><div class="label">${a}</div><div class="value">${b}</div></div>`).join(''); const rows=(db.quotes||[]).slice().reverse();
- body.innerHTML=rows.length?rows.map(q=>{const c=quoteCalc(q),req=quoteDepositRequired(q),paid=Math.max(0,Number(q.depositPaid)||0),statusCell=q.orderId?`<span class="badge">Convertido</span>`:`<select onchange="setQuoteStatus('${q.id}',this.value)">${quoteStatusOptions(q.status)}</select>`,convertBtn=q.status==='Aceite'&&!q.orderId?`<button class="btn primary" onclick="convertQuoteToOrder('${q.id}')">Converter em encomenda</button>`:'';return `<tr><td>${escapeHtml(q.id)}</td><td>${escapeHtml(q.client||'—')}</td><td>${escapeHtml(q.eventDate||'—')}</td><td>${escapeHtml(q.validUntil||'—')}</td><td>${euro(c.total)}</td><td>${euro(paid)} / ${euro(req)}<br><small>${quotePaymentLabel(q)}</small><br><span class="badge ${['Sinal pago','Pago'].includes(quoteFinancialState(q))?'ok':'warn'}">${quoteFinancialState(q)}</span></td><td>${statusCell}</td><td><button class="btn" onclick="previewQuotePDF('${q.id}')">Ver PDF</button> <button class="btn" onclick="quotePDF('${q.id}')">Guardar PDF</button> <button class="btn primary" onclick="shareQuotePDF('${q.id}')">Enviar PDF</button> <button class="btn" onclick="quoteWhatsApp('${q.id}')">WhatsApp texto</button> ${!q.orderId?`<button class="btn" onclick="registerQuotePayment('${q.id}')">Registar pagamento</button>`:''} ${convertBtn} <button class="btn danger" onclick="deleteQuote('${q.id}')">Eliminar</button></td></tr>`}).join(''):'<tr><td colspan="8" class="empty">Sem orçamentos</td></tr>';
+ const body=document.getElementById('quotesBody');if(!body)return;let expiredChanged=false;(db.quotes||[]).forEach(q=>{if(q.validUntil&&q.validUntil<todayISO()&&!['Aceite','Recusado','Expirado'].includes(q.status)&&!q.orderId){const prev=q.status||'Rascunho';q.status='Expirado';q.statusHistory=Array.isArray(q.statusHistory)?q.statusHistory:[];q.statusHistory.push({date:new Date().toISOString(),status:'Expirado',from:prev,to:'Expirado',source:'automatic'});expiredChanged=true}});if(expiredChanged)setTimeout(()=>save(),0);const st=quoteConversion(),k=document.getElementById('quoteKpis');if(k)k.innerHTML=[['Orçamentos',st.total],['Aceites',st.accepted],['Recusados',st.refused],['Conversão',pct(st.rate)]].map(([a,b])=>`<div class="card kpi"><div class="label">${a}</div><div class="value">${b}</div></div>`).join(''); const rows=(db.quotes||[]).slice().reverse();
+ body.innerHTML=rows.length?rows.map(q=>{const c=quoteCalc(q),req=quoteDepositRequired(q),paid=Math.max(0,Number(q.depositPaid)||0),statusCell=q.orderId?`<span class="badge">Convertido</span>`:`<select onchange="setQuoteStatus('${q.id}',this.value)">${quoteStatusOptions(q.status)}</select>`,convertBtn=q.status==='Aceite'&&!q.orderId?`<button class="btn primary" onclick="convertQuoteToOrder('${q.id}')">Converter em encomenda</button>`:'';return `<tr><td>${escapeHtml(q.id)}</td><td>${escapeHtml(q.client||'—')}</td><td>${escapeHtml(q.eventDate||'—')}</td><td>${escapeHtml(q.validUntil||'—')}</td><td>${euro(c.total)}</td><td>${euro(paid)} / ${euro(req)}<br><small>${quotePaymentLabel(q)}</small><br><span class="badge ${['Sinal pago','Pago'].includes(quoteFinancialState(q))?'ok':'warn'}">${quoteFinancialState(q)}</span></td><td>${statusCell}</td><td><button class="btn" onclick="previewQuotePDF('${q.id}')">Ver PDF</button> <button class="btn" onclick="quotePDF('${q.id}')">Guardar PDF</button> <button class="btn primary" onclick="shareQuotePDF('${q.id}')">Enviar PDF</button> <button class="btn" onclick="quoteWhatsApp('${q.id}')">WhatsApp texto</button> <button class="btn" onclick="showQuoteHistory('${q.id}')">Histórico</button> ${!q.orderId?`<button class="btn" onclick="registerQuotePayment('${q.id}')">Registar pagamento</button>`:''} ${convertBtn} <button class="btn danger" onclick="deleteQuote('${q.id}')">Eliminar</button></td></tr>`}).join(''):'<tr><td colspan="8" class="empty">Sem orçamentos</td></tr>';
 }
 function syncQuotePaymentFields(){const t=document.getElementById('quotePaymentTerms')?.value||'50_50',pctEl=document.getElementById('quoteDepositPct'),daysEl=document.getElementById('quoteBalanceDays');if(!pctEl||!daysEl)return;if(t==='100_upfront'){pctEl.value=100;pctEl.disabled=true;daysEl.value=0;daysEl.disabled=true}else if(t==='50_50'){pctEl.value=50;pctEl.disabled=true;daysEl.value=3;daysEl.disabled=false}else{pctEl.disabled=false;daysEl.disabled=false}renderQuoteCart()}
 function addQuoteProduct(){const code=quoteProduct.value,p=db.products.find(x=>x.code===code),qty=Math.max(1,Number(quoteQty.value)||1);if(!p)return toast('Escolha um produto');const raw=quoteUnitPrice.value.trim(),price=raw===''?Number(p.price)||0:Number(raw);quoteCart.push({code:p.code,name:p.name,qty,price:Number.isFinite(price)&&price>=0?price:Number(p.price)||0,type:'product'});quoteUnitPrice.value='';renderQuoteCart()}
@@ -7142,9 +7256,15 @@ function addQuoteFreeLine(){const name=quoteFreeDesc.value.trim(),qty=Math.max(1
 function removeQuoteLine(i){quoteCart.splice(i,1);renderQuoteCart()}
 function renderQuoteCart(){const el=document.getElementById('quoteCart');if(!el)return;el.innerHTML=quoteCart.length?quoteCart.map((i,n)=>`<div class="cart-row" style="grid-template-columns:1fr 80px 100px 80px"><span>${escapeHtml(i.name||'')}</span><strong>${Number(i.qty)||0} un.</strong><strong>${euro(i.qty*i.price)}</strong><button class="btn danger" onclick="removeQuoteLine(${n})">Remover</button></div>`).join(''):'<div class="empty">Adicione produtos ou linhas personalizadas.</div>';const sub=quoteCart.reduce((a,i)=>a+i.qty*i.price,0),disc=Math.max(0,Number(document.getElementById('quoteDiscount')?.value)||0),total=Math.max(0,sub-disc),terms=document.getElementById('quotePaymentTerms')?.value||'50_50',dp=terms==='100_upfront'?100:terms==='50_50'?50:Math.min(100,Math.max(0,Number(document.getElementById('quoteDepositPct')?.value)||0));if(document.getElementById('quoteSubtotal'))quoteSubtotal.textContent=euro(sub);if(document.getElementById('quoteDiscountView'))quoteDiscountView.textContent=euro(disc);if(document.getElementById('quoteTotal'))quoteTotal.textContent=euro(total);if(document.getElementById('quoteDepositView'))quoteDepositView.textContent=euro(total*dp/100)}
 function clearQuoteForm(){quoteCart=[];['quoteClient','quoteContact','quoteEventDate','quoteValidUntil','quoteNotes','quoteUnitPrice','quoteFreeDesc','quoteFreePrice','quoteFreeCost'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});if(document.getElementById('quoteDiscount'))quoteDiscount.value=0;if(document.getElementById('quotePaymentTerms'))quotePaymentTerms.value='50_50';if(document.getElementById('quoteDepositPct'))quoteDepositPct.value=50;if(document.getElementById('quoteBalanceDays'))quoteBalanceDays.value=3;if(document.getElementById('quotePaymentMethod'))quotePaymentMethod.value='MB Way';if(document.getElementById('quoteBoxes'))quoteBoxes.value=1;syncPackagingSelect();syncQuotePaymentFields();renderQuoteCart()}
-function saveQuote(){if(!quoteClient.value.trim())return toast('Indique o cliente');if(!quoteCart.length)return toast('Adicione pelo menos uma linha');const terms=quotePaymentTerms.value||'50_50',dp=terms==='100_upfront'?100:terms==='50_50'?50:Math.min(100,Math.max(0,Number(quoteDepositPct.value)||0));if(terms==='custom'&&dp<=0)return toast('Defina o sinal inicial');const y=new Date().getFullYear(),nums=(db.quotes||[]).filter(q=>q.id?.startsWith('ORC-'+y+'-')).map(q=>Number(q.id.split('-').pop())||0),id='ORC-'+y+'-'+String((Math.max(0,...nums)+1)).padStart(4,'0');const clientId=upsertClientFromOrder(quoteClient.value.trim(),quoteContact.value.trim());db.quotes=db.quotes||[];db.quotes.push({id,clientId,client:quoteClient.value.trim(),contact:quoteContact.value.trim(),eventDate:quoteEventDate.value,validUntil:quoteValidUntil.value,items:quoteCart.map(x=>({...x})),discount:Math.max(0,Number(quoteDiscount.value)||0),notes:quoteNotes.value.trim(),status:'Rascunho',created:todayISO(),orderId:null,paymentTerms:terms,depositPct:dp,balanceDays:Math.max(0,Number(quoteBalanceDays.value)||0),paymentMethod:quotePaymentMethod.value||'MB Way',box:document.getElementById('quoteBox')?.value||'Caixa 6',boxes:Math.max(1,Number(document.getElementById('quoteBoxes')?.value)||1),boxCostSnapshot:(()=>{const pk=(db.packaging||[]).find(p=>p.name===(document.getElementById('quoteBox')?.value||''));return pk?Number(pk.cost)||0:0})(),depositPaid:0,paymentHistory:[]});save();clearQuoteForm();go('quotes');toast('Orçamento guardado')}
-function setQuoteStatus(id,status){const q=(db.quotes||[]).find(x=>x.id===id);if(!q||q.orderId)return;q.status=status;if(status==='Recusado'){q.refusalReason=prompt('Motivo da recusa (opcional): preço, data, apenas consulta, desistência, outra opção...',q.refusalReason||'')||q.refusalReason||''}save();toast('Estado atualizado')}
-function registerQuotePayment(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q||q.orderId)return;const c=quoteCalc(q),current=Math.max(0,Number(q.depositPaid)||0),remaining=Math.max(0,c.total-current),raw=prompt(`Novo pagamento para ${q.id}\nTotal: ${euro(c.total)}\nJá recebido: ${euro(current)}\nEm falta: ${euro(remaining)}\n\nIndique o valor recebido agora:`,String(remaining.toFixed(2)).replace('.',','));if(raw===null)return;const amount=Number(String(raw).replace(',','.'));if(!Number.isFinite(amount)||amount<=0||amount>remaining+0.001)return toast('Valor inválido');q.depositPaid=current+amount;q.paymentHistory=q.paymentHistory||[];q.paymentHistory.push({id:uid('PAY'),date:new Date().toISOString(),amount,method:q.paymentMethod||'MB Way',type:'payment'});save();toast('Pagamento registado: '+euro(amount))}
+function saveQuote(){if(!quoteClient.value.trim())return toast('Indique o cliente');if(!quoteCart.length)return toast('Adicione pelo menos uma linha');const terms=quotePaymentTerms.value||'50_50',dp=terms==='100_upfront'?100:terms==='50_50'?50:Math.min(100,Math.max(0,Number(quoteDepositPct.value)||0));if(terms==='custom'&&dp<=0)return toast('Defina o sinal inicial');const y=new Date().getFullYear(),nums=(db.quotes||[]).filter(q=>q.id?.startsWith('ORC-'+y+'-')).map(q=>Number(q.id.split('-').pop())||0),id='ORC-'+y+'-'+String((Math.max(0,...nums)+1)).padStart(4,'0');const clientId=upsertClientFromOrder(quoteClient.value.trim(),quoteContact.value.trim());db.quotes=db.quotes||[];db.quotes.push({id,clientId,client:quoteClient.value.trim(),contact:quoteContact.value.trim(),eventDate:quoteEventDate.value,validUntil:quoteValidUntil.value,items:quoteCart.map(x=>({...x})),discount:Math.max(0,Number(quoteDiscount.value)||0),notes:quoteNotes.value.trim(),status:'Rascunho',created:todayISO(),orderId:null,paymentTerms:terms,depositPct:dp,balanceDays:Math.max(0,Number(quoteBalanceDays.value)||0),paymentMethod:quotePaymentMethod.value||'MB Way',box:document.getElementById('quoteBox')?.value||'Caixa 6',boxes:Math.max(1,Number(document.getElementById('quoteBoxes')?.value)||1),boxCostSnapshot:(()=>{const pk=(db.packaging||[]).find(p=>p.name===(document.getElementById('quoteBox')?.value||''));return pk?Number(pk.cost)||0:0})(),depositPaid:0,paymentHistory:[],statusHistory:[{date:new Date().toISOString(),status:'Rascunho',source:'create'}]});save();clearQuoteForm();go('quotes');toast('Orçamento guardado')}
+function setQuoteStatus(id,status){const q=(db.quotes||[]).find(x=>x.id===id);if(!q||q.orderId)return;const previous=q.status||'Rascunho';if(previous===status)return;if(status==='Recusado'){const reason=prompt('Motivo da recusa (opcional): preço, data, apenas consulta, desistência, outra opção...',q.refusalReason||'');if(reason===null){renderQuotes();return}q.refusalReason=reason.trim()}q.status=status;q.statusHistory=Array.isArray(q.statusHistory)?q.statusHistory:[];q.statusHistory.push({date:new Date().toISOString(),status,from:previous,to:status,source:'manual',reason:status==='Recusado'?(q.refusalReason||''):''});save();toast('Estado atualizado')}
+function registerQuotePayment(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q||q.orderId)return;const c=quoteCalc(q),current=Math.max(0,Number(q.depositPaid)||0),remaining=Math.max(0,c.total-current),raw=prompt(`Novo pagamento para ${q.id}
+Total: ${euro(c.total)}
+Já recebido: ${euro(current)}
+Em falta: ${euro(remaining)}
+
+Indique o valor recebido agora:`,String(remaining.toFixed(2)).replace('.',','));if(raw===null)return;const amount=Number(String(raw).replace(',','.'));if(!Number.isFinite(amount)||amount<=0||amount>remaining+0.001)return toast('Valor inválido');const payment={id:uid('PAY'),date:new Date().toISOString(),amount,method:q.paymentMethod||'MB Way',type:'payment'};q.depositPaid=current+amount;q.paymentHistory=q.paymentHistory||[];q.paymentHistory.push(payment);addQuotePaymentCash(q,payment);save();toast('Pagamento registado no orçamento e no Caixa: '+euro(amount))}
+
 function quoteMessage(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return'';const c=quoteCalc(q),lines=(q.items||[]).map(i=>`${i.qty}x ${i.name} — ${euro(i.qty*i.price)}`),req=quoteDepositRequired(q),due=quoteBalanceDueDate(q);return `Olá ${q.client||''}!\n\nSegue o orçamento ${q.id} da ${db.settings.businessName||'DONART'}${q.eventDate?' para o evento de '+q.eventDate:''}:\n${lines.join('\n')}\n${q.discount?`Desconto: ${euro(q.discount)}\n`:''}${q.box?`Embalagem: ${q.box} × ${Math.max(1,Number(q.boxes)||1)}\n`:''}Total: ${euro(c.total)}${q.validUntil?'\nVálido até: '+q.validUntil:''}\n\nPagamento: ${quotePaymentLabel(q)}.\nPara confirmar/reservar: ${euro(req)}${due?'\nSaldo restante até: '+due:''}.${q.paymentMethod?'\nMeio previsto: '+q.paymentMethod+'.':''}${db.settings.businessPhone?'\nMB WAY: '+db.settings.businessPhone:''}${db.settings.iban?'\nIBAN: '+db.settings.iban:''}${q.notes?'\n\nObservações: '+q.notes:''}\n\nA data/produção só fica confirmada após receção do pagamento inicial definido. Obrigado!`}
 function quoteWhatsApp(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return;let phone=normalizePhone(q.contact);if(phone.startsWith('9')&&phone.length===9)phone='351'+phone;if(!phone)return toast('Cliente sem número de telemóvel');window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(quoteMessage(id)),'_blank');if(q.status==='Rascunho'){q.status='Enviado';save()}}
 function wrapCanvasText(ctx,text,maxWidth){const words=String(text||'').split(/\s+/),lines=[];let line='';for(const w of words){const test=line?line+' '+w:w;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);return lines}
@@ -7180,9 +7300,42 @@ async function jpegBlobToPDF(jpegBlob,imgW,imgH){const jpg=new Uint8Array(await 
 function quoteFileName(q){return `${q.id}_DONART.pdf`}
 async function previewQuotePDF(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return;const w=window.open('about:blank','_blank');try{const blob=await buildQuotePdfBlob(q),u=URL.createObjectURL(blob);if(w)w.location.href=u;else window.location.href=u;setTimeout(()=>URL.revokeObjectURL(u),120000)}catch(e){if(w)w.close();toast('Não foi possível gerar o PDF')}}
 async function quotePDF(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return;try{const blob=await buildQuotePdfBlob(q),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=quoteFileName(q);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2500);toast('PDF guardado')}catch(e){toast('Não foi possível gerar o PDF')}}
-async function shareQuotePDF(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return;try{const blob=await buildQuotePdfBlob(q),file=new File([blob],quoteFileName(q),{type:'application/pdf'}),text=`Olá ${q.client||''}! Segue em anexo o orçamento ${q.id} da ${db.settings.businessName||'DONART'}.`;if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'Orçamento '+q.id,text,files:[file]});if(q.status==='Rascunho'){q.status='Enviado';save()}toast('Orçamento partilhado')}else{await quotePDF(id);toast('O dispositivo não permite anexar diretamente. O PDF foi guardado para anexares no WhatsApp ou email.')}}catch(e){if(e.name!=='AbortError')toast('Não foi possível partilhar o PDF')}}
+async function shareQuotePDF(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return;try{const blob=await buildQuotePdfBlob(q),file=new File([blob],quoteFileName(q),{type:'application/pdf'}),text=`Olá ${q.client||''}! Segue em anexo o orçamento ${q.id} da ${db.settings.businessName||'DONART'}.`;if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'Orçamento '+q.id,text,files:[file]});if(q.status==='Rascunho'){const prev=q.status;q.status='Enviado';q.statusHistory=Array.isArray(q.statusHistory)?q.statusHistory:[];q.statusHistory.push({date:new Date().toISOString(),status:'Enviado',from:prev,to:'Enviado',source:'share'});save()}toast('Orçamento partilhado')}else{await quotePDF(id);toast('O dispositivo não permite anexar diretamente. O PDF foi guardado para anexares no WhatsApp ou email.')}}catch(e){if(e.name!=='AbortError')toast('Não foi possível partilhar o PDF')}}
 function quotePdfLines(q){const c=quoteCalc(q),lines=['DONART MINI DONUTS - ORCAMENTO',q.id,'Emitido em: '+q.created,'Cliente: '+(q.client||'-'),'Contacto cliente: '+(q.contact||'-'),q.eventDate?'Data do evento: '+q.eventDate:'',q.validUntil?'Valido ate: '+q.validUntil:'','','ITENS'];(q.items||[]).forEach(i=>lines.push(`${i.qty} x ${i.name} | ${euro(i.price)}/un | ${euro(i.qty*i.price)}`));lines.push('','Subtotal: '+euro(c.sub));if(q.discount)lines.push('Desconto: '+euro(q.discount));if(q.box)lines.push('Embalagem: '+q.box+' x '+Math.max(1,Number(q.boxes)||1));lines.push('TOTAL: '+euro(c.total),'','Pagamento: '+quotePaymentLabel(q),'Para confirmar: '+euro(quoteDepositRequired(q)));const due=quoteBalanceDueDate(q);if(due)lines.push('Saldo ate: '+due);if(db.settings.businessPhone)lines.push('Contacto / MB Way: '+db.settings.businessPhone);if(db.settings.iban)lines.push('IBAN: '+db.settings.iban);if(db.settings.paymentNote)lines.push(db.settings.paymentNote);if(q.notes)lines.push('','Observacoes: '+q.notes);lines.push('','Estado: '+(q.orderId?'Convertido':q.status),'Este documento e um orcamento e nao substitui fatura.');return lines.filter(Boolean)}
-function convertQuoteToOrder(id){const q=(db.quotes||[]).find(x=>x.id===id);if(!q||q.orderId)return;if(q.status!=='Aceite')return toast('Marque primeiro o orçamento como Aceite');const required=quoteDepositRequired(q),paid=Math.max(0,Number(q.depositPaid)||0);if(paid+0.001<required)return toast(`Pagamento insuficiente para confirmar. Necessário: ${euro(required)}; registado: ${euro(paid)}`);const y=new Date().getFullYear(),nums=db.orders.filter(o=>o.id?.startsWith('AS-'+y+'-')).map(o=>+o.id.split('-').pop()||0),oid='AS-'+y+'-'+String(Math.max(0,...nums)+1).padStart(4,'0');const items=[];(q.items||[]).forEach((i,n)=>{if(i.type==='free'){items.push({code:'ORC-EXTRA-'+String(n+1).padStart(2,'0'),name:i.name,qty:Number(i.qty)||1,price:Number(i.price)||0,cost:Number(i.cost)||0,type:'quote_extra'})}else{const p=db.products.find(x=>x.code===i.code);if(p)items.push({code:i.code,name:i.name,qty:Number(i.qty)||1,price:Number(i.price)||0,cost:calculatedProductCost(p)})}});if(!items.length)return toast('O orçamento não tem linhas convertíveis');if(Number(q.discount)>0)items.push({code:'ORC-DESCONTO',name:'Desconto do orçamento',qty:1,price:-Math.abs(Number(q.discount)||0),cost:0,type:'quote_discount'});const target=quoteCalc(q).total,current=items.reduce((a,i)=>a+i.qty*i.price,0),roundAdjust=Math.round((target-current)*100)/100;if(Math.abs(roundAdjust)>0.009)items.push({code:'ORC-AJUSTE',name:'Ajuste do orçamento',qty:1,price:roundAdjust,cost:0,type:'quote_adjustment'});const newOrder={id:oid,clientId:q.clientId,client:q.client,contact:q.contact,delivery:q.eventDate||'',payment:q.paymentMethod||'MB Way',box:q.box||'Caixa 6',boxCostSnapshot:q.boxCostSnapshot!=null?Number(q.boxCostSnapshot)||0:((db.packaging||[]).find(p=>p.name===(q.box||''))?.cost||0),boxes:Math.max(1,Number(q.boxes)||1),paid:Math.min(paid,target),status:'Confirmada',created:todayISO(),items,sourceQuoteId:q.id,notes:q.notes||'',quotePaymentTerms:q.paymentTerms,quoteBalanceDue:quoteBalanceDueDate(q),paymentHistory:(q.paymentHistory||[]).map(x=>({...x,source:'quote'}))};db.orders.push(newOrder);ensureOrderPaymentCashLedger(db);q.orderId=oid;q.convertedAt=todayISO();q.status='Convertido';save();toast('Orçamento convertido em '+oid);go('orders')}
+function convertQuoteToOrder(id){
+ const q=(db.quotes||[]).find(x=>x.id===id);if(!q||q.orderId)return;
+ if(q.status!=='Aceite')return toast('Marque primeiro o orçamento como Aceite');
+ const required=quoteDepositRequired(q),paid=Math.max(0,Number(q.depositPaid)||0),target=quoteCalc(q).total;
+ if(paid+0.001<required)return toast(`Pagamento insuficiente para confirmar. Necessário: ${euro(required)}; registado: ${euro(paid)}`);
+ if(!confirm(`Converter ${q.id} em encomenda?
+
+Cliente: ${q.client||'—'}
+Evento: ${q.eventDate||'—'}
+Total: ${euro(target)}
+Recebido: ${euro(paid)}
+
+O orçamento ficará ligado à nova encomenda e deixa de poder ser alterado.`))return;
+ const y=new Date().getFullYear(),nums=db.orders.filter(o=>o.id?.startsWith('AS-'+y+'-')).map(o=>+o.id.split('-').pop()||0),oid='AS-'+y+'-'+String(Math.max(0,...nums)+1).padStart(4,'0');
+ const items=[];(q.items||[]).forEach((i,n)=>{if(i.type==='free'){items.push({code:'ORC-EXTRA-'+String(n+1).padStart(2,'0'),name:i.name,qty:Number(i.qty)||1,price:Number(i.price)||0,cost:Number(i.cost)||0,type:'quote_extra'})}else{const p=db.products.find(x=>x.code===i.code);if(p)items.push({code:i.code,name:i.name,qty:Number(i.qty)||1,price:Number(i.price)||0,cost:calculatedProductCost(p)})}});
+ if(!items.length)return toast('O orçamento não tem linhas convertíveis');
+ if(Number(q.discount)>0)items.push({code:'ORC-DESCONTO',name:'Desconto do orçamento',qty:1,price:-Math.abs(Number(q.discount)||0),cost:0,type:'quote_discount'});
+ const current=items.reduce((a,i)=>a+i.qty*i.price,0),roundAdjust=Math.round((target-current)*100)/100;if(Math.abs(roundAdjust)>0.009)items.push({code:'ORC-AJUSTE',name:'Ajuste do orçamento',qty:1,price:roundAdjust,cost:0,type:'quote_adjustment'});
+ const newOrder={id:oid,clientId:q.clientId,client:q.client,contact:q.contact,delivery:q.eventDate||'',payment:q.paymentMethod||'MB Way',box:q.box||'Caixa 6',boxCostSnapshot:q.boxCostSnapshot!=null?Number(q.boxCostSnapshot)||0:((db.packaging||[]).find(p=>p.name===(q.box||''))?.cost||0),boxes:Math.max(1,Number(q.boxes)||1),paid:Math.min(paid,target),status:'Confirmada',created:todayISO(),items,sourceQuoteId:q.id,notes:q.notes||'',quotePaymentTerms:q.paymentTerms,quoteBalanceDue:quoteBalanceDueDate(q),paymentHistory:(q.paymentHistory||[]).map(x=>({...x,source:'quote'})),statusHistory:[{date:new Date().toISOString(),from:'—',to:'Confirmada',status:'Confirmada',source:'quote_conversion',quoteId:q.id}]};
+ db.orders.push(newOrder);ensureOrderPaymentCashLedger(db);q.orderId=oid;q.convertedAt=new Date().toISOString();q.status='Convertido';q.statusHistory=Array.isArray(q.statusHistory)?q.statusHistory:[];q.statusHistory.push({date:q.convertedAt,status:'Convertido',from:'Aceite',to:'Convertido',source:'conversion',orderId:oid});save();toast('Orçamento convertido em '+oid);go('orders')
+}
+
+function showQuoteHistory(id){
+ const q=(db.quotes||[]).find(x=>x.id===id);if(!q)return;
+ const c=quoteCalc(q),statusRows=(Array.isArray(q.statusHistory)?q.statusHistory:[]).map(x=>({date:x.date||'',type:'Estado',detail:x.status||'—',note:x.reason?('Motivo: '+x.reason):(x.orderId?('Encomenda: '+x.orderId):'')}));
+ const payRows=(q.paymentHistory||[]).map(x=>({date:x.date||'',type:'Pagamento',detail:euro(Number(x.amount)||0)+' · '+(x.method||q.paymentMethod||'—'),note:''}));
+ if(q.convertedAt&&q.orderId&&!statusRows.some(x=>x.detail==='Convertido'))statusRows.push({date:q.convertedAt,type:'Estado',detail:'Convertido',note:'Encomenda: '+q.orderId});
+ const rows=statusRows.concat(payRows).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+ const fmt=d=>{if(!d)return'—';const dt=new Date(d);return Number.isNaN(dt.getTime())?escapeHtml(String(d)):dt.toLocaleString('pt-PT')};
+ quoteHistoryTitle.textContent='Histórico · '+q.id;
+ quoteHistoryDetail.innerHTML=`<div class="totalbox"><div class="mini"><span>Cliente</span><strong>${escapeHtml(q.client||'—')}</strong></div><div class="mini"><span>Total</span><strong>${euro(c.total)}</strong></div><div class="mini"><span>Recebido</span><strong>${euro(Math.max(0,Number(q.depositPaid)||0))}</strong></div><div class="mini"><span>Estado</span><strong>${escapeHtml(q.orderId?'Convertido':(q.status||'Rascunho'))}</strong></div></div>${q.refusalReason?`<div class="card" style="margin-top:12px;background:#fff8f6"><strong>Motivo da recusa</strong><div style="margin-top:6px">${escapeHtml(q.refusalReason)}</div></div>`:''}<div class="tablewrap" style="margin-top:12px"><table><thead><tr><th>Data/hora</th><th>Tipo</th><th>Registo</th><th>Nota</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${fmt(r.date)}</td><td>${escapeHtml(r.type)}</td><td>${escapeHtml(r.detail)}</td><td>${escapeHtml(r.note||'—')}</td></tr>`).join(''):'<tr><td colspan="4" class="empty">Ainda não existem movimentos neste orçamento.</td></tr>'}</tbody></table></div>`;
+ quoteHistoryDialog.showModal()
+}
+
 async function deleteQuote(id){
  const q=(db.quotes||[]).find(x=>x.id===id);
  if(!q)return;
@@ -7271,7 +7424,7 @@ function renderReports(){
  ].map(([l,v])=>`<div class="report-activity"><span>${l}</span><strong>${v}</strong></div>`).join('');
 }
 
-function ensureQuotePaymentModel(){(db.quotes||[]).forEach(q=>{if(!q.paymentTerms)q.paymentTerms='50_50';if(q.depositPct==null)q.depositPct=q.paymentTerms==='100_upfront'?100:50;if(q.balanceDays==null)q.balanceDays=q.paymentTerms==='100_upfront'?0:3;if(!q.paymentMethod)q.paymentMethod='MB Way';if(q.depositPaid==null)q.depositPaid=0;if(!q.paymentHistory)q.paymentHistory=[]})}
+function ensureQuotePaymentModel(){(db.quotes||[]).forEach(q=>{if(!q.paymentTerms)q.paymentTerms='50_50';if(q.depositPct==null)q.depositPct=q.paymentTerms==='100_upfront'?100:50;if(q.balanceDays==null)q.balanceDays=q.paymentTerms==='100_upfront'?0:3;if(!q.paymentMethod)q.paymentMethod='MB Way';if(q.depositPaid==null)q.depositPaid=0;if(!q.paymentHistory)q.paymentHistory=[];if(!Array.isArray(q.statusHistory))q.statusHistory=[];if(!q.statusHistory.length&&q.created)q.statusHistory.push({date:q.created+'T00:00:00',from:'—',to:q.status||'Rascunho',status:q.status||'Rascunho',source:'legacy'});q.statusHistory.forEach(h=>{if(!h.to&&h.status)h.to=h.status})})}
 
 function cloudCfg(){try{return JSON.parse(localStorage.getItem(CLOUD_CFG))||{}}catch(e){return{}}}
 function cloudMeta(){

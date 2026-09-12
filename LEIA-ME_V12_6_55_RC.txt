@@ -1,0 +1,17 @@
+DONART V12.6.55 RC — ESTABILIZAÇÃO PRÉ-FINAL
+
+Base direta: V12.6.54.
+
+Objetivo desta versão:
+- Corrigir apenas pontos objetivos encontrados na auditoria final.
+- Preservar estrutura, módulos, navegação, dados e funcionalidades já existentes.
+- Não alterar tabelas, RPCs, RLS, Storage nem arquitetura Supabase.
+
+Correções aplicadas:
+1. Orçamentos expirados automaticamente passam a ser persistidos e sincronizados, em vez de a alteração existir apenas em memória.
+2. Histórico inicial de encomendas convertidas de orçamento usa o mesmo formato from/to do restante histórico de estados.
+3. Pagamentos recebidos em orçamento entram no Caixa no momento do recebimento. Na conversão para encomenda o mesmo paymentId é reutilizado e não é duplicado no Caixa.
+4. Histórico de estados de orçamento normalizado de forma compatível com registos antigos.
+
+Nenhuma funcionalidade existente foi removida ou redesenhada.
+Esta versão deve ser tratada como RELEASE CANDIDATE para testes finais funcionais.
