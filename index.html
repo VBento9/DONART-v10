@@ -2012,6 +2012,46 @@
   .creator-ui-save .creator-save-btn{width:100%;min-width:0}
 }
 
+
+/* DONART V12.7.1 UX RC — Cores + unificação visual de personalizações adicionais
+   Compatibilidade: mantém IDs, estrutura boxCreator, RPCs e handlers existentes. */
+.creator-color-chip-v1261.is-inactive-v1271{opacity:.62;background:#f5f2f0;border-style:dashed}
+.creator-color-chip-v1261 .creator-color-status-v1271{font-size:6.8px;font-style:normal;font-weight:850;padding:3px 6px;border-radius:999px;background:#e8f6ef;color:#216b4d}
+.creator-color-chip-v1261.is-inactive-v1271 .creator-color-status-v1271{background:#eee9e6;color:#806f67}
+.creator-color-active-v1271{display:flex!important;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding:9px 10px;border:1px solid #e8ddd7;border-radius:11px;background:#faf7f5;font-size:9px;font-weight:800;color:#4d3b34}
+.creator-color-active-v1271 input{width:18px!important;height:18px!important;accent-color:#a91642}
+.creator-color-dialog-actions-v1261 .creator-color-delete-v1271{margin-right:auto;color:#9d2449;border-color:#efcbd7;background:#fff7fa}
+.creator-custom-person-v1271{padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;margin-top:12px!important}
+.creator-custom-person-v1271 .creator-custom-person-head-v1270{padding:0 2px 7px!important;margin-bottom:0!important;border-bottom:0!important}
+.creator-custom-person-v1271 .creator-custom-person-list-v12657{gap:0!important;border:1px solid #e6d7d1;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 5px 18px rgba(69,45,38,.035)}
+.creator-custom-person-v1271 .creator-custom-person-empty-v12657{border:0;border-radius:0;background:#fff;padding:14px 12px}
+.creator-custom-person-v1271 .creator-dynamic-person-row-v1271{grid-template-columns:minmax(170px,1fr) 145px 140px 76px!important;border-top:1px solid #f0e7e3!important;border-radius:0!important;margin:0!important;padding:9px 12px!important;min-height:51px!important;background:#fff}
+.creator-custom-person-v1271 .creator-dynamic-person-row-v1271:first-child{border-top:0!important}
+.creator-dynamic-person-title-v1271{display:flex;flex-direction:column;gap:2px;min-width:0}
+.creator-dynamic-person-title-v1271 b{font-size:10px!important;color:#44332d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.creator-dynamic-person-title-v1271 small{font-size:7px!important;color:#88766e}
+.creator-dynamic-status-v1271{justify-self:start;background:#f8f4f2;border:1px solid #e8ddd7;border-radius:999px;padding:5px 9px;font-size:8px;font-weight:800;min-width:84px;display:flex;align-items:center;gap:6px}
+.creator-dynamic-status-v1271 .dot{width:7px;height:7px;border-radius:99px;background:#40a678;display:inline-block}
+.creator-dynamic-status-v1271.off .dot{background:#b7aaa4}
+.creator-dynamic-price-v1271{min-width:104px;border:1px solid #e6d9d3;border-radius:10px;background:#fcfaf9;padding:8px 9px;font-size:9px;font-weight:850;color:#46352f}
+.creator-dynamic-edit-v1271{padding:7px 9px!important;font-size:8px!important;min-width:64px}
+#creatorPersonalizationInlineHostV1271{margin-top:8px}
+#creatorPersonalizationInlineHostV1271:empty{display:none}
+#creatorPersonalizationInlineHostV1271 .modal{position:static!important;inset:auto!important;background:transparent!important;padding:0!important;display:block!important;z-index:auto!important}
+#creatorPersonalizationInlineHostV1271 .modal.hidden{display:none!important}
+#creatorPersonalizationInlineHostV1271 .dialog{width:100%!important;max-width:none!important;margin:0!important;border:1px solid #eadbd5!important;border-radius:14px!important;box-shadow:none!important;background:#fff9fb!important;padding:12px!important}
+#creatorPersonalizationInlineHostV1271 .dialog-head{margin-bottom:10px!important}
+#creatorPersonalizationInlineHostV1271 .dialog-actions{position:static!important;margin-top:10px!important;padding-top:10px!important;border-top:1px solid #eadfd9!important}
+@media(max-width:900px){
+ .creator-custom-person-v1271 .creator-dynamic-person-row-v1271{grid-template-columns:minmax(0,1fr) auto auto!important}
+ .creator-custom-person-v1271 .creator-dynamic-edit-v1271{grid-column:auto}
+}
+@media(max-width:650px){
+ .creator-custom-person-v1271 .creator-dynamic-person-row-v1271{grid-template-columns:1fr auto!important}
+ .creator-custom-person-v1271 .creator-dynamic-price-v1271{grid-column:1}
+ .creator-custom-person-v1271 .creator-dynamic-edit-v1271{grid-column:2;grid-row:2}
+}
+
 </style>
 </head>
 <body>
@@ -2027,9 +2067,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.7.0 UX RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.7.1 UX RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.7.0 UX RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.7.1 UX RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -2558,12 +2598,13 @@
         <div class="creator-person-row-v1268"><strong>💌 Cartão</strong><label class="creator-switch-v1268"><input id="creatorCard" type="checkbox"><span>Ativo</span></label><div class="creator-money"><span>€</span><input id="creatorPriceCard" type="number" min="0" step="0.01"></div></div>
       </div>
 
-      <div class="creator-custom-person-v12657">
+      <div class="creator-custom-person-v12657 creator-custom-person-v1271">
         <div class="creator-custom-person-head-v12657 creator-custom-person-head-v1270">
-          <div><span class="creator-ux-eyebrow-v1270">ADICIONAIS</span><strong>Personalizações adicionais</strong><br><small>Cria novos extras sem alterar o código da app.</small></div>
+          <div><span class="creator-ux-eyebrow-v1270">ADICIONAIS</span> <strong>Personalizações adicionais</strong><br><small>Seguem a mesma estrutura visual das personalizações padrão.</small></div>
           <button type="button" class="btn primary" onclick="openCreatorPersonalizationEditorV12657(-1)">+ Nova personalização</button>
         </div>
         <div id="creatorCustomPersonalizationsV12657" class="creator-custom-person-list-v12657"></div>
+        <div id="creatorPersonalizationInlineHostV1271"></div>
       </div>
 
       <div class="creator-pricing-grid creator-master-pricing-v1268">
@@ -6520,12 +6561,12 @@ function creatorColorOptionsV1257(s=boxCreatorSettings()){
  const opts=Array.isArray(s.colorOptions)?s.colorOptions:[];
  const byName=new Map();
  opts.forEach(o=>{
-   if(typeof o==='string'){const name=o.trim();if(name)byName.set(creatorColorNormalizeV1257(name),{name,hex:creatorColorHexGuessV1257(name)})}
-   else if(o&&typeof o==='object'){const name=String(o.name||'').trim();if(name)byName.set(creatorColorNormalizeV1257(name),{name,hex:/^#[0-9a-f]{6}$/i.test(String(o.hex||''))?String(o.hex).toUpperCase():creatorColorHexGuessV1257(name)})}
+   if(typeof o==='string'){const name=o.trim();if(name)byName.set(creatorColorNormalizeV1257(name),{name,hex:creatorColorHexGuessV1257(name),active:true})}
+   else if(o&&typeof o==='object'){const name=String(o.name||'').trim();if(name)byName.set(creatorColorNormalizeV1257(name),{name,hex:/^#[0-9a-f]{6}$/i.test(String(o.hex||''))?String(o.hex).toUpperCase():creatorColorHexGuessV1257(name),active:o.active!==false&&o.enabled!==false})}
  });
  legacy.forEach(v=>{
    const name=typeof v==='string'?v.trim():String(v?.name||'').trim();
-   if(name&&!byName.has(creatorColorNormalizeV1257(name)))byName.set(creatorColorNormalizeV1257(name),{name,hex:creatorColorHexGuessV1257(name)})
+   if(name&&!byName.has(creatorColorNormalizeV1257(name)))byName.set(creatorColorNormalizeV1257(name),{name,hex:creatorColorHexGuessV1257(name),active:true})
  });
  return [...byName.values()]
 }
@@ -6533,7 +6574,7 @@ let creatorColorEditIndexV1261=-1;
 function renderCreatorColorsV1257(){
  const root=document.getElementById('creatorColorRowsV1257');if(!root)return;
  const opts=creatorColorOptionsV1257();
- root.innerHTML=opts.map((o,i)=>`<button type="button" class="creator-color-chip-v1261" onclick="openCreatorColorEditorV1261(${i})"><span style="background:${escapeHtml(o.hex)}"></span><b>${escapeHtml(o.name)}</b><em>Editar</em></button>`).join('');
+ root.innerHTML=opts.map((o,i)=>`<button type="button" class="creator-color-chip-v1261 ${o.active===false?'is-inactive-v1271':''}" onclick="openCreatorColorEditorV1261(${i})"><span style="background:${escapeHtml(o.hex)}"></span><b>${escapeHtml(o.name)}</b><em class="creator-color-status-v1271">${o.active===false?'Indisponível':'Ativa'}</em></button>`).join('');
  syncCreatorColorsV1257()
 }
 function addCreatorColorRowV1257(name='',hex='',focus=true){
@@ -6546,6 +6587,8 @@ function openCreatorColorEditorV1261(index=-1,name='',hex=''){
  if(!m)return;
  n.value=o?.name||name||'';
  h.value=o?.hex||hex||creatorColorHexGuessV1257(name||'Verde');
+ const a=document.getElementById('creatorColorActiveV1271');if(a)a.checked=o?.active!==false;
+ const del=document.getElementById('creatorColorDeleteV1271');if(del)del.style.display=index>=0?'inline-flex':'none';
  document.getElementById('creatorColorDialogTitleV1261').textContent=index>=0?'Editar cor':'Adicionar cor';
  updateCreatorColorPreviewV1261();m.classList.remove('hidden');setTimeout(()=>n.focus(),50)
 }
@@ -6557,19 +6600,26 @@ function updateCreatorColorPreviewV1261(){
 function saveCreatorColorEditorV1261(){
  const n=document.getElementById('creatorColorNameV1261'),h=document.getElementById('creatorColorHexV1261');
  const name=String(n?.value||'').trim();if(!name)return toast('Indica o nome da cor');
- const opts=creatorColorOptionsV1257(),item={name,hex:String(h?.value||creatorColorHexGuessV1257(name)).toUpperCase()};
+ const a=document.getElementById('creatorColorActiveV1271');
+ const opts=creatorColorOptionsV1257(),item={name,hex:String(h?.value||creatorColorHexGuessV1257(name)).toUpperCase(),active:a?a.checked:true};
  if(creatorColorEditIndexV1261>=0)opts[creatorColorEditIndexV1261]=item;else opts.push(item);
- const s=boxCreatorSettings();s.colorOptions=opts;s.colors=opts.map(o=>o.name);
+ const s=boxCreatorSettings();s.colorOptions=opts;s.colors=opts.filter(o=>o.active!==false).map(o=>o.name);
  closeCreatorColorEditorV1261();renderCreatorColorsV1257();save();persistBoxCreatorCloudV12612()
 }
 function removeCreatorColorV1261(index){
- const opts=creatorColorOptionsV1257();opts.splice(index,1);
- const s=boxCreatorSettings();s.colorOptions=opts;s.colors=opts.map(o=>o.name);renderCreatorColorsV1257();save();persistBoxCreatorCloudV12612()
+ const opts=creatorColorOptionsV1257(),o=opts[index];if(!o)return;
+ if(!confirm(`Eliminar definitivamente a cor “${o.name}”? As encomendas antigas mantêm o nome já gravado.`))return;
+ opts.splice(index,1);
+ const s=boxCreatorSettings();s.colorOptions=opts;s.colors=opts.filter(x=>x.active!==false).map(x=>x.name);renderCreatorColorsV1257();save();persistBoxCreatorCloudV12612();toast('Cor eliminada')
+}
+function deleteCreatorColorV1271(){
+ if(creatorColorEditIndexV1261<0)return;
+ const idx=creatorColorEditIndexV1261;closeCreatorColorEditorV1261();removeCreatorColorV1261(idx)
 }
 function syncCreatorColorsV1257(){
  const s=boxCreatorSettings(),opts=creatorColorOptionsV1257(s);
- s.colorOptions=opts.map(o=>({name:o.name,hex:o.hex}));
- s.colors=opts.map(o=>o.name);
+ s.colorOptions=opts.map(o=>({name:o.name,hex:o.hex,active:o.active!==false}));
+ s.colors=opts.filter(o=>o.active!==false).map(o=>o.name);
  const ta=document.getElementById('creatorColors');if(ta)ta.value=s.colors.join('\n');
  return s.colorOptions
 }
@@ -6906,11 +6956,12 @@ function renderCreatorPersonalizationsV12657(){
  const root=document.getElementById('creatorCustomPersonalizationsV12657');if(!root)return;
  const s=boxCreatorSettings();s.personalizationOptions=normalizeCreatorPersonalizationsV12657(s.personalizationOptions);
  if(!s.personalizationOptions.length){root.innerHTML='<div class="creator-custom-person-empty-v12657">Ainda não existem personalizações adicionais. As opções base acima continuam disponíveis normalmente.</div>';return}
- root.innerHTML=s.personalizationOptions.map((o,i)=>`<button type="button" class="creator-custom-person-item-v12657" onclick="openCreatorPersonalizationEditorV12657(${i})"><span><b>${escapeHtml(o.name)}</b><br><small>${escapeHtml(creatorPersonalizationTypeLabelV12657(o.type))}${o.required?' · Obrigatória':''}${(o.type==='text'||o.type==='textarea')?' · '+o.maxChars+' car.':''}</small></span><span class="status">${o.active?'● Ativa':'○ Inativa'}</span><span class="price">${euro(o.price)}</span><small>Editar</small></button>`).join('');
+ root.innerHTML=s.personalizationOptions.map((o,i)=>`<div class="creator-person-row-v1268 creator-dynamic-person-row-v1271"><div class="creator-dynamic-person-title-v1271"><b>✨ ${escapeHtml(o.name)}</b><small>${escapeHtml(creatorPersonalizationTypeLabelV12657(o.type))}${o.required?' · Obrigatória':''}${(o.type==='text'||o.type==='textarea')?' · '+o.maxChars+' car.':''}</small></div><span class="creator-dynamic-status-v1271 ${o.active?'':'off'}"><i class="dot"></i>${o.active?'Ativo':'Indisponível'}</span><span class="creator-dynamic-price-v1271">${euro(o.price)}</span><button type="button" class="btn ghost creator-dynamic-edit-v1271" onclick="openCreatorPersonalizationEditorV12657(${i})">Editar</button></div>`).join('');
 }
 function openCreatorPersonalizationEditorV12657(index=-1){
  const s=boxCreatorSettings(),arr=normalizeCreatorPersonalizationsV12657(s.personalizationOptions),o=index>=0?arr[index]:null;creatorPersonalizationEditIndexV12657=index;
  const m=document.getElementById('creatorPersonalizationModalV12657');if(!m)return;
+ const host=document.getElementById('creatorPersonalizationInlineHostV1271');if(host&&m.parentElement!==host)host.appendChild(m);
  document.getElementById('creatorPersonalizationDialogTitleV12657').textContent=o?'Editar personalização':'Nova personalização';
  document.getElementById('creatorPersonalizationNameV12657').value=o?.name||'';
  document.getElementById('creatorPersonalizationTypeV12657').value=o?.type||'toggle';
@@ -8664,7 +8715,9 @@ ensureCostModel();syncPackagingSelect();go('dashboard');configureLock();setTimeo
     <div class="creator-color-preview-v1261" id="creatorColorPreviewV1261"></div>
     <label>Nome da cor<input id="creatorColorNameV1261" type="text" placeholder="Ex.: Verde"></label>
     <label>Tonalidade<input id="creatorColorHexV1261" type="color" value="#4FAE69"></label>
+    <label class="creator-color-active-v1271"><span>Disponível na loja</span><input id="creatorColorActiveV1271" type="checkbox" checked></label>
     <div class="creator-color-dialog-actions-v1261">
+      <button id="creatorColorDeleteV1271" type="button" class="btn ghost creator-color-delete-v1271" onclick="deleteCreatorColorV1271()" style="display:none">Eliminar</button>
       <button type="button" class="btn ghost" onclick="closeCreatorColorEditorV1261()">Cancelar</button>
       <button type="button" class="btn primary" onclick="saveCreatorColorEditorV1261()">Guardar cor</button>
     </div>

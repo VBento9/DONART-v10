@@ -1,0 +1,26 @@
+DONART V12.7.1 UX RC
+
+Base protegida: V12.7.0 UX RC / V12.6.59 RC.
+
+Alterações delimitadas:
+1) Criador de Caixas > Cores
+   - cada cor mantém nome e tonalidade existentes;
+   - novo estado Disponível na loja / Indisponível;
+   - cores indisponíveis permanecem guardadas no Backoffice;
+   - cores indisponíveis deixam de integrar a lista legacy de cores ativas;
+   - Eliminar com confirmação;
+   - encomendas antigas não são alteradas.
+
+2) Catálogos > Personalizações e preços
+   - personalizações adicionais passam a usar a mesma gramática visual das linhas padrão (Etiqueta, Cartão, etc.);
+   - editor abre inline na própria secção, não no fundo da página;
+   - CRUD, IDs, campos e estrutura personalizationOptions mantidos.
+
+Não alterado:
+- Supabase, tabelas, RPCs, RLS, Storage e segurança;
+- boxCreator e respetivos nomes de propriedades existentes;
+- cálculos/preços, encomendas, produção, stock, orçamentos, Homepage, Edições Especiais, Campanhas e Entregas Loja;
+- sincronização Cloud e Backup.
+
+Compatibilidade Loja:
+A Loja V8.3.20 já filtra colorOptions com active=false, por isso não foi necessário alterar a Loja.
