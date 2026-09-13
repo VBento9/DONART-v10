@@ -2013,7 +2013,7 @@
 }
 
 
-/* DONART V12.7.2 UX RC — Cores + unificação visual de personalizações adicionais
+/* DONART V12.7.3 UX RC — Cores + unificação visual de personalizações adicionais
    Compatibilidade: mantém IDs, estrutura boxCreator, RPCs e handlers existentes. */
 .creator-color-chip-v1261.is-inactive-v1271{opacity:.62;background:#f5f2f0;border-style:dashed}
 .creator-color-chip-v1261 .creator-color-status-v1271{font-size:6.8px;font-style:normal;font-weight:850;padding:3px 6px;border-radius:999px;background:#e8f6ef;color:#216b4d}
@@ -2052,6 +2052,44 @@
  .creator-custom-person-v1271 .creator-dynamic-edit-v1271{grid-column:2;grid-row:2}
 }
 
+
+/* DONART V12.7.3 UX RC — harmonização visual do Criador (Ocasiões, Cores e Temas).
+   CSS/markup apenas: sem alterações aos handlers, IDs, persistência ou estrutura de dados. */
+.creator-top-grid-v1261 .creator-ui-options{align-items:stretch!important}
+.creator-occasions-v1267,.creator-colors-v1273{min-height:154px!important;display:flex!important;flex-direction:column!important}
+.creator-manager-head-v1273{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.creator-manager-head-v1273 strong{display:block;font-size:9.5px;color:#44342e}
+.creator-manager-head-v1273 small{display:block;margin-top:2px;font-size:7.5px!important;color:#8d7d75}
+.creator-manager-badge-v1273{font-size:6.5px;font-weight:900;letter-spacing:.08em;padding:4px 7px;border-radius:999px;background:#f5edef;color:#9d2449}
+.creator-colors-v1273 .creator-color-chips-v1261{min-height:78px!important;align-content:start!important}
+.creator-colors-v1273 .creator-add-color-v1261{margin-top:auto!important;align-self:flex-start!important;min-width:126px!important}
+.creator-color-chip-v1261{min-width:0!important;max-width:100%;transition:.15s ease}
+.creator-color-chip-v1261:hover{border-color:#d8c5bd;box-shadow:0 3px 10px rgba(69,45,38,.05)}
+.creator-color-chip-v1261>b{max-width:115px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.creator-section-v1266{margin-top:16px!important}
+.creator-themes-panel-v1266{border:1px solid #e8ddd7!important;border-radius:15px!important;background:#fff!important;padding:11px!important}
+.creator-themes-toolbar-v1266{padding-bottom:9px!important;margin-bottom:8px!important;border-bottom:1px solid #f0e7e3!important}
+.creator-themes-toolbar-v1266>div>strong{font-size:9.5px!important;color:#44342e}
+.creator-themes-toolbar-v1266>div>small{font-size:7.5px!important;color:#8d7d75}
+.creator-theme-rows-v1258{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+.creator-theme-card-v1264{border:1px solid #e8ddd7!important;border-radius:12px!important;background:#fff!important;box-shadow:none!important}
+.creator-theme-summary-v1264{min-height:48px!important;padding:7px 9px!important}
+.creator-theme-summary-main-v1264>span{width:31px!important;height:31px!important;border-radius:9px!important;background:#f8f3f0!important;display:flex!important;align-items:center!important;justify-content:center!important}
+.creator-theme-summary-main-v1264 strong{font-size:8.8px!important}
+.creator-theme-summary-main-v1264 small{font-size:6.8px!important}
+.creator-theme-summary-actions-v1264{gap:6px!important}
+.creator-theme-state-v1264{font-size:6.8px!important;padding:4px 7px!important;border-radius:999px!important;background:#e8f6ef!important;color:#216b4d!important;font-weight:850!important}
+.creator-theme-summary-actions-v1264 .btn{min-height:29px!important;padding:5px 9px!important;font-size:7px!important}
+.creator-theme-card-v1264.editing-v1264{grid-column:1/-1!important;border-color:#d9c6bf!important;background:#fffdfc!important}
+.creator-theme-card-v1264.editing-v1264 .creator-theme-main-v1258{padding:3px 0 0!important}
+.creator-theme-card-v1264.editing-v1264 .creator-theme-occasions-v1258{margin-top:7px!important}
+.creator-theme-note-v1266{display:block!important;margin-top:8px!important;padding-top:7px!important;border-top:1px solid #f0e7e3!important}
+@media(max-width:900px){
+ .creator-top-grid-v1261 .creator-ui-options{grid-template-columns:1fr!important}
+ .creator-occasions-v1267,.creator-colors-v1273{min-height:0!important}
+ .creator-theme-rows-v1258{grid-template-columns:1fr!important}
+}
+
 </style>
 </head>
 <body>
@@ -2067,9 +2105,9 @@
 </div>
 
 <div class="app">
-<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.7.2 UX RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
+<aside class="sidebar"><div class="brand"><img src="logo-donart-ui.png" alt="DONART Mini Donuts"><small>Gestão Privada · V12.7.3 UX RC · Tablet + iPhone</small></div><div class="nav" id="nav"></div></aside>
 <main class="main">
-  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.7.2 UX RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
+  <div class="topbar"><div class="page-heading"><span id="pageContext">GESTÃO DONART</span><h1 id="pageTitle">Dashboard</h1></div><div class="top-actions"><button id="orderAlertButtonV12624" class="smallbtn order-alert-button-v12624" onclick="toggleOrderNotificationsV12624()" title="Novas encomendas">🔔<span id="orderAlertBadgeV12624" class="order-alert-count-v12624 hidden">0</span></button><span id="runtimeVersion" class="pill" style="font-weight:900">V12.7.3 UX RC</span><button id="installBtn" class="smallbtn hidden" onclick="installApp()">Instalar app</button><button class="pill cloud-status neutral" id="cloudStatus" onclick="go('cloud')" title="Estado da sincronização"><span class="cloud-dot"></span><span id="cloudStatusText">Cloud desligada</span></button><div class="pill" id="today"></div></div></div>
   <div id="installBanner" class="installBanner hidden"><div><strong>Instalar no dispositivo</strong><br><small>Adiciona a app ao ecrã inicial e abre em modo completo.</small></div><button class="btn primary" onclick="installApp()">Instalar</button></div>
 
   <div id="orderNotificationPanelV12624" class="order-notification-panel-v12624 hidden" aria-live="polite">
@@ -2542,8 +2580,8 @@
 
             <textarea id="creatorStyles" rows="7" style="display:none" aria-hidden="true"></textarea>
 
-          <div class="creator-ui-block creator-compact-card-v1261 creator-colors-compact-v1261">
-            
+          <div class="creator-ui-block creator-compact-card-v1261 creator-colors-compact-v1261 creator-colors-v1273">
+            <div class="creator-manager-head-v1273"><div><strong>Cores disponíveis</strong><small>Geridas visualmente para a loja</small></div><span class="creator-manager-badge-v1273">CRIADOR</span></div>
             <textarea id="creatorColors" rows="7" style="display:none" aria-hidden="true"></textarea>
             <div id="creatorColorRowsV1257" class="creator-color-chips-v1261"></div>
             <button type="button" class="btn ghost creator-add-color-v1261" onclick="openCreatorColorEditorV1261()">+ Adicionar cor</button>
